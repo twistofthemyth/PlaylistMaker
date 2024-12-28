@@ -17,8 +17,7 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         style="@style/SettingsItemSwitch"
-        android:text="@string/setting_item_theme"
-        android:theme="@style/SwitchStyle" />
+        android:text="@string/setting_item_theme" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/SettingsItemTextView"

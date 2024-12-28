@@ -48,6 +48,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="useMaterialThemeColors">false</item>
         <item name="thumbTintMode">src_in</item>
+        <item name="android:theme">@style/SwitchStyle</item>
     </style>
 
     <style name="SwitchStyle" parent="">
