@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:id="@+id/settings"
@@ -15,38 +15,23 @@
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/settings_button_txt" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/SettingsItemSwitch"
+        android:text="@string/setting_item_theme"
+        android:theme="@style/SwitchStyle" />
 
-        <LinearLayout style="@style/SettingsItem">
-            <TextView style="@style/SettingsItemText"
-                android:text="@string/setting_item_theme"
-                />
-            <Switch style="@style/SettingsItemSwitch" />
-        </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_share"
+        android:text="@string/setting_item_share" />
 
-        <LinearLayout style="@style/SettingsItem">
-            <TextView style="@style/SettingsItemText"
-                android:text="@string/setting_item_share" />
-                <ImageView style="@style/SettingsItemIcon"
-                    android:src="@drawable/ic_share"/>
-        </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_support"
+        android:text="@string/setting_item_support" />
 
-        <LinearLayout style="@style/SettingsItem">
-            <TextView style="@style/SettingsItemText"
-                android:text="@string/setting_item_support" />
-                <ImageView style="@style/SettingsItemIcon"
-                    android:src="@drawable/ic_support"/>
-        </LinearLayout>
-
-        <LinearLayout style="@style/SettingsItem">
-            <TextView style="@style/SettingsItemText"
-                android:text="@string/setting_item_agreement" />
-                <ImageView style="@style/SettingsItemIcon"
-                    android:src="@drawable/ic_arrow_forward"/>
-        </LinearLayout>
-
-    </LinearLayout>
-</com.google.android.material.appbar.AppBarLayout>
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:text="@string/setting_item_agreement" />
+</LinearLayout>
