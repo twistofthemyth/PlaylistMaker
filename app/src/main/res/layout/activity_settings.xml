@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/settings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        style="@style/Toolbar"
+        android:text="@string/settings_button_txt"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/settings_button_txt" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/SettingsItemSwitch"
+        android:text="@string/setting_item_theme" />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_share"
+        android:text="@string/setting_item_share" />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_support"
+        android:text="@string/setting_item_support" />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsItemTextView"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:text="@string/setting_item_agreement" />
+</LinearLayout>
