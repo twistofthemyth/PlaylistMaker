@@ -10,7 +10,7 @@
     <androidx.appcompat.widget.Toolbar
         style="@style/Toolbar"
         app:title="@string/app_name"
-        app:titleTextColor="@color/white"/>
+        app:titleTextColor="@color/main_toolbar_text_color" />
 
         <Button style="@style/MainScreenButton"
             android:id="@+id/search_button"
