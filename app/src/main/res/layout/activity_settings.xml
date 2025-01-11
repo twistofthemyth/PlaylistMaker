@@ -16,20 +16,24 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         style="@style/SettingsItemSwitch"
+        android:id="@+id/settings_theme_button"
         android:text="@string/setting_item_theme" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/SettingsItemTextView"
         android:drawableEnd="@drawable/ic_share"
+        android:id="@+id/settings_share_tv"
         android:text="@string/setting_item_share" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/SettingsItemTextView"
         android:drawableEnd="@drawable/ic_support"
+        android:id="@+id/settings_support_tv"
         android:text="@string/setting_item_support" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/SettingsItemTextView"
         android:drawableEnd="@drawable/ic_arrow_forward"
+        android:id="@+id/settings_agreement_tv"
         android:text="@string/setting_item_agreement" />
 </LinearLayout>
