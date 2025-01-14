@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
 
+    private var savedInput = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -28,6 +30,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 changeClearButtonVisibility(clearButton, s)
+                savedInput = s.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -45,17 +48,15 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val searchInput = findViewById<EditText>(R.id.search_et)
-        if (!searchInput.text.isNullOrEmpty()) {
-            outState.putString(SEARCH_TEXT_ID, searchInput.text.toString())
-        }
+        outState.putString(SEARCH_TEXT_ID, savedInput)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val savedText = savedInstanceState.getString(SEARCH_TEXT_ID)
+        savedInput = savedInstanceState.getString(SEARCH_TEXT_ID).toString()
+
         val searchInput = findViewById<EditText>(R.id.search_et)
-        searchInput.setText(savedText)
+        searchInput.setText(savedInput)
     }
 
     private fun changeClearButtonVisibility(button: View, s: CharSequence?) {
