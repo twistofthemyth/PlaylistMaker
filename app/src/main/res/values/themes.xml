@@ -1,8 +1,6 @@
 <resources>
 
     <style name="Base.Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorSecondary">#3772E7</item>
-        <item name="colorOnSurface">#FFFF</item>
     </style>
 
     <style name="Toolbar" parent="Widget.Material3.Toolbar">
@@ -56,7 +54,7 @@
     </style>
 
     <style name="SwitchThemeOverlay">
-        <item name="colorSecondary">@color/switch_thumb_color</item>
+        <item name="colorSecondary">@color/primary_color</item>
     </style>
 
     <style name="EditTextField">
@@ -73,6 +71,7 @@
         <item name="android:textSize">16sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:maxLength">15</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
     </style>
 
     <style name="EditTextIcon">
