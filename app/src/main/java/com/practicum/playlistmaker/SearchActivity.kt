@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -42,11 +43,30 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val searchInput = findViewById<EditText>(R.id.search_et)
+        if (!searchInput.text.isNullOrEmpty()) {
+            outState.putString(SEARCH_TEXT_ID, searchInput.text.toString())
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val savedText = savedInstanceState.getString(SEARCH_TEXT_ID)
+        val searchInput = findViewById<EditText>(R.id.search_et)
+        searchInput.setText(savedText)
+    }
+
     private fun changeClearButtonVisibility(button: View, s: CharSequence?) {
         if (s.isNullOrEmpty()) {
             button.visibility = View.GONE
         } else {
             button.visibility = View.VISIBLE
         }
+    }
+
+    companion object {
+        const val SEARCH_TEXT_ID = "SEARCH_TEXT_ID"
     }
 }
