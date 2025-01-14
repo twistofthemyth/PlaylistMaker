@@ -11,4 +11,5 @@
     <string name="support_default_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="support_default_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="share_app_url">https://practicum.yandex.ru/android-developer/</string>
 </resources>
