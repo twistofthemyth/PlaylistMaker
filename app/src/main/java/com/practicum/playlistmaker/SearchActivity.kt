@@ -18,11 +18,10 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val searchInput = findViewById<EditText>(R.id.search_et)
-        val clearButton = findViewById<ImageView>(R.id.clear_search_iv)
+
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-
+        val clearButton = findViewById<ImageView>(R.id.clear_search_iv)
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // do nothing
@@ -38,7 +37,9 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        val searchInput = findViewById<EditText>(R.id.search_et)
         searchInput.addTextChangedListener(searchTextWatcher)
+
         clearButton.setOnClickListener {
             searchInput.text.clear()
             inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken, 0)

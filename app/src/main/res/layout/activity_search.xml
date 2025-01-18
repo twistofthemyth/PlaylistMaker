@@ -9,7 +9,9 @@
     tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
-        style="@style/Toolbar"
+        style="@style/ToolbarWithBackButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         app:title="@string/search_button_txt" />
 
@@ -20,21 +22,33 @@
         android:layout_marginVertical="8dp">
 
         <EditText
-            style="@style/EditTextField"
             android:id="@+id/search_et"
+            style="@style/EditTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="@string/search_button_txt" />
 
         <ImageView
             style="@style/EditTextIcon"
-            android:src="@drawable/ic_search" />
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/ic_search"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
-            style="@style/EditTextIcon"
             android:id="@+id/clear_search_iv"
-            android:layout_gravity="right"
+            style="@style/EditTextIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="10dp"
             android:src="@drawable/ic_clear"
-            tools:ignore="RtlHardcoded"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="RtlHardcoded" />
     </FrameLayout>
 
 </LinearLayout>

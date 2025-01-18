@@ -26,7 +26,7 @@ class SettingsActivity : AppCompatActivity() {
         supportTv.setOnClickListener {
             val sendToSupportIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, getString(R.string.support_email))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_default_subject))
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.support_default_text))
             }

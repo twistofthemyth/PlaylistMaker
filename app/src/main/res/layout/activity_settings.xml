@@ -10,30 +10,41 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        style="@style/Toolbar"
+        style="@style/ToolbarWithBackButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:text="@string/settings_button_txt"
         app:title="@string/settings_button_txt" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        style="@style/SettingsItemSwitch"
         android:id="@+id/settings_theme_button"
+        style="@style/SettingsItemSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/setting_item_theme" />
 
     <com.google.android.material.textview.MaterialTextView
-        style="@style/SettingsItemTextView"
-        android:drawableEnd="@drawable/ic_share"
         android:id="@+id/settings_share_tv"
+        style="@style/SettingsItemTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_share"
         android:text="@string/setting_item_share" />
 
     <com.google.android.material.textview.MaterialTextView
-        style="@style/SettingsItemTextView"
-        android:drawableEnd="@drawable/ic_support"
         android:id="@+id/settings_support_tv"
+        style="@style/SettingsItemTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_support"
         android:text="@string/setting_item_support" />
 
     <com.google.android.material.textview.MaterialTextView
-        style="@style/SettingsItemTextView"
-        android:drawableEnd="@drawable/ic_arrow_forward"
         android:id="@+id/settings_agreement_tv"
+        style="@style/SettingsItemTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_forward"
         android:text="@string/setting_item_agreement" />
 </LinearLayout>
