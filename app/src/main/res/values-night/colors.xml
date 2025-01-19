@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="text_color">#FFFFFF</color>
+    <color name="background">#1A1B22</color>
+    <color name="background_main">#1A1B22</color>
+    <color name="primary_color">#3772E7</color>
+    <color name="primary_container_color">#9FBBF3</color>
+    <color name="main_button_text_color">#1A1B22</color>
+    <color name="main_button_color">#FFFFFF</color>
+    <color name="main_toolbar_text_color">#FFFFFF</color>
+    <color name="list_item_icon_color">#FFFFFF</color>
+    <color name="et_color">#FFFFFF</color>
+    <color name="et_text_color">#1A1B22</color>
+    <color name="et_hint_color">#1A1B22</color>
+</resources>
+
