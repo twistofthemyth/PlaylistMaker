@@ -5,7 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +47,15 @@ class SettingsActivity : AppCompatActivity() {
             val viewAgreementIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.agreement_url)))
             startActivity(viewAgreementIntent)
+        }
+
+        val darkThemeSwitch = findViewById<SwitchMaterial>(R.id.settings_theme_button).also {
+            it.isChecked = AppCompatDelegate.getDefaultNightMode().equals(MODE_NIGHT_YES)
+        }
+
+        darkThemeSwitch.setOnClickListener {
+            val theme = if (!darkThemeSwitch.isChecked) MODE_NIGHT_FOLLOW_SYSTEM else MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
 }

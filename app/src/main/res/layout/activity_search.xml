@@ -9,8 +9,8 @@
     tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
-        style="@style/ToolbarWithBackButton"
         android:id="@+id/toolbar"
+        style="@style/ToolbarWithBackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -28,8 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/search_button_txt"
-            android:maxLines="1"
-            android:maxLength="30" />
+            android:maxLength="30"
+            android:maxLines="1" />
 
         <ImageView
             style="@style/EditTextIcon"
@@ -53,5 +53,11 @@
             android:visibility="gone"
             tools:ignore="RtlHardcoded" />
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RvSearchResult"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>

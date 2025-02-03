@@ -7,4 +7,5 @@
     <dimen name="list_item_text_subtitle_size">11sp</dimen>
     <dimen name="list_item_vertical_padding">20dp</dimen>
     <dimen name="list_item_image_size">45dp</dimen>
+
 </resources>

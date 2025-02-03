@@ -11,7 +11,7 @@
         android:layout_width="@dimen/list_item_image_size"
         android:layout_height="@dimen/list_item_image_size"
         android:layout_gravity="start|center_vertical"
-        tools:background="@color/text_subtitle_color" />
+        android:src="@drawable/placeholder_album" />
 
     <TextView
         android:id="@+id/TvTrackName"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="66dp"
         android:layout_marginTop="6dp"
-        tools:text="Yesterday (Remastered 2009)" />
+        tools:text="Yesterday (Remastered 2009)ffffffffffffffffffffffffffffffffff" />
 
     <LinearLayout
         android:layout_width="wrap_content"
