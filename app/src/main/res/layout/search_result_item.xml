@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:id="@+id/IvAlbum"
+        android:layout_width="@dimen/list_item_image_size"
+        android:layout_height="@dimen/list_item_image_size"
+        android:layout_gravity="start|center_vertical"
+        android:src="@drawable/placeholder_album" />
+
+    <TextView
+        android:id="@+id/TvTrackName"
+        style="@style/TextAppearance.PM.ListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="66dp"
+        android:layout_marginTop="6dp"
+        tools:text="Yesterday (Remastered 2009)ffffffffffffffffffffffffffffffffff" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="66dp"
+        android:layout_marginTop="26dp">
+
+        <TextView
+            android:id="@+id/TvTrackAuthor"
+            style="@style/TextAppearance.PM.ListSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="The Beatles" />
+
+        <ImageView
+            android:id="@+id/IvDotDelimiter"
+            style="@style/TextAppearance.PM.ListSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_dot_delimiter" />
+
+        <TextView
+            android:id="@+id/TvTrackLength"
+            style="@style/TextAppearance.PM.ListSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2:55" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/IvArrowForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:src="@drawable/ic_arrow_forward" />
+</FrameLayout>
