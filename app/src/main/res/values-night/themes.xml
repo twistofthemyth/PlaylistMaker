@@ -33,7 +33,7 @@
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="SettingsItemTextView">
+    <style name="TextAppearance.PM.ListTitle.Settings">
         <item name="android:paddingHorizontal">@dimen/default_padding</item>
         <item name="android:paddingVertical">@dimen/list_item_vertical_padding</item>
         <item name="android:textSize">@dimen/list_item_text_size</item>
@@ -42,7 +42,7 @@
         <item name="fontWeight">400</item>
     </style>
 
-    <style name="SettingsItemSwitch" parent="SettingsItemTextView">
+    <style name="TextAppearance.PM.ListTitle.Settings.Switch" parent="TextAppearance.PM.ListTitle.Settings">
         <item name="materialThemeOverlay">@style/SwitchThemeOverlay</item>
         <item name="materialSwitchStyle">@style/SwitchThemeOverlay</item>
         <item name="android:gravity">center_vertical</item>
