@@ -20,14 +20,14 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/settings_theme_button"
-        style="@style/TextAppearance.PM.ListTitle.Settings.Switch"
+        style="@style/PM.Text.ListTitle.Settings.Switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/setting_item_theme" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_share_tv"
-        style="@style/TextAppearance.PM.ListTitle.Settings"
+        style="@style/PM.Text.ListTitle.Settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_share"
@@ -35,7 +35,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_support_tv"
-        style="@style/TextAppearance.PM.ListTitle.Settings"
+        style="@style/PM.Text.ListTitle.Settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_support"
@@ -43,7 +43,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_agreement_tv"
-        style="@style/TextAppearance.PM.ListTitle.Settings"
+        style="@style/PM.Text.ListTitle.Settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_arrow_forward"

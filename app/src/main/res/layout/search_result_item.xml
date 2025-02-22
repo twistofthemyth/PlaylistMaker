@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/TvTrackName"
-        style="@style/TextAppearance.PM.ListTitle"
+        style="@style/PM.Text.ListTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="66dp"
@@ -30,21 +30,21 @@
 
         <TextView
             android:id="@+id/TvTrackAuthor"
-            style="@style/TextAppearance.PM.ListSubTitle"
+            style="@style/PM.Text.ListSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="The Beatles" />
 
         <ImageView
             android:id="@+id/IvDotDelimiter"
-            style="@style/TextAppearance.PM.ListSubTitle"
+            style="@style/PM.Text.ListSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_dot_delimiter" />
 
         <TextView
             android:id="@+id/TvTrackLength"
-            style="@style/TextAppearance.PM.ListSubTitle"
+            style="@style/PM.Text.ListSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="2:55" />

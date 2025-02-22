@@ -29,7 +29,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/search_button_txt"
             android:maxLength="30"
-            android:maxLines="1" />
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageView
             style="@style/EditTextIcon"
@@ -53,6 +54,40 @@
             android:visibility="gone"
             tools:ignore="RtlHardcoded" />
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/error_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="154dp"
+        tools:visibility="visible"
+        tools:src="@drawable/placeholder_net_error"/>
+
+    <TextView
+        style="@style/PM.Text.Notification"
+        android:id="@+id/error_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="24dp"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        tools:visibility="visible"
+        tools:text="@string/net_error"/>
+
+    <Button
+        style="@style/PM.Button.Notification"
+        android:id="@+id/error_update_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:text="@string/search_query_update_button"
+        tools:visibility="visible"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RvSearchResult"
