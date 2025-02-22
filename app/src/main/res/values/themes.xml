@@ -32,22 +32,35 @@
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="SettingsItemTextView">
-        <item name="android:paddingHorizontal">@dimen/default_padding</item>
-        <item name="android:paddingVertical">@dimen/list_item_vertical_padding</item>
-        <item name="android:textSize">@dimen/list_item_text_size</item>
-        <item name="android:textColor">@color/text_color</item>
+    <style name="TextAppearance.PM" parent="">
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">@integer/list_item_max_length</item>
     </style>
 
-    <style name="SettingsItemSwitch" parent="SettingsItemTextView">
+    <style name="TextAppearance.PM.ListTitle">
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="TextAppearance.PM.ListTitle.Settings">
+        <item name="android:paddingHorizontal">@dimen/default_padding</item>
+        <item name="android:paddingVertical">@dimen/list_item_vertical_padding</item>
+    </style>
+
+    <style name="TextAppearance.PM.ListTitle.Settings.Switch">
         <item name="materialThemeOverlay">@style/SwitchThemeOverlay</item>
         <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="SwitchThemeOverlay">
         <item name="colorSecondary">@color/primary_color</item>
+    </style>
+
+    <style name="TextAppearance.PM.ListSubTitle">
+        <item name="android:textSize">@dimen/list_item_text_subtitle_size</item>
+        <item name="android:textColor">@color/text_subtitle_color</item>
     </style>
 
     <style name="EditTextField">
