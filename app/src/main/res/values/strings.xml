@@ -13,6 +13,6 @@
     <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
     <string name="share_app_url">https://practicum.yandex.ru/android-developer/</string>
     <string name="not_found">Ничего не нашлось</string>
-    <string name="net_error">Проблемы со связью.\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="net_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="search_query_update_button">Обновить</string>
 </resources>
