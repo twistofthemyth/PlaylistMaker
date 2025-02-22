@@ -47,6 +47,7 @@ class SearchActivity : AppCompatActivity() {
 
         val iTunesService = ITunesService()
         val searchSong = fun() {
+            searchAdapter.cleanSearchResult()
             iTunesService.api.searchSong(savedInput).enqueue(object : Callback<SearchSongResponse> {
                 override fun onResponse(
                     call: Call<SearchSongResponse>,
