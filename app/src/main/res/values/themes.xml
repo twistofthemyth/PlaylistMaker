@@ -19,37 +19,57 @@
         <item name="titleMarginTop">2dp</item>
     </style>
 
-    <style name="MainScreenButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+    <style name="PM.Button" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:backgroundTint">@color/main_button_color</item>
         <item name="android:textColor">@color/main_button_text_color</item>
         <item name="android:textSize">@dimen/default_text_size</item>
-        <item name="cornerRadius">@dimen/button_corner</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconPadding">@dimen/default_padding</item>
-        <item name="iconTint">@color/main_button_text_color</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="fontWeight">500</item>
         <item name="textAllCaps">false</item>
     </style>
+    
+    <style name="PM.Button.Main">
+        <item name="cornerRadius">@dimen/button_corner</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/default_padding</item>
+        <item name="iconTint">@color/main_button_text_color</item>
+    </style>
+    
+    <style name="PM.Button.Notification">
+        <item name="cornerRadius">@dimen/button_notification_corner</item>
+        <item name="android:backgroundTint">@color/text_color</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textColor">@color/background</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingVertical">10dp</item>
+        <item name="android:paddingHorizontal">14dp</item>
+    </style>
 
-    <style name="TextAppearance.PM" parent="">
+    <style name="PM.Text" parent="">
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
+    </style>
+
+    <style name="PM.Text.Notification">
+        <item name="android:textSize">@dimen/notification_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="PM.Text.ListTitle">
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
         <item name="android:maxLines">1</item>
         <item name="android:maxLength">@integer/list_item_max_length</item>
     </style>
 
-    <style name="TextAppearance.PM.ListTitle">
-        <item name="android:textSize">@dimen/list_item_text_size</item>
-        <item name="android:textColor">@color/text_color</item>
-    </style>
-
-    <style name="TextAppearance.PM.ListTitle.Settings">
+    <style name="PM.Text.ListTitle.Settings">
         <item name="android:paddingHorizontal">@dimen/default_padding</item>
         <item name="android:paddingVertical">@dimen/list_item_vertical_padding</item>
     </style>
 
-    <style name="TextAppearance.PM.ListTitle.Settings.Switch">
+    <style name="PM.Text.ListTitle.Settings.Switch">
         <item name="materialThemeOverlay">@style/SwitchThemeOverlay</item>
         <item name="android:gravity">center_vertical</item>
     </style>
@@ -58,7 +78,7 @@
         <item name="colorSecondary">@color/primary_color</item>
     </style>
 
-    <style name="TextAppearance.PM.ListSubTitle">
+    <style name="PM.Text.ListSubTitle">
         <item name="android:textSize">@dimen/list_item_text_subtitle_size</item>
         <item name="android:textColor">@color/text_subtitle_color</item>
     </style>
