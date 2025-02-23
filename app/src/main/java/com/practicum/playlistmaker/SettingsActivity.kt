@@ -53,6 +53,10 @@ class SettingsActivity : AppCompatActivity() {
             it.isChecked = AppCompatDelegate.getDefaultNightMode().equals(MODE_NIGHT_YES)
         }
 
+        darkThemeSwitch.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
+
         darkThemeSwitch.setOnClickListener {
             val theme = if (!darkThemeSwitch.isChecked) MODE_NIGHT_FOLLOW_SYSTEM else MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(theme)
