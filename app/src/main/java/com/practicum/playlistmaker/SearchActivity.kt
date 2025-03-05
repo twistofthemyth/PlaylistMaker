@@ -6,6 +6,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
@@ -173,14 +174,17 @@ class SearchActivity : AppCompatActivity() {
         adapter: TrackSearchHistoryAdapter,
         displayCondition: () -> Boolean
     ) {
+        val searchHistoryLl = findViewById<LinearLayout>(R.id.search_history_ll)
         val historyTitle = findViewById<TextView>(R.id.search_history_title_tv)
         val historyList = findViewById<RecyclerView>(R.id.RvSearchHistory)
         val cleanButton = findViewById<Button>(R.id.clear_history_btn)
         if (!adapter.isEmpty() && displayCondition.invoke()) {
+            searchHistoryLl.visibility = View.VISIBLE
             historyTitle.visibility = View.VISIBLE
             historyList.visibility = View.VISIBLE
             cleanButton.visibility = View.VISIBLE
         } else {
+            searchHistoryLl.visibility = View.GONE
             historyTitle.visibility = View.GONE
             historyList.visibility = View.GONE
             cleanButton.visibility = View.GONE

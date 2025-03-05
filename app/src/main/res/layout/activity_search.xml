@@ -28,9 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/search_button_txt"
-            android:maxLength="30"
             android:imeOptions="actionDone"
-            android:singleLine="true"/>
+            android:maxLength="30"
+            android:singleLine="true" />
 
         <ImageView
             style="@style/EditTextIcon"
@@ -55,68 +55,77 @@
             tools:ignore="RtlHardcoded" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/search_history_title_tv"
-        style="@style/PM.Text.Notification.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone"
-        android:text="@string/you_searched"
-        tools:visibility="visible"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RvSearchHistory"
+
+
+    <LinearLayout
+        android:id="@+id/search_history_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
-        />
-    <Button
-        style="@style/PM.Button.Notification"
-        android:id="@+id/clear_history_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:visibility="gone"
-        android:text="@string/clear_search_history_button"
-        tools:visibility="visible"
-        />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/search_history_title_tv"
+            style="@style/PM.Text.Notification.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/you_searched"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RvSearchHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/clear_history_btn"
+            style="@style/PM.Button.Notification"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:layout_gravity="center"
+            android:text="@string/clear_search_history_button"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/error_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
         android:layout_marginTop="154dp"
-        tools:visibility="visible"
-        tools:src="@drawable/placeholder_net_error"/>
+        android:visibility="gone"
+        tools:src="@drawable/placeholder_net_error"
+        tools:visibility="visible" />
 
     <TextView
-        style="@style/PM.Text.Notification"
         android:id="@+id/error_tv"
+        style="@style/PM.Text.Notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginHorizontal="24dp"
-        android:visibility="gone"
         android:layout_marginTop="16dp"
-        tools:visibility="visible"
-        tools:text="@string/net_error"/>
+        android:visibility="gone"
+        tools:text="@string/net_error"
+        tools:visibility="visible" />
 
     <Button
-        style="@style/PM.Button.Notification"
         android:id="@+id/error_update_btn"
+        style="@style/PM.Button.Notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="24dp"
-        android:visibility="gone"
         android:text="@string/search_query_update_button"
-        tools:visibility="visible"
-        />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RvSearchResult"
