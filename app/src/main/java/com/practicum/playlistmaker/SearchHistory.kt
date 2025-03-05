@@ -10,6 +10,9 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     fun addTrackToHistory(track: Track) {
         history = history.asReversed()
+        if (history.contains(track)) {
+            history.remove(track)
+        }
         history.add(track)
         history = history.asReversed()
         if (history.size > 10) {
