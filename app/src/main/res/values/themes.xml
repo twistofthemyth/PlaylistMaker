@@ -57,6 +57,10 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="PM.Text.Notification.Title">
+        <item name="fontWeight">500</item>
+    </style>
+
     <style name="PM.Text.ListTitle">
         <item name="android:textSize">@dimen/list_item_text_size</item>
         <item name="android:textColor">@color/text_color</item>

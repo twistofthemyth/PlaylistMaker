@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.adapters.TrackSearchHistoryAdapter
 import com.practicum.playlistmaker.adapters.TrackSearchResultAdapter
 import com.practicum.playlistmaker.model.SearchSongResponse
 import com.practicum.playlistmaker.net.ITunesService
@@ -28,7 +29,8 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
 
-        var searchAdapter = TrackSearchResultAdapter()
+        val searchHistory = SearchHistory((applicationContext as App).getSharedPreferences())
+        val searchAdapter = TrackSearchResultAdapter(searchHistory)
         findViewById<RecyclerView>(R.id.RvSearchResult).apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
@@ -38,12 +40,6 @@ class SearchActivity : AppCompatActivity() {
         val errorImage = findViewById<ImageView>(R.id.error_iv)
         val errorText = findViewById<TextView>(R.id.error_tv)
         val errorButton = findViewById<Button>(R.id.error_update_btn)
-        val clearButton = findViewById<ImageView>(R.id.clear_search_iv)
-        clearButton.setOnClickListener {
-            searchEditText.text.clear()
-            searchAdapter.cleanSearchResult()
-            hideError(errorImage, errorText, errorButton)
-        }
 
         val iTunesService = ITunesService()
         val searchSong = fun() {
@@ -71,23 +67,70 @@ class SearchActivity : AppCompatActivity() {
                 }
             })
         }
-
         errorButton.setOnClickListener { searchSong.invoke() }
 
-        searchEditText.doOnTextChanged { text, _, _, _ ->
-            run {
+        val searchHistoryAdapter = TrackSearchHistoryAdapter(searchHistory)
+        val searchHistoryTitleTv = findViewById<TextView>(R.id.search_history_title_tv)
+        val searchHistoryRv = findViewById<RecyclerView>(R.id.RvSearchHistory).apply {
+            adapter = searchHistoryAdapter
+            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        }
+
+        val clearButton = findViewById<ImageView>(R.id.clear_search_iv).apply {
+            setOnClickListener {
+                searchEditText.text.clear()
+                searchAdapter.cleanSearchResult()
                 hideError(errorImage, errorText, errorButton)
-                changeClearButtonVisibility(clearButton, text)
-                savedInput = text.toString()
             }
         }
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchSong.invoke()
-                true
+
+        val searchHistoryClearBtn = findViewById<Button>(R.id.clear_history_btn).apply {
+            setOnClickListener { b ->
+                searchHistoryAdapter.cleanSearchHistory()
+                hideHistory(searchHistoryTitleTv, searchHistoryRv, b as Button)
             }
-            false
         }
+
+        searchEditText.apply {
+            doOnTextChanged { text, _, _, _ ->
+                run {
+                    hideError(errorImage, errorText, errorButton)
+                    changeClearButtonVisibility(clearButton, text)
+                    savedInput = text.toString()
+                    if (savedInput.isEmpty() && !searchHistoryAdapter.isEmpty()) {
+                        showHistory(searchHistoryTitleTv, searchHistoryRv, searchHistoryClearBtn)
+                    } else {
+                        hideHistory(searchHistoryTitleTv, searchHistoryRv, searchHistoryClearBtn)
+                    }
+                }
+            }
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    searchSong.invoke()
+                    true
+                }
+                false
+            }
+            setOnFocusChangeListener { view, hasFocus ->
+                if (hasFocus && !searchHistoryAdapter.isEmpty() && savedInput.isEmpty()) {
+                    showHistory(searchHistoryTitleTv, searchHistoryRv, searchHistoryClearBtn)
+                } else {
+                    hideHistory(searchHistoryTitleTv, searchHistoryRv, searchHistoryClearBtn)
+                }
+            }
+        }
+    }
+
+    fun showHistory(titleTv: TextView, list: RecyclerView, clearBtn: Button) {
+        titleTv.visibility = View.VISIBLE
+        list.visibility = View.VISIBLE
+        clearBtn.visibility = View.VISIBLE
+    }
+
+    fun hideHistory(titleTv: TextView, list: RecyclerView, clearBtn: Button) {
+        titleTv.visibility = View.GONE
+        list.visibility = View.GONE
+        clearBtn.visibility = View.GONE
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -2,10 +2,14 @@ package com.practicum.playlistmaker.adapters
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.SearchHistory
 import com.practicum.playlistmaker.holders.TrackSearchResultViewHolder
 import com.practicum.playlistmaker.model.Track
 
-class TrackSearchResultAdapter(val tracks: MutableList<Track> = mutableListOf()) :
+class TrackSearchResultAdapter(
+    private val searchHistory: SearchHistory,
+    private val tracks: MutableList<Track> = mutableListOf()
+) :
     RecyclerView.Adapter<TrackSearchResultViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchResultViewHolder {
@@ -17,7 +21,9 @@ class TrackSearchResultAdapter(val tracks: MutableList<Track> = mutableListOf())
     }
 
     override fun onBindViewHolder(holder: TrackSearchResultViewHolder, position: Int) {
-        holder.bind(tracks[position])
+        val track = tracks[position]
+        holder.bind(track)
+        holder.itemView.setOnClickListener { searchHistory.addTrackToHistory(track) }
     }
 
     fun updateSearchResult(result: List<Track>) {

@@ -55,6 +55,35 @@
             tools:ignore="RtlHardcoded" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/search_history_title_tv"
+        style="@style/PM.Text.Notification.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:text="@string/you_searched"
+        tools:visibility="visible"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RvSearchHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+    <Button
+        style="@style/PM.Button.Notification"
+        android:id="@+id/clear_history_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:text="@string/clear_search_history_button"
+        tools:visibility="visible"
+        />
     <ImageView
         android:id="@+id/error_iv"
         android:layout_width="wrap_content"
