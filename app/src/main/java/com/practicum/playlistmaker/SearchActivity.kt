@@ -79,21 +79,21 @@ class SearchActivity : AppCompatActivity() {
             searchEditText.text.clear()
             changeSearchResultVisibility { false }
             hideError()
-            changeHistoryVisibility(searchHistoryAdapter)
+            changeHistoryVisibility(searchHistoryRv)
         }
 
-        changeHistoryVisibility(searchHistoryAdapter)
+        changeHistoryVisibility(searchHistoryRv)
 
         val clearHistoryButton = findViewById<Button>(R.id.clear_history_btn)
         clearHistoryButton.setOnClickListener {
             searchHistoryAdapter.cleanSearchHistory()
-            changeHistoryVisibility(searchHistoryAdapter)
+            changeHistoryVisibility(searchHistoryRv)
         }
 
         searchEditText.doOnTextChanged { text, _, _, _ ->
             hideError()
             changeClearButtonVisibility(clearButton, text)
-            changeHistoryVisibility(searchHistoryAdapter) { text.isNullOrEmpty() }
+            changeHistoryVisibility(searchHistoryRv) { text.isNullOrEmpty() }
             changeSearchResultVisibility { !text.isNullOrEmpty() }
             savedInput = text.toString()
         }
@@ -106,7 +106,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            changeHistoryVisibility(searchHistoryAdapter) { hasFocus }
+            changeHistoryVisibility(searchHistoryRv) { hasFocus }
         }
     }
 
@@ -149,26 +149,29 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeHistoryVisibility(adapter: TrackSearchHistoryAdapter) {
-        changeHistoryVisibility(adapter) { true }
+    private fun changeHistoryVisibility(view: RecyclerView) {
+        changeHistoryVisibility(view) { true }
     }
 
     private fun changeHistoryVisibility(
-        adapter: TrackSearchHistoryAdapter,
+        view: RecyclerView,
         displayCondition: () -> Boolean
     ) {
         val searchHistoryLl = findViewById<LinearLayout>(R.id.search_history_ll)
-        if (!adapter.isEmpty() && displayCondition.invoke()) {
-            adapter.notifyItemRangeChanged(0, adapter.itemCount)
-            searchHistoryLl.visibility = View.VISIBLE
-        } else {
-            searchHistoryLl.visibility = View.GONE
+        if (view.adapter is TrackSearchHistoryAdapter) {
+            val adapter = view.adapter as TrackSearchHistoryAdapter
+            if (!adapter.isEmpty() && displayCondition.invoke()) {
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                searchHistoryLl.visibility = View.VISIBLE
+            } else {
+                searchHistoryLl.visibility = View.GONE
+            }
         }
     }
 
     private fun changeSearchResultVisibility(displayCondition: () -> Boolean) {
         val searchResultRv = findViewById<RecyclerView>(R.id.RvSearchResult)
-        if(displayCondition.invoke()) {
+        if (displayCondition.invoke()) {
             searchResultRv.visibility = View.VISIBLE
         } else {
             (searchResultRv.adapter as TrackSearchResultAdapter).cleanSearchResult()
