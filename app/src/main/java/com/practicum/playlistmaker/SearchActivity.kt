@@ -123,39 +123,21 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideError() {
-        val errorImage = findViewById<ImageView>(R.id.error_iv)
-        val errorText = findViewById<TextView>(R.id.error_tv)
-        val errorButton = findViewById<Button>(R.id.error_update_btn)
-
-        if (errorImage.visibility != View.GONE || errorText.visibility != View.GONE) {
-            errorImage.visibility = View.GONE
-            errorText.visibility = View.GONE
-            errorButton.visibility = View.GONE
-        }
+        findViewById<LinearLayout>(R.id.error_ll).visibility = View.GONE
     }
 
     private fun displayNotFoundError() {
-        val errorImage = findViewById<ImageView>(R.id.error_iv)
-        val errorText = findViewById<TextView>(R.id.error_tv)
-        val errorButton = findViewById<Button>(R.id.error_update_btn)
-
-        errorImage.setImageResource(R.drawable.placeholder_not_found)
-        errorText.setText(R.string.not_found)
-        errorImage.visibility = View.VISIBLE
-        errorText.visibility = View.VISIBLE
-        errorButton.visibility = View.GONE
+        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_not_found)
+        findViewById<TextView>(R.id.error_tv).setText(R.string.not_found)
+        findViewById<Button>(R.id.error_update_btn).visibility = View.GONE
+        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
     }
 
     private fun displayNetworkError() {
-        val errorImage = findViewById<ImageView>(R.id.error_iv)
-        val errorText = findViewById<TextView>(R.id.error_tv)
-        val errorButton = findViewById<Button>(R.id.error_update_btn)
-
-        errorImage.setImageResource(R.drawable.placeholder_net_error)
-        errorText.setText(R.string.net_error)
-        errorImage.visibility = View.VISIBLE
-        errorText.visibility = View.VISIBLE
-        errorButton.visibility = View.VISIBLE
+        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_net_error)
+        findViewById<TextView>(R.id.error_tv).setText(R.string.net_error)
+        findViewById<Button>(R.id.error_update_btn).visibility = View.VISIBLE
+        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
     }
 
     private fun changeClearButtonVisibility(button: View, s: CharSequence?) {
@@ -175,19 +157,11 @@ class SearchActivity : AppCompatActivity() {
         displayCondition: () -> Boolean
     ) {
         val searchHistoryLl = findViewById<LinearLayout>(R.id.search_history_ll)
-        val historyTitle = findViewById<TextView>(R.id.search_history_title_tv)
-        val historyList = findViewById<RecyclerView>(R.id.RvSearchHistory)
-        val cleanButton = findViewById<Button>(R.id.clear_history_btn)
         if (!adapter.isEmpty() && displayCondition.invoke()) {
+            adapter.notifyItemRangeChanged(0, adapter.itemCount)
             searchHistoryLl.visibility = View.VISIBLE
-            historyTitle.visibility = View.VISIBLE
-            historyList.visibility = View.VISIBLE
-            cleanButton.visibility = View.VISIBLE
         } else {
             searchHistoryLl.visibility = View.GONE
-            historyTitle.visibility = View.GONE
-            historyList.visibility = View.GONE
-            cleanButton.visibility = View.GONE
         }
     }
 
