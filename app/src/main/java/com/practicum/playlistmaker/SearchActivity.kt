@@ -77,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
         val clearButton = findViewById<ImageView>(R.id.clear_search_iv)
         clearButton.setOnClickListener {
             searchEditText.text.clear()
-            searchAdapter.cleanSearchResult()
+            changeSearchResultVisibility { false }
             hideError()
             changeHistoryVisibility(searchHistoryAdapter)
         }
@@ -171,6 +171,7 @@ class SearchActivity : AppCompatActivity() {
         if(displayCondition.invoke()) {
             searchResultRv.visibility = View.VISIBLE
         } else {
+            (searchResultRv.adapter as TrackSearchResultAdapter).cleanSearchResult()
             searchResultRv.visibility = View.GONE
         }
     }
