@@ -21,7 +21,7 @@ class TrackSearchHistoryAdapter(private val searchHistory: SearchHistory) :
         holder.bind(track)
         holder.itemView.setOnClickListener {
             searchHistory.addTrackToHistory(track)
-            notifyItemRangeInserted(searchHistory.getHistorySize()-1, searchHistory.getHistorySize())
+            notifyItemRangeChanged(0, searchHistory.getHistorySize())
         }
     }
 
