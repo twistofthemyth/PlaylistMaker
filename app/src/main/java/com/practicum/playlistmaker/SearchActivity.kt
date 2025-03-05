@@ -94,6 +94,7 @@ class SearchActivity : AppCompatActivity() {
             hideError()
             changeClearButtonVisibility(clearButton, text)
             changeHistoryVisibility(searchHistoryAdapter) { text.isNullOrEmpty() }
+            changeSearchResultVisibility { !text.isNullOrEmpty() }
             savedInput = text.toString()
         }
 
@@ -162,6 +163,15 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryLl.visibility = View.VISIBLE
         } else {
             searchHistoryLl.visibility = View.GONE
+        }
+    }
+
+    private fun changeSearchResultVisibility(displayCondition: () -> Boolean) {
+        val searchResultRv = findViewById<RecyclerView>(R.id.RvSearchResult)
+        if(displayCondition.invoke()) {
+            searchResultRv.visibility = View.VISIBLE
+        } else {
+            searchResultRv.visibility = View.GONE
         }
     }
 
