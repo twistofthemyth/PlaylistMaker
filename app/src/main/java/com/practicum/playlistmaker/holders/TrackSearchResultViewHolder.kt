@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.holders
 
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,6 +15,7 @@ import com.practicum.playlistmaker.model.Track
 class TrackSearchResultViewHolder(parent: ViewGroup) : ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.search_result_item, parent, false)
 ) {
+
     fun bind(data: Track) {
         val ivAlbum = itemView.findViewById<ImageView>(R.id.IvAlbum)
         Glide.with(itemView)
