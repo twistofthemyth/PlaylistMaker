@@ -2,7 +2,9 @@ package com.practicum.playlistmaker
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.model.Track
+import java.lang.reflect.Type
 
 class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
@@ -37,7 +39,8 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
     private fun loadHistory(): MutableList<Track> {
         val json = sharedPreferences.getString(HISTORY_PREF_KEY, null)
         return if (!json.isNullOrEmpty()) {
-            mutableListOf(* Gson().fromJson(json, Array<Track>::class.java))
+            val type: Type = object : TypeToken<MutableList<Track>>() {}.type
+            Gson().fromJson(json, type)
         } else {
             mutableListOf()
         }
