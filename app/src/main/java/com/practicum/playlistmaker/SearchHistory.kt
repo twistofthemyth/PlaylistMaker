@@ -9,15 +9,15 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
     private var history = loadHistory()
 
     fun addTrackToHistory(track: Track) {
-        history = history.asReversed()
         if (history.contains(track)) {
             history.remove(track)
         }
-        history.add(track)
-        history = history.asReversed()
-        if (history.size > 10) {
-            history = history.subList(0, 10)
+        if (history.size >= 10) {
+            history = history.subList(0, 9)
         }
+
+        val reversedHistory = history.asReversed()
+        reversedHistory.add(track)
         saveHistory()
     }
 

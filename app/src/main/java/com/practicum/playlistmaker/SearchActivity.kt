@@ -51,6 +51,7 @@ class SearchActivity : AppCompatActivity() {
                     if (response.code() == 200) {
                         if (response.body()?.results?.isNotEmpty() == true) {
                             hideError()
+                            changeSearchResultVisibility { true }
                             searchAdapter.updateSearchResult(response.body()?.results!!)
                         } else {
                             displayNotFoundError()
@@ -107,6 +108,9 @@ class SearchActivity : AppCompatActivity() {
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
             changeHistoryVisibility(searchHistoryRv) { hasFocus }
+            if (!hasFocus) {
+                searchSong.invoke()
+            }
         }
     }
 
