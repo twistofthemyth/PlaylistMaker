@@ -14,9 +14,9 @@ data class Track(
     val country: String
 ) {
 
-    fun trackTime(): String {
-        return if (trackTimeMillis == 0L) "0:00" else TRACK_TIME_FORMATTER.format(trackTimeMillis)
-    }
+    fun getTrackTime() = if (trackTimeMillis == 0L) "0:00" else TRACK_TIME_FORMATTER.format(trackTimeMillis)
+
+    fun getCoverArtwork() = artworkUrl100.replaceAfterLast("/", "512x512bb.jpg")
 
     companion object {
         private val TRACK_TIME_FORMATTER = SimpleDateFormat("mm:ss", Locale.getDefault())

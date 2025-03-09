@@ -68,10 +68,12 @@
 
     <style name="PM.Text.TrackDescription.Value">
         <item name="android:textColor">@color/text_color</item>
+        <item name="android:maxLength">40</item>
     </style>
 
     <style name="PM.Text.TrackDescription.Name">
         <item name="android:textColor">@color/pm_gray</item>
+        <item name="android:maxLength">20</item>
     </style>
 
     <style name="PM.Text.Notification">

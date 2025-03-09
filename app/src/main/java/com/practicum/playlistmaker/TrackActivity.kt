@@ -34,7 +34,7 @@ class TrackActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.album_iv).apply {
             Glide.with(this.rootView)
-                .load(Uri.parse(track.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg")))
+                .load(Uri.parse(track.getCoverArtwork()))
                 .placeholder(R.drawable.placeholder_album)
                 .centerInside()
                 .into(this)
@@ -46,6 +46,10 @@ class TrackActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.author_name_tv).apply {
             text = track.artistName
+        }
+
+        findViewById<TextView>(R.id.time_tv).apply {
+            text = "0:33"
         }
 
         findViewById<TextView>(R.id.track_year_value_tv).apply {
@@ -61,7 +65,7 @@ class TrackActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.track_duration_value_tv).apply {
-            text = track.trackTime()
+            text = track.getTrackTime()
         }
     }
 }
