@@ -1,8 +1,12 @@
 package com.practicum.playlistmaker.adapters
 
+import android.app.Activity
+import android.content.Intent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.practicum.playlistmaker.SearchHistory
+import com.practicum.playlistmaker.TrackActivity
 import com.practicum.playlistmaker.holders.TrackSearchResultViewHolder
 
 class TrackSearchHistoryAdapter(private val searchHistory: SearchHistory) :
@@ -22,6 +26,9 @@ class TrackSearchHistoryAdapter(private val searchHistory: SearchHistory) :
         holder.itemView.setOnClickListener {
             searchHistory.addTrackToHistory(track)
             notifyItemRangeChanged(0, searchHistory.getHistorySize())
+            val intent = Intent(holder.itemView.context, TrackActivity::class.java)
+            intent.putExtra("track", Gson().toJson(track))
+            holder.itemView.context.startActivity(intent)
         }
     }
 

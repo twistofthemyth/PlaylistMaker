@@ -69,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
         }
         errorButton.setOnClickListener { searchSong.invoke() }
 
-        val searchHistoryAdapter = TrackSearchHistoryAdapter(searchHistory)
+        val searchHistoryAdapter = TrackSearchHistoryAdapter( searchHistory)
         val searchHistoryRv = findViewById<RecyclerView>(R.id.RvSearchHistory)
         searchHistoryRv.adapter = searchHistoryAdapter
         searchHistoryRv.layoutManager =
