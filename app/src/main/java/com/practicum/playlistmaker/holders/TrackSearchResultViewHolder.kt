@@ -36,7 +36,7 @@ class TrackSearchResultViewHolder(parent: ViewGroup) : ViewHolder(
         tvTrackName.text = cutIfRequired(data.trackName)
 
         val tvTrackLength = itemView.findViewById<TextView>(R.id.TvTrackLength)
-        tvTrackLength.text = data.trackTime
+        tvTrackLength.text = data.trackTime()
     }
 
     private fun cutIfRequired(origin: String): String {
