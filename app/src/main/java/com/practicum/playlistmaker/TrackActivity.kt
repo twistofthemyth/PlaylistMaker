@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.practicum.playlistmaker.model.Track
 
@@ -37,6 +38,9 @@ class TrackActivity : AppCompatActivity() {
                 .load(Uri.parse(track.getCoverArtwork()))
                 .placeholder(R.drawable.placeholder_album)
                 .centerInside()
+                .transform(
+                    RoundedCorners(resources.getInteger(R.integer.album_image_corner))
+                )
                 .into(this)
         }
 
@@ -53,7 +57,11 @@ class TrackActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.track_year_value_tv).apply {
-            text = track.releaseDate.replaceRange(track.releaseDate.indexOf("-"), track.releaseDate.length, "")
+            text = track.releaseDate.replaceRange(
+                track.releaseDate.indexOf("-"),
+                track.releaseDate.length,
+                ""
+            )
         }
 
         findViewById<TextView>(R.id.track_genre_value_tv).apply {
