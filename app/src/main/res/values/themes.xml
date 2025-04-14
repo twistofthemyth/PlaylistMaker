@@ -52,6 +52,30 @@
         <item name="fontWeight">400</item>
     </style>
 
+    <style name="PM.Text.TrackName">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="PM.Text.TrackAuthorName">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="PM.Text.TrackDescription">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="PM.Text.TrackDescription.Value">
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:maxLength">40</item>
+    </style>
+
+    <style name="PM.Text.TrackDescription.Name">
+        <item name="android:textColor">@color/pm_gray</item>
+        <item name="android:maxLength">20</item>
+    </style>
+
     <style name="PM.Text.Notification">
         <item name="android:textSize">@dimen/notification_text_size</item>
         <item name="android:textColor">@color/text_color</item>
