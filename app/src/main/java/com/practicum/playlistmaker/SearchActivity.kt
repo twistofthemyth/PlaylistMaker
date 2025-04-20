@@ -1,12 +1,14 @@
 package com.practicum.playlistmaker
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
@@ -42,12 +44,15 @@ class SearchActivity : AppCompatActivity() {
         val iTunesService = ITunesService()
 
         val searchSong = fun() {
+            changeSearchResultVisibility { false }
+            showProgressBar()
             searchAdapter.cleanSearchResult()
             iTunesService.api.searchSong(savedInput).enqueue(object : Callback<SearchSongResponse> {
                 override fun onResponse(
                     call: Call<SearchSongResponse>,
                     response: Response<SearchSongResponse>
                 ) {
+                    hideProgressBar()
                     if (response.code() == 200) {
                         if (response.body()?.results?.isNotEmpty() == true) {
                             hideError()
@@ -69,7 +74,7 @@ class SearchActivity : AppCompatActivity() {
         }
         errorButton.setOnClickListener { searchSong.invoke() }
 
-        val searchHistoryAdapter = TrackSearchHistoryAdapter( searchHistory)
+        val searchHistoryAdapter = TrackSearchHistoryAdapter(searchHistory)
         val searchHistoryRv = findViewById<RecyclerView>(R.id.RvSearchHistory)
         searchHistoryRv.adapter = searchHistoryAdapter
         searchHistoryRv.layoutManager =
@@ -91,19 +96,18 @@ class SearchActivity : AppCompatActivity() {
             changeHistoryVisibility(searchHistoryRv)
         }
 
+        val mainHandler = Handler(Looper.getMainLooper())
+        val searchEditTextTask = Runnable { searchSong.invoke() }
         searchEditText.doOnTextChanged { text, _, _, _ ->
             hideError()
             changeClearButtonVisibility(clearButton, text)
             changeHistoryVisibility(searchHistoryRv) { text.isNullOrEmpty() }
             changeSearchResultVisibility { !text.isNullOrEmpty() }
             savedInput = text.toString()
-        }
-
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchSong.invoke()
+            mainHandler.removeCallbacks(searchEditTextTask)
+            if (!text.isNullOrEmpty()) {
+                mainHandler.postDelayed(searchEditTextTask, SEARCH_DEBOUNCE_IN_MILLIS)
             }
-            false
         }
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -125,6 +129,14 @@ class SearchActivity : AppCompatActivity() {
 
         val searchInput = findViewById<EditText>(R.id.search_et)
         searchInput.setText(savedInput)
+    }
+
+    private fun showProgressBar() {
+        findViewById<ProgressBar>(R.id.search_pb).visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        findViewById<ProgressBar>(R.id.search_pb).visibility = View.GONE
     }
 
     private fun hideError() {
@@ -185,5 +197,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_TEXT_ID = "SEARCH_TEXT_ID"
+        const val SEARCH_DEBOUNCE_IN_MILLIS = 2000L
     }
 }
