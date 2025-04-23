@@ -13,11 +13,13 @@ class MockedObjects {
                     "",
                     "",
                     "",
+                    "",
                     ""
                 ),
                 Track(
                     "Billie Jean", "Michael Jackson", 50000,
                     "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg",
+                    "",
                     "",
                     "",
                     "",
@@ -29,6 +31,7 @@ class MockedObjects {
                     "",
                     "",
                     "",
+                    "",
                     ""
                 ),
                 Track(
@@ -37,11 +40,13 @@ class MockedObjects {
                     "",
                     "",
                     "",
+                    "",
                     ""
                 ),
                 Track(
                     "Sweet Child O'Mine", "Guns N' Roses", 50000,
                     "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg",
+                    "",
                     "",
                     "",
                     "",

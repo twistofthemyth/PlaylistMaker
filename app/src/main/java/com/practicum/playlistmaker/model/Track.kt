@@ -11,7 +11,8 @@ data class Track(
     val collectionName: String,
     val releaseDate: String,
     val primaryGenreName: String,
-    val country: String
+    val country: String,
+    val previewUrl: String
 ) {
 
     fun getTrackTime() = if (trackTimeMillis == 0L) "0:00" else TRACK_TIME_FORMATTER.format(trackTimeMillis)
