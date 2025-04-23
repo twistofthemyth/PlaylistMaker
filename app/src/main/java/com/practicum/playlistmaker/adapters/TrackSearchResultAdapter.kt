@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.adapters
 
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -15,6 +17,13 @@ class TrackSearchResultAdapter(
 ) :
     RecyclerView.Adapter<TrackSearchResultViewHolder>() {
 
+    companion object {
+        const val TOUCH_DEBOUNCE_IN_MILLIS = 1000L
+    }
+
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchResultViewHolder {
         return TrackSearchResultViewHolder(parent)
     }
@@ -27,10 +36,12 @@ class TrackSearchResultAdapter(
         val track = tracks[position]
         holder.bind(track)
         holder.itemView.setOnClickListener {
-            searchHistory.addTrackToHistory(track)
-            val intent = Intent(holder.itemView.context, TrackActivity::class.java)
-            intent.putExtra("track", Gson().toJson(track))
-            holder.itemView.context.startActivity(intent)
+            if (clickDebounce()) {
+                searchHistory.addTrackToHistory(track)
+                val intent = Intent(holder.itemView.context, TrackActivity::class.java)
+                intent.putExtra("track", Gson().toJson(track))
+                holder.itemView.context.startActivity(intent)
+            }
         }
     }
 
@@ -50,5 +61,14 @@ class TrackSearchResultAdapter(
         val size = tracks.size
         tracks.clear()
         this.notifyItemRangeRemoved(0, size)
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, TOUCH_DEBOUNCE_IN_MILLIS)
+        }
+        return current
     }
 }
