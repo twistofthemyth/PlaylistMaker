@@ -131,4 +131,9 @@
         <item name="tint">@color/et_hint_color</item>
     </style>
 
+    <style name="PM.ProgressBar" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:indeterminate">true</item>
+        <item name="indicatorColor">@color/primary_color</item>
+    </style>
+
 </resources>
