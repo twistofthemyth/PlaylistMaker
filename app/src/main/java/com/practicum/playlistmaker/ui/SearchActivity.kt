@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -14,9 +14,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.adapters.TrackSearchHistoryAdapter
-import com.practicum.playlistmaker.adapters.TrackSearchResultAdapter
-import com.practicum.playlistmaker.model.SearchSongResponse
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.SharedPrefClient
+import com.practicum.playlistmaker.presentation.TrackSearchHistoryAdapter
+import com.practicum.playlistmaker.presentation.TrackSearchResultAdapter
+import com.practicum.playlistmaker.data.dto.SearchSongResponse
 import com.practicum.playlistmaker.net.ITunesService
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
 
-        val searchHistory = SearchHistory((applicationContext as App).getSharedPreferences())
+        val searchHistory = SharedPrefClient((applicationContext as App).getSharedPreferences())
         val searchAdapter = TrackSearchResultAdapter(searchHistory)
         findViewById<RecyclerView>(R.id.RvSearchResult).apply {
             adapter = searchAdapter

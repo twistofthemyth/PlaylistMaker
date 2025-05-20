@@ -1,15 +1,15 @@
-package com.practicum.playlistmaker.adapters
+package com.practicum.playlistmaker.presentation
 
-import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.practicum.playlistmaker.SearchHistory
-import com.practicum.playlistmaker.TrackActivity
-import com.practicum.playlistmaker.holders.TrackSearchResultViewHolder
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.TrackActivity
+import java.util.concurrent.atomic.AtomicReference
 
-class TrackSearchHistoryAdapter(private val searchHistory: SearchHistory) :
+class TrackSearchHistoryAdapter(private val searchHistory: TrackInteractor) :
     RecyclerView.Adapter<TrackSearchResultViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchResultViewHolder {
@@ -17,15 +17,21 @@ class TrackSearchHistoryAdapter(private val searchHistory: SearchHistory) :
     }
 
     override fun getItemCount(): Int {
-        return searchHistory.getHistorySize()
+        val count: AtomicReference<Int> = AtomicReference()
+        searchHistory.getHistorySize { count.set(it) }
+        return count.get()
     }
 
     override fun onBindViewHolder(holder: TrackSearchResultViewHolder, position: Int) {
-        val track = searchHistory.getTrackInHistory(position)
-        holder.bind(track)
+        val track = AtomicReference<Track>()
+        val historySize = AtomicReference<Int>()
+        searchHistory.getTrackInHistory(position) { track.set(it) }
+        searchHistory.getHistorySize { historySize.set(it) }
+
+        holder.bind(track.get())
         holder.itemView.setOnClickListener {
-            searchHistory.addTrackToHistory(track)
-            notifyItemRangeChanged(0, searchHistory.getHistorySize())
+            searchHistory.addTrackToHistory(track.get())
+            notifyItemRangeChanged(0, historySize.get())
             val intent = Intent(holder.itemView.context, TrackActivity::class.java)
             intent.putExtra("track", Gson().toJson(track))
             holder.itemView.context.startActivity(intent)

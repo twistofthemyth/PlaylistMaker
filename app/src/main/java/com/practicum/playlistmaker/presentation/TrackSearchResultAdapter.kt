@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.adapters
+package com.practicum.playlistmaker.presentation
 
 import android.content.Intent
 import android.os.Handler
@@ -6,13 +6,13 @@ import android.os.Looper
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.practicum.playlistmaker.SearchHistory
-import com.practicum.playlistmaker.TrackActivity
-import com.practicum.playlistmaker.holders.TrackSearchResultViewHolder
-import com.practicum.playlistmaker.model.Track
+import com.practicum.playlistmaker.data.SharedPrefClient
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.ui.TrackActivity
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackSearchResultAdapter(
-    private val searchHistory: SearchHistory,
+    private val searchHistory: TrackInteractor,
     private val tracks: MutableList<Track> = mutableListOf()
 ) :
     RecyclerView.Adapter<TrackSearchResultViewHolder>() {
