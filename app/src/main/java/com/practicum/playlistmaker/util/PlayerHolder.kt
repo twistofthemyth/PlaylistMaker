@@ -12,16 +12,18 @@ abstract class PlayerHolder(
     private val positionView: TextView
 ) {
 
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
+    enum class PlayerState {
+        STATE_DEFAULT,
+        STATE_PREPARED,
+        STATE_PLAYING,
+        STATE_PAUSED
+    }
 
+    companion object {
         private const val TIME_FORMAT = "mm:ss"
     }
 
-    private var playerState = STATE_DEFAULT
+    private var playerState = PlayerState.STATE_DEFAULT
     private var mediaPlayer = MediaPlayer()
 
     abstract fun onPause()
@@ -38,26 +40,26 @@ abstract class PlayerHolder(
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             onPrepare()
-            playerState = STATE_PREPARED
+            playerState = PlayerState.STATE_PREPARED
         }
 
         mediaPlayer.setOnCompletionListener {
             onComplete()
-            playerState = STATE_PREPARED
+            playerState = PlayerState.STATE_PREPARED
             positionView.text = getStartPosition()
         }
     }
 
     fun startPlayer() {
         mediaPlayer.start()
-        playerState = STATE_PLAYING
+        playerState = PlayerState.STATE_PLAYING
         startCurrentPositionUpdater()
         onPlay()
     }
 
     fun pausePlayer() {
         mediaPlayer.pause()
-        playerState = STATE_PAUSED
+        playerState = PlayerState.STATE_PAUSED
         onPause()
     }
 
@@ -67,11 +69,11 @@ abstract class PlayerHolder(
 
     fun playbackControl() {
         when (playerState) {
-            STATE_PLAYING -> {
+            PlayerState.STATE_PLAYING -> {
                 pausePlayer()
             }
 
-            STATE_PREPARED, STATE_PAUSED -> {
+            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED, PlayerState.STATE_DEFAULT -> {
                 startPlayer()
             }
         }
@@ -93,7 +95,7 @@ abstract class PlayerHolder(
         val handler = Handler.createAsync(Looper.getMainLooper())
         val updateCurrentPositionTask = object : Runnable {
             override fun run() {
-                if (playerState == STATE_PLAYING) {
+                if (playerState == PlayerState.STATE_PLAYING) {
                     positionView.text = getFormattedCurrentPosition()
                     handler.postDelayed(this, 300)
                 } else {
