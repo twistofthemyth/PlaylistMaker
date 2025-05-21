@@ -8,12 +8,12 @@ import com.practicum.playlistmaker.data.dto.HistoryTrackDto
 import com.practicum.playlistmaker.domain.models.Track
 import java.lang.reflect.Type
 
-class SharedPrefClient(
+class SharedPrefTrackHistoryStorage(
     private val sharedPreferences: SharedPreferences,
     private val gson: Gson
 ) {
 
-    private var history = loadHistory()
+    private var history = loadTrackHistory()
 
     fun addTrackToHistory(track: HistoryTrackDto) {
         if (history.contains(track)) {
@@ -25,33 +25,37 @@ class SharedPrefClient(
 
         val reversedHistory = history.asReversed()
         reversedHistory.add(track)
-        saveHistory()
+        saveTrackHistory()
     }
 
-    fun clearHistory() {
+    fun clearTrackHistory() {
         history.clear()
-        saveHistory()
+        saveTrackHistory()
     }
 
     fun getTrackInHistory(position: Int): HistoryTrackDto {
         return history[position]
     }
 
-    fun getHistorySize(): Int {
+    fun getTrackHistorySize(): Int {
         return history.size
     }
 
-    private fun loadHistory(): MutableList<HistoryTrackDto> {
+    fun getTrackHistory(): List<HistoryTrackDto> {
+        return history
+    }
+
+    private fun loadTrackHistory(): MutableList<HistoryTrackDto> {
         val json = sharedPreferences.getString(HISTORY_PREF_KEY, null)
         return if (!json.isNullOrEmpty()) {
-            val type: Type = object : TypeToken<MutableList<Track>>() {}.type
+            val type: Type = object : TypeToken<MutableList<HistoryTrackDto>>() {}.type
             gson.fromJson(json, type)
         } else {
             mutableListOf()
         }
     }
 
-    private fun saveHistory() {
+    private fun saveTrackHistory() {
         val json = gson.toJson(history)
         sharedPreferences.edit {
             putString(HISTORY_PREF_KEY, json)

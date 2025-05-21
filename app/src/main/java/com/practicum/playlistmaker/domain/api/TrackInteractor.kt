@@ -1,18 +1,19 @@
 package com.practicum.playlistmaker.domain.api
 
 import com.practicum.playlistmaker.domain.models.Track
+import kotlinx.coroutines.Runnable
 import java.util.function.Consumer
 
 interface TrackInteractor {
-    fun searchTracks(query: String, consumer: Consumer<List<Track>>)
+    fun searchTracks(query: String, onSuccess: Consumer<List<Track>>, onFail: Runnable)
 
     fun addTrackToHistory(track: Track)
 
     fun clearHistory()
 
-    fun getTrackInHistory(position: Int, consumer: Consumer<Track>)
+    fun getSearchHistory(consumer: Consumer<List<Track>>)
 
-    fun getHistorySize(consumer: Consumer<Int>)
+    fun saveSearchQuery(value: String)
 
-    fun getAllHistory(consumer: Consumer<List<Track>>)
+    fun getSavedSearchQuery(): String
 }

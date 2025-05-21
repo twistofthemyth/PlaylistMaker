@@ -11,39 +11,47 @@ import java.util.Locale
 
 class TrackRepositoryImpl(
     private val iTunesClient: ITunesClient,
-    private val sharedPrefClient: SharedPrefClient
+    private val sharedPrefTrackHistoryStorage: SharedPrefTrackHistoryStorage,
+    private val sharedPrefInputStorage: SharedPrefInputStorage
 ) : TrackRepository {
 
-    override fun searchTrack(query: String): List<Track> {
+    override fun searchTrack(query: String, onFail: Runnable): Pair<Boolean, List<Track>> {
         val request = SearchSongRequest(query, "song")
         val result = iTunesClient.doRequest(request)
         if (result.statusCode == 200) {
-            return (result as SearchSongResponse).results.map {
-                convertNetworkTrackToTrack(it)
-            }
+            return Pair(
+                true,
+                (result as SearchSongResponse).results.map { convertNetworkTrackToTrack(it) }
+            )
         } else {
-            return emptyList()
+            onFail.run()
+            return Pair(
+                false,
+                emptyList()
+            )
         }
     }
 
     override fun addTrackToHistory(track: Track) {
-        sharedPrefClient.addTrackToHistory(convertTrackToHistoryTrack(track))
+        sharedPrefTrackHistoryStorage.addTrackToHistory(convertTrackToHistoryTrack(track))
     }
 
-    override fun clearHistory() {
-        sharedPrefClient.clearHistory()
+    override fun clearTrackHistory() {
+        sharedPrefTrackHistoryStorage.clearTrackHistory()
     }
 
-    override fun getTrackInHistory(position: Int): Track {
-        return convertHistoryTrackToTrack(sharedPrefClient.getTrackInHistory(position))
+    override fun getSearchHistory(): List<Track> {
+        return sharedPrefTrackHistoryStorage.getTrackHistory()
+            .map { convertHistoryTrackToTrack(it) }
     }
 
-    override fun getHistorySize(): Int {
-        return sharedPrefClient.getHistorySize()
+    override fun saveSearchInput(value: String) {
+        sharedPrefInputStorage.saveStringValue("search_input", value)
     }
 
-    override fun getAllHistory(): List<Track> {
-        TODO("Not yet implemented")
+
+    override fun loadSavedSearchInput(): String {
+        return sharedPrefInputStorage.loadStringValue("search_input")
     }
 
     private fun convertNetworkTrackToTrack(iTunesTrackDto: ITunesTrackDto): Track {
@@ -56,7 +64,7 @@ class TrackRepositoryImpl(
             iTunesTrackDto.artworkUrl100,
             iTunesTrackDto.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg"),
             iTunesTrackDto.collectionName,
-            iTunesTrackDto.releaseDate,
+            iTunesTrackDto.releaseDate ?: "",
             iTunesTrackDto.primaryGenreName,
             iTunesTrackDto.country,
             iTunesTrackDto.previewUrl

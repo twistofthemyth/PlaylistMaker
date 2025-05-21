@@ -3,44 +3,44 @@ package com.practicum.playlistmaker.domain.impl
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.api.TrackRepository
 import com.practicum.playlistmaker.domain.models.Track
+import kotlinx.coroutines.Runnable
 import java.util.concurrent.Executors
 import java.util.function.Consumer
 
 class TrackInteractorImpl(private val trackRepository: TrackRepository) : TrackInteractor {
 
-    override fun searchTracks(query: String, consumer: Consumer<List<Track>>) {
+    override fun searchTracks(
+        query: String,
+        onSuccess: Consumer<List<Track>>,
+        onFail: Runnable
+    ) {
         Executors.newSingleThreadExecutor().execute {
-            consumer.accept(trackRepository.searchTrack(query))
+            var searchResult = trackRepository.searchTrack(query, onFail)
+            if (searchResult.first) {
+                onSuccess.accept(searchResult.second)
+            }
         }
     }
 
     override fun addTrackToHistory(track: Track) {
-        Executors.newSingleThreadExecutor().execute {
-            trackRepository.addTrackToHistory(track)
-        }
+        trackRepository.addTrackToHistory(track)
     }
 
     override fun clearHistory() {
+        trackRepository.clearTrackHistory()
+    }
+
+    override fun getSearchHistory(consumer: Consumer<List<Track>>) {
         Executors.newSingleThreadExecutor().execute {
-            trackRepository.clearHistory()
+            consumer.accept(trackRepository.getSearchHistory())
         }
     }
 
-    override fun getTrackInHistory(position: Int, consumer: Consumer<Track>) {
-        Executors.newSingleThreadExecutor().execute {
-            consumer.accept(trackRepository.getTrackInHistory(position))
-        }
+    override fun saveSearchQuery(value: String) {
+        trackRepository.saveSearchInput(value)
     }
 
-    override fun getHistorySize(consumer: Consumer<Int>) {
-        Executors.newSingleThreadExecutor().execute {
-            consumer.accept(trackRepository.getHistorySize())
-        }
-    }
-
-    override fun getAllHistory(consumer: Consumer<List<Track>>) {
-        Executors.newSingleThreadExecutor().execute {
-            consumer.accept(trackRepository.getAllHistory())
-        }
+    override fun getSavedSearchQuery(): String {
+        return trackRepository.loadSavedSearchInput()
     }
 }

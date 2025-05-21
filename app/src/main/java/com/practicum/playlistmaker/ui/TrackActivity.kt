@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker.ui
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
@@ -39,7 +39,7 @@ class TrackActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.album_iv).apply {
             Glide.with(this.rootView)
-                .load(Uri.parse(track.getCoverArtwork()))
+                .load(track.coverArtwork.toUri())
                 .placeholder(R.drawable.placeholder_album)
                 .centerInside()
                 .transform(RoundedCorners(resources.getInteger(R.integer.album_image_corner)))
@@ -71,7 +71,7 @@ class TrackActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.track_duration_value_tv).apply {
-            text = track.getTrackTime()
+            text = track.trackTime
         }
 
         val playPosition = findViewById<TextView>(R.id.time_tv)

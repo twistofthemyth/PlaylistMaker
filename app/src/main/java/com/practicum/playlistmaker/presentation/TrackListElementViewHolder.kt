@@ -1,18 +1,17 @@
 package com.practicum.playlistmaker.presentation
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.models.Track
-import androidx.core.net.toUri
 
-class TrackSearchResultViewHolder(parent: ViewGroup) : ViewHolder(
+class TrackListElementViewHolder(parent: ViewGroup) : ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.search_result_item, parent, false)
 ) {
 

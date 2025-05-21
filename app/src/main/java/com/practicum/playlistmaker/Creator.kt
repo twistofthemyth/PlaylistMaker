@@ -3,7 +3,8 @@ package com.practicum.playlistmaker
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.practicum.playlistmaker.data.ITunesClient
-import com.practicum.playlistmaker.data.SharedPrefClient
+import com.practicum.playlistmaker.data.SharedPrefInputStorage
+import com.practicum.playlistmaker.data.SharedPrefTrackHistoryStorage
 import com.practicum.playlistmaker.data.TrackRepositoryImpl
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.api.TrackRepository
@@ -16,8 +17,9 @@ object Creator {
     }
 
     private fun getTrackRepository(sharedPreferences: SharedPreferences): TrackRepository {
-        return TrackRepositoryImpl(ITunesClient(), SharedPrefClient(sharedPreferences, Gson()))
+        return TrackRepositoryImpl(
+            ITunesClient(), SharedPrefTrackHistoryStorage(sharedPreferences, Gson()),
+            SharedPrefInputStorage(sharedPreferences)
+        )
     }
-
-
 }

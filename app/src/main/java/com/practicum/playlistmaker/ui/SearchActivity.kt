@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,192 +15,232 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.App
+import com.google.gson.Gson
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.SharedPrefClient
-import com.practicum.playlistmaker.presentation.TrackSearchHistoryAdapter
-import com.practicum.playlistmaker.presentation.TrackSearchResultAdapter
-import com.practicum.playlistmaker.data.dto.SearchSongResponse
-import com.practicum.playlistmaker.net.ITunesService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.TrackListAdapter
 
 class SearchActivity : AppCompatActivity() {
 
-    private var savedInput = ""
+    private lateinit var trackInteractor: TrackInteractor
+
+    private lateinit var searchAdapter: TrackListAdapter
+    private lateinit var searchHistoryAdapter: TrackListAdapter
+
+    private lateinit var searchQuery: String
+
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchTracks() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        trackInteractor =
+            Creator.provideTrackInteractor(getSharedPreferences("SearchActivity", MODE_PRIVATE))
 
-        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
+        setupRecyclerViews()
+        setupSearchInput()
+        setupToolbar()
+        setupSavedSearchQuery()
 
-        val searchHistory = SharedPrefClient((applicationContext as App).getSharedPreferences())
-        val searchAdapter = TrackSearchResultAdapter(searchHistory)
+        onSearchQuery(searchQuery)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        setupSavedSearchQuery()
+        onSearchQuery(searchQuery)
+    }
+
+    private fun onSearchQuery(query: String) {
+        hideErrors()
+        hideTracks()
+        hideTrackHistory()
+        showLoading()
+        searchQuery = query
+        trackInteractor.saveSearchQuery(query)
+        handler.removeCallbacks(searchRunnable)
+        if (query.isEmpty()) {
+            trackInteractor.getSearchHistory {
+                handler.post {
+                    hideLoading()
+                    if (it.isNotEmpty()) {
+                        showTrackHistory(it)
+                    } else {
+                        hideTrackHistory()
+                    }
+                }
+            }
+        } else {
+            showClearQueryButton()
+            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_IN_MILLIS)
+        }
+    }
+
+    private fun onClearHistoryClicked() {
+        trackInteractor.clearHistory()
+        onSearchQuery("")
+    }
+
+    private fun onTrackClick(track: Track) {
+        if (clickDebounce()) {
+            trackInteractor.addTrackToHistory(track)
+            trackInteractor.getSearchHistory {
+                handler.post {
+                    searchHistoryAdapter.updateList(it)
+                }
+            }
+
+            var intent = Intent(this, TrackActivity::class.java)
+            intent.putExtra("track", Gson().toJson(track))
+            startActivity(intent)
+        }
+    }
+
+    private fun searchTracks() {
+        trackInteractor.searchTracks(
+            searchQuery,
+            onSuccess = { tracks ->
+                handler.post {
+                    hideLoading()
+                    if (tracks.isEmpty()) {
+                        showNotFoundError()
+                    } else {
+                        showTracks(tracks)
+                    }
+
+                }
+            },
+            onFail = {
+                handler.post {
+                    hideLoading()
+                    showNetworkError()
+                }
+            }
+        )
+    }
+
+    private fun setupRecyclerViews() {
+        searchAdapter = TrackListAdapter { track -> onTrackClick(track) }
+        searchHistoryAdapter = TrackListAdapter { track -> onTrackClick(track) }
+
         findViewById<RecyclerView>(R.id.RvSearchResult).apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
 
-        val searchEditText = findViewById<EditText>(R.id.search_et)
-        val errorButton = findViewById<Button>(R.id.error_update_btn)
-        val iTunesService = ITunesService()
+        findViewById<RecyclerView>(R.id.RvSearchHistory).apply {
+            adapter = searchHistoryAdapter
+            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        }
+    }
 
-        val searchSong = fun() {
-            changeSearchResultVisibility { false }
-            showProgressBar()
-            searchAdapter.cleanSearchResult()
-            iTunesService.api.searchSong(savedInput).enqueue(object : Callback<SearchSongResponse> {
-                override fun onResponse(
-                    call: Call<SearchSongResponse>,
-                    response: Response<SearchSongResponse>
-                ) {
-                    hideProgressBar()
-                    if (response.code() == 200) {
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            hideError()
-                            changeSearchResultVisibility { true }
-                            searchAdapter.updateSearchResult(response.body()?.results!!)
-                        } else {
-                            displayNotFoundError()
-                        }
-                    } else {
-                        displayNetworkError()
-                    }
+    private fun setupSearchInput() {
+        val searchInput = findViewById<EditText>(R.id.search_et).apply {
+            doOnTextChanged { text, _, _, _ ->
+                onSearchQuery(text.toString())
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    onSearchQuery(text.toString())
                 }
-
-                override fun onFailure(call: Call<SearchSongResponse>, error: Throwable) {
-                    error.printStackTrace()
-                    displayNetworkError()
-                }
-            })
-        }
-        errorButton.setOnClickListener { searchSong.invoke() }
-
-        val searchHistoryAdapter = TrackSearchHistoryAdapter(searchHistory)
-        val searchHistoryRv = findViewById<RecyclerView>(R.id.RvSearchHistory)
-        searchHistoryRv.adapter = searchHistoryAdapter
-        searchHistoryRv.layoutManager =
-            LinearLayoutManager(searchHistoryRv.context, LinearLayoutManager.VERTICAL, false)
-
-        val clearButton = findViewById<ImageView>(R.id.clear_search_iv)
-        clearButton.setOnClickListener {
-            searchEditText.text.clear()
-            changeSearchResultVisibility { false }
-            hideError()
-            changeHistoryVisibility(searchHistoryRv)
-        }
-
-        changeHistoryVisibility(searchHistoryRv)
-
-        val clearHistoryButton = findViewById<Button>(R.id.clear_history_btn)
-        clearHistoryButton.setOnClickListener {
-            searchHistoryAdapter.cleanSearchHistory()
-            changeHistoryVisibility(searchHistoryRv)
-        }
-
-        val mainHandler = Handler(Looper.getMainLooper())
-        val searchEditTextTask = Runnable { searchSong.invoke() }
-        searchEditText.doOnTextChanged { text, _, _, _ ->
-            hideError()
-            changeClearButtonVisibility(clearButton, text)
-            changeHistoryVisibility(searchHistoryRv) { text.isNullOrEmpty() }
-            changeSearchResultVisibility { !text.isNullOrEmpty() }
-            savedInput = text.toString()
-            mainHandler.removeCallbacks(searchEditTextTask)
-            if (!text.isNullOrEmpty()) {
-                mainHandler.postDelayed(searchEditTextTask, SEARCH_DEBOUNCE_IN_MILLIS)
             }
         }
 
-        searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            changeHistoryVisibility(searchHistoryRv) { hasFocus }
-            if (!hasFocus) {
-                searchSong.invoke()
-            }
+        findViewById<Button>(R.id.error_update_btn).apply {
+            setOnClickListener { onSearchQuery(searchQuery) }
+        }
+
+        findViewById<Button>(R.id.clear_history_btn).apply {
+            setOnClickListener { onClearHistoryClicked() }
+        }
+
+        findViewById<ImageView>(R.id.clear_search_iv).apply {
+            setOnClickListener { searchInput.setText("") }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT_ID, savedInput)
+    private fun setupToolbar() {
+        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        savedInput = savedInstanceState.getString(SEARCH_TEXT_ID).toString()
-
-        val searchInput = findViewById<EditText>(R.id.search_et)
-        searchInput.setText(savedInput)
+    private fun setupSavedSearchQuery() {
+        searchQuery = trackInteractor.getSavedSearchQuery()
+        if (searchQuery.isNotEmpty()) {
+            findViewById<EditText>(R.id.search_et).setText(searchQuery)
+            onSearchQuery(searchQuery)
+        }
     }
 
-    private fun showProgressBar() {
+    private fun showLoading() {
         findViewById<ProgressBar>(R.id.search_pb).visibility = View.VISIBLE
     }
 
-    private fun hideProgressBar() {
+    private fun hideLoading() {
         findViewById<ProgressBar>(R.id.search_pb).visibility = View.GONE
     }
 
-    private fun hideError() {
-        findViewById<LinearLayout>(R.id.error_ll).visibility = View.GONE
-    }
-
-    private fun displayNotFoundError() {
-        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_not_found)
-        findViewById<TextView>(R.id.error_tv).setText(R.string.not_found)
-        findViewById<Button>(R.id.error_update_btn).visibility = View.GONE
-        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
-    }
-
-    private fun displayNetworkError() {
+    private fun showNetworkError() {
         findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_net_error)
         findViewById<TextView>(R.id.error_tv).setText(R.string.net_error)
         findViewById<Button>(R.id.error_update_btn).visibility = View.VISIBLE
         findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
     }
 
-    private fun changeClearButtonVisibility(button: View, s: CharSequence?) {
-        if (s.isNullOrEmpty()) {
-            button.visibility = View.GONE
-        } else {
-            button.visibility = View.VISIBLE
-        }
+    private fun showNotFoundError() {
+        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_not_found)
+        findViewById<TextView>(R.id.error_tv).setText(R.string.not_found)
+        findViewById<Button>(R.id.error_update_btn).visibility = View.GONE
+        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
     }
 
-    private fun changeHistoryVisibility(view: RecyclerView) {
-        changeHistoryVisibility(view) { true }
+    private fun hideErrors() {
+        findViewById<LinearLayout>(R.id.error_ll).visibility = View.GONE
     }
 
-    private fun changeHistoryVisibility(
-        view: RecyclerView,
-        displayCondition: () -> Boolean
-    ) {
-        val searchHistoryLl = findViewById<LinearLayout>(R.id.search_history_ll)
-        if (view.adapter is TrackSearchHistoryAdapter) {
-            val adapter = view.adapter as TrackSearchHistoryAdapter
-            if (!adapter.isEmpty() && displayCondition.invoke()) {
-                adapter.notifyItemRangeChanged(0, adapter.itemCount)
-                searchHistoryLl.visibility = View.VISIBLE
-            } else {
-                searchHistoryLl.visibility = View.GONE
-            }
-        }
+    private fun showTracks(tracks: List<Track>) {
+        searchAdapter.updateList(tracks)
+        findViewById<RecyclerView>(R.id.RvSearchResult).visibility = View.VISIBLE
     }
 
-    private fun changeSearchResultVisibility(displayCondition: () -> Boolean) {
-        val searchResultRv = findViewById<RecyclerView>(R.id.RvSearchResult)
-        if (displayCondition.invoke()) {
-            searchResultRv.visibility = View.VISIBLE
-        } else {
-            (searchResultRv.adapter as TrackSearchResultAdapter).cleanSearchResult()
-            searchResultRv.visibility = View.GONE
+    private fun hideTracks() {
+        searchAdapter.updateList(listOf())
+        findViewById<RecyclerView>(R.id.RvSearchResult).visibility = View.GONE
+    }
+
+    private fun showTrackHistory(tracks: List<Track>) {
+        searchHistoryAdapter.updateList(tracks)
+        findViewById<LinearLayout>(R.id.search_history_ll).visibility = View.VISIBLE
+    }
+
+    private fun hideTrackHistory() {
+        findViewById<LinearLayout>(R.id.search_history_ll).visibility = View.GONE
+    }
+
+    private fun showClearQueryButton() {
+        findViewById<ImageView>(R.id.clear_search_iv).visibility = View.VISIBLE
+    }
+
+    private fun hideClearQueryButton() {
+        findViewById<ImageView>(R.id.clear_search_iv).visibility = View.GONE
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, TOUCH_DEBOUNCE_IN_MILLIS)
         }
+        return current
     }
 
     companion object {
-        const val SEARCH_TEXT_ID = "SEARCH_TEXT_ID"
         const val SEARCH_DEBOUNCE_IN_MILLIS = 2000L
+        const val TOUCH_DEBOUNCE_IN_MILLIS = 1000L
     }
 }

@@ -1,17 +1,18 @@
 package com.practicum.playlistmaker.domain.api
 
 import com.practicum.playlistmaker.domain.models.Track
+import kotlinx.coroutines.Runnable
 
 interface TrackRepository {
-    fun searchTrack(query: String): List<Track>
+    fun searchTrack(query: String, onFail: Runnable): Pair<Boolean, List<Track>>
 
     fun addTrackToHistory(track: Track)
 
-    fun clearHistory()
+    fun clearTrackHistory()
 
-    fun getTrackInHistory(position: Int): Track
+    fun getSearchHistory(): List<Track>
 
-    fun getHistorySize(): Int
+    fun saveSearchInput(value: String)
 
-    fun getAllHistory(): List<Track>
+    fun loadSavedSearchInput() : String
 }
