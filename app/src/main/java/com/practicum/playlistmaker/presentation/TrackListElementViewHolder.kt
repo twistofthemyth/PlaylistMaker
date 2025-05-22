@@ -1,25 +1,24 @@
-package com.practicum.playlistmaker.holders
+package com.practicum.playlistmaker.presentation
 
-import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.model.Track
+import com.practicum.playlistmaker.domain.models.Track
 
-class TrackSearchResultViewHolder(parent: ViewGroup) : ViewHolder(
+class TrackListElementViewHolder(parent: ViewGroup) : ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.search_result_item, parent, false)
 ) {
 
     fun bind(data: Track) {
         val ivAlbum = itemView.findViewById<ImageView>(R.id.IvAlbum)
         Glide.with(itemView)
-            .load(Uri.parse(data.artworkUrl100))
+            .load(data.artwork.toUri())
             .placeholder(R.drawable.placeholder_album)
             .centerInside()
             .transform(
@@ -36,7 +35,7 @@ class TrackSearchResultViewHolder(parent: ViewGroup) : ViewHolder(
         tvTrackName.text = cutIfRequired(data.trackName)
 
         val tvTrackLength = itemView.findViewById<TextView>(R.id.TvTrackLength)
-        tvTrackLength.text = data.getTrackTime()
+        tvTrackLength.text = data.trackTime
     }
 
     private fun cutIfRequired(origin: String): String {
