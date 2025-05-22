@@ -97,7 +97,7 @@ abstract class PlayerHolder(
             override fun run() {
                 if (playerState == PlayerState.STATE_PLAYING) {
                     positionView.text = getFormattedCurrentPosition()
-                    handler.postDelayed(this, 300)
+                    handler.postDelayed(this, 100)
                 } else {
                     handler.removeCallbacks(this)
                 }
