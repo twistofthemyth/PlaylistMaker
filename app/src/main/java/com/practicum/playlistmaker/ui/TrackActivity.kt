@@ -96,24 +96,17 @@ class TrackActivity : AppCompatActivity() {
         val playPosition = findViewById<TextView>(R.id.time_tv)
         val playIv = findViewById<ImageView>(R.id.play_track_iv).apply { isEnabled = false }
 
-        playerHolder = object : PlayerHolder(track.previewUrl, playPosition) {
-            override fun onPause() {
-                playIv.setImageResource(R.drawable.button_play_track)
-            }
-
-            override fun onPlay() {
-                playIv.setImageResource(R.drawable.button_pause_track)
-            }
-
-            override fun onComplete() {
-                playIv.setImageResource(R.drawable.button_play_track)
-            }
-
-            override fun onPrepare() {
-                playIv.isEnabled = true
-            }
+        playerHolder = PlayerHolder(
+            url = track.previewUrl,
+            onPositionUpdateAction = { playPosition.text = it },
+            onPlayAction = { playIv.setImageResource(R.drawable.button_pause_track) },
+            onPauseAction = { playIv.setImageResource(R.drawable.button_play_track) },
+            onCompleteAction = { playIv.setImageResource(R.drawable.button_play_track) },
+            onPrepareAction = { playIv.isEnabled = true }
+        ).apply {
+            preparePlayer()
         }
-        playerHolder.preparePlayer()
+
         playIv.setOnClickListener {
             playerHolder.playbackControl()
         }

@@ -7,46 +7,50 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-abstract class PlayerHolder(
+class PlayerHolder(
     private val url: String,
-    private val positionView: TextView
+    private val onPositionUpdateAction: (String) -> Unit = {},
+    private val onPauseAction: () -> Unit = {},
+    private val onPlayAction: () -> Unit = {},
+    private val onCompleteAction: () -> Unit = {},
+    private val onPrepareAction: () -> Unit = {}
 ) {
 
-    enum class PlayerState {
+    private enum class PlayerState {
         STATE_DEFAULT,
         STATE_PREPARED,
         STATE_PLAYING,
         STATE_PAUSED
     }
 
-    companion object {
-        private const val TIME_FORMAT = "mm:ss"
+    private var playerState = PlayerState.STATE_DEFAULT
+    private val mediaPlayer = MediaPlayer()
+    private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
+    private val updateHandler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            if (playerState == PlayerState.STATE_PLAYING) {
+                onPositionUpdateAction.invoke(getFormattedCurrentPosition())
+                updateHandler.postDelayed(this, 300)
+            } else {
+                updateHandler.removeCallbacks(this)
+            }
+        }
     }
 
-    private var playerState = PlayerState.STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
-
-    abstract fun onPause()
-
-    abstract fun onPlay()
-
-    abstract fun onComplete()
-
-    abstract fun onPrepare()
-
     fun preparePlayer() {
-        positionView.text = getStartPosition()
+        onPositionUpdateAction.invoke(getStartPosition())
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            onPrepare()
+            onPrepareAction.invoke()
             playerState = PlayerState.STATE_PREPARED
         }
 
         mediaPlayer.setOnCompletionListener {
-            onComplete()
+            onCompleteAction.invoke()
             playerState = PlayerState.STATE_PREPARED
-            positionView.text = getStartPosition()
+            onPositionUpdateAction.invoke(getStartPosition())
         }
     }
 
@@ -54,16 +58,17 @@ abstract class PlayerHolder(
         mediaPlayer.start()
         playerState = PlayerState.STATE_PLAYING
         startCurrentPositionUpdater()
-        onPlay()
+        onPlayAction.invoke()
     }
 
     fun pausePlayer() {
         mediaPlayer.pause()
         playerState = PlayerState.STATE_PAUSED
-        onPause()
+        onPauseAction.invoke()
     }
 
     fun release() {
+        updateHandler.removeCallbacks(updateRunnable)
         mediaPlayer.release()
     }
 
@@ -84,25 +89,14 @@ abstract class PlayerHolder(
     }
 
     fun getFormattedCurrentPosition(): String {
-        return SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(getCurrentPosition())
+        return timeFormat.format(getCurrentPosition())
     }
 
     fun getStartPosition(): String {
-        return SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(0)
+        return timeFormat.format(0)
     }
 
     fun startCurrentPositionUpdater() {
-        val handler = Handler.createAsync(Looper.getMainLooper())
-        val updateCurrentPositionTask = object : Runnable {
-            override fun run() {
-                if (playerState == PlayerState.STATE_PLAYING) {
-                    positionView.text = getFormattedCurrentPosition()
-                    handler.postDelayed(this, 100)
-                } else {
-                    handler.removeCallbacks(this)
-                }
-            }
-        }
-        handler.post(updateCurrentPositionTask)
+        updateHandler.post(updateRunnable)
     }
 }
