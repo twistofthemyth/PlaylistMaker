@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 
 class App : Application() {
 
@@ -20,7 +21,7 @@ class App : Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        getSharedPreferences().edit().putBoolean(DARK_THEME_KEY, darkThemeEnabled).apply()
+        getSharedPreferences().edit { putBoolean(DARK_THEME_KEY, darkThemeEnabled) }
     }
 
     fun getSharedPreferences() : SharedPreferences {
