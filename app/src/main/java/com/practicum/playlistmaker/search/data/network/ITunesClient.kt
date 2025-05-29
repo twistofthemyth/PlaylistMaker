@@ -1,14 +1,16 @@
 package com.practicum.playlistmaker.search.data.network
 
+import android.net.ConnectivityManager
 import com.practicum.playlistmaker.search.data.dto.SearchSongRequest
-import com.practicum.playlistmaker.util.data_utils.NetworkClient
+import com.practicum.playlistmaker.util.data_utils.AbstractNetworkClient
 import com.practicum.playlistmaker.util.data_utils.Response
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
-class ITunesClient : NetworkClient {
+class ITunesClient(connectivityManager: ConnectivityManager) : AbstractNetworkClient(
+    connectivityManager
+) {
 
     private val url = "https://itunes.apple.com"
 
@@ -21,16 +23,19 @@ class ITunesClient : NetworkClient {
     private val service: ITunesApiService = retrofit.create(ITunesApiService::class.java)
 
     override fun doRequest(dto: Any): Response {
-        try {
-            if (dto is SearchSongRequest) {
-                val response = service.searchSong(dto.entity, dto.term).execute();
-                val body = response.body() ?: Response()
-                return body.apply { statusCode = response.code() }
-            } else {
-                return Response().apply { statusCode = 400 }
-            }
-        } catch (e: IOException) {
+        if (isConnected() == false) {
+            return Response().apply { statusCode = -1 }
+        }
+        if (dto !is SearchSongRequest) {
             return Response().apply { statusCode = 400 }
+        }
+
+        val response = service.searchSong(dto.entity, dto.term).execute()
+        val body = response.body()
+        return if (body != null) {
+            body.apply { statusCode = response.code() }
+        } else {
+            Response().apply { statusCode = response.code() }
         }
     }
 }

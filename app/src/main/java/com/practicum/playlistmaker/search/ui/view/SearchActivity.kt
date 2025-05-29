@@ -21,12 +21,12 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.player.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
+import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.Creator
 
 class SearchActivity : AppCompatActivity() {
 
-    private lateinit var trackInteractor: TrackInteractor
-
+    private lateinit var viewModel: SearchViewModel
     private lateinit var searchAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
 
@@ -55,6 +55,18 @@ class SearchActivity : AppCompatActivity() {
 
         setupSavedSearchQuery()
         onSearchQuery(searchQuery)
+    }
+
+    private fun setupViewModel() {
+        viewModel = SearchViewModel(application)
+        viewModel.getState().observe(this) {
+            when(it) {
+                is SearchViewModel.SearchViewState.Loading -> TODO()
+                is SearchViewModel.SearchViewState.NetworkError -> TODO()
+                is SearchViewModel.SearchViewState.ShowHistory -> TODO()
+                is SearchViewModel.SearchViewState.ShowSearchResult -> TODO()
+            }
+        }
     }
 
     private fun onSearchQuery(query: String) {
