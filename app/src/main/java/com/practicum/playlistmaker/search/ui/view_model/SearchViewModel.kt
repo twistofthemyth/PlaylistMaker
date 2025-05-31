@@ -25,7 +25,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     private var isClickAllowed = true
     private var latestSearchQuery: String? = null
-    private var state = setUpDefaultState()
+    private var state = MutableLiveData(setUpDefaultState())
 
     fun getState(): LiveData<SearchViewState> = state
 
@@ -47,6 +47,10 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
             searchHistoryInteractor.addTrackToHistory(track)
             state.postValue(SearchViewState.ProceedToTrack(track))
         }
+    }
+
+    fun resume() {
+        state.postValue(setUpDefaultState())
     }
 
     fun search(query: String) {
@@ -71,8 +75,8 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private fun setUpDefaultState(): MutableLiveData<SearchViewState> {
-        return MutableLiveData<SearchViewState>(SearchViewState.ShowHistory(searchHistoryInteractor.getSearchHistory().records))
+    private fun setUpDefaultState(): SearchViewState {
+        return SearchViewState.ShowHistory(searchHistoryInteractor.getSearchHistory().records)
     }
 
     private fun isClickAllowed(): Boolean {
@@ -97,6 +101,8 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         class ShowSearchResult(val tracks: List<Track>) : SearchViewState
 
         class ProceedToTrack(val track: Track) : SearchViewState
+
+        class InitedSearchInput() : SearchViewState
     }
 
     companion object {

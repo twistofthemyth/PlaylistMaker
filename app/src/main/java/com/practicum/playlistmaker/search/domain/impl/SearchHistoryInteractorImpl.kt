@@ -15,7 +15,7 @@ class SearchHistoryInteractorImpl(private val repo: HistoryRepository) :
     override fun addTrackToHistory(track: Track) {
         var history = repo.getSearchHistory()
         history.records.remove(track)
-        history.records.add(track)
+        history.records.add(0, track)
         repo.updateSearchHistory(history)
     }
 

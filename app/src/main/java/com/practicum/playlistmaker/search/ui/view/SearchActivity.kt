@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.search.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -38,6 +36,11 @@ class SearchActivity : AppCompatActivity() {
         setupViewModel()
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        viewModel.resume()
+    }
+
     private fun setupViewModel() {
         viewModel = SearchViewModel(application)
         viewModel.getState().observe(this) {
@@ -60,11 +63,13 @@ class SearchActivity : AppCompatActivity() {
                     if (it.tracks.isEmpty()) {
                         hideTrackHistory()
                     } else {
-                        showTrackHistory(it.tracks)
+                        updateTrackHistory(it.tracks)
+                        showTrackHistory()
                     }
                     hideLoading()
                     hideErrors()
                     hideTracks()
+                    hideClearQueryButton()
                 }
 
                 is SearchViewModel.SearchViewState.ShowSearchResult -> {
@@ -82,6 +87,10 @@ class SearchActivity : AppCompatActivity() {
                     var intent = Intent(this, TrackActivity::class.java)
                     intent.putExtra("track", Gson().toJson(it.track))
                     startActivity(intent)
+                }
+
+                is SearchViewModel.SearchViewState.InitedSearchInput -> {
+                    showClearQueryButton()
                 }
             }
         }
@@ -105,6 +114,11 @@ class SearchActivity : AppCompatActivity() {
     private fun setupSearchInput() {
         val searchInput = findViewById<EditText>(R.id.search_et).apply {
             doOnTextChanged { text, _, _, _ ->
+                if (text?.isEmpty() != false) {
+                    hideClearQueryButton()
+                } else {
+                    showClearQueryButton()
+                }
                 viewModel.search(text.toString())
             }
 
@@ -168,9 +182,16 @@ class SearchActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.RvSearchResult).visibility = View.GONE
     }
 
-    private fun showTrackHistory(tracks: List<Track>) {
-        searchHistoryAdapter.updateList(tracks)
+    private fun showTrackHistory() {
+        findViewById<EditText>(R.id.search_et).apply {
+            setText("")
+            clearFocus()
+        }
         findViewById<LinearLayout>(R.id.search_history_ll).visibility = View.VISIBLE
+    }
+
+    private fun updateTrackHistory(tracks: List<Track>) {
+        searchHistoryAdapter.updateList(tracks)
     }
 
     private fun hideTrackHistory() {
