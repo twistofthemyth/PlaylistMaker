@@ -18,11 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.player.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
+import com.practicum.playlistmaker.player.ui.view.TrackListAdapter
+import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.util.Creator
 
 class SearchActivity : AppCompatActivity() {
 
@@ -30,116 +29,67 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
 
-    private lateinit var searchQuery: String
-
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { searchTracks() }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        trackInteractor =
-            Creator.provideTrackInteractor(getSharedPreferences("SearchActivity", MODE_PRIVATE))
-
         setupRecyclerViews()
         setupSearchInput()
         setupToolbar()
-        setupSavedSearchQuery()
-
-        onSearchQuery(searchQuery)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        setupSavedSearchQuery()
-        onSearchQuery(searchQuery)
+        setupViewModel()
     }
 
     private fun setupViewModel() {
         viewModel = SearchViewModel(application)
         viewModel.getState().observe(this) {
-            when(it) {
-                is SearchViewModel.SearchViewState.Loading -> TODO()
-                is SearchViewModel.SearchViewState.NetworkError -> TODO()
-                is SearchViewModel.SearchViewState.ShowHistory -> TODO()
-                is SearchViewModel.SearchViewState.ShowSearchResult -> TODO()
-            }
-        }
-    }
+            when (it) {
+                is SearchViewModel.SearchViewState.Loading -> {
+                    showLoading()
+                    hideTracks()
+                    hideErrors()
+                    hideTrackHistory()
+                }
 
-    private fun onSearchQuery(query: String) {
-        hideErrors()
-        hideTracks()
-        hideTrackHistory()
-        showLoading()
-        searchQuery = query
-        trackInteractor.saveSearchQuery(query)
-        handler.removeCallbacks(searchRunnable)
-        if (query.isEmpty()) {
-            trackInteractor.getSearchHistory {
-                handler.post {
+                is SearchViewModel.SearchViewState.NetworkError -> {
+                    showNetworkError()
                     hideLoading()
-                    if (it.isNotEmpty()) {
-                        showTrackHistory(it)
-                    } else {
+                    hideTracks()
+                    hideTrackHistory()
+                }
+
+                is SearchViewModel.SearchViewState.ShowHistory -> {
+                    if (it.tracks.isEmpty()) {
                         hideTrackHistory()
+                    } else {
+                        showTrackHistory(it.tracks)
                     }
-                }
-            }
-        } else {
-            showClearQueryButton()
-            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_IN_MILLIS)
-        }
-    }
-
-    private fun onClearHistoryClicked() {
-        trackInteractor.clearHistory()
-        onSearchQuery("")
-    }
-
-    private fun onTrackClick(track: Track) {
-        if (clickDebounce()) {
-            trackInteractor.addTrackToHistory(track)
-            trackInteractor.getSearchHistory {
-                handler.post {
-                    searchHistoryAdapter.updateList(it)
-                }
-            }
-
-            var intent = Intent(this, TrackActivity::class.java)
-            intent.putExtra("track", Gson().toJson(track))
-            startActivity(intent)
-        }
-    }
-
-    private fun searchTracks() {
-        trackInteractor.searchTracks(
-            searchQuery,
-            onSuccess = { tracks ->
-                handler.post {
                     hideLoading()
-                    if (tracks.isEmpty()) {
+                    hideErrors()
+                    hideTracks()
+                }
+
+                is SearchViewModel.SearchViewState.ShowSearchResult -> {
+                    if (it.tracks.isEmpty()) {
                         showNotFoundError()
                     } else {
-                        showTracks(tracks)
+                        showTracks(it.tracks)
                     }
-
-                }
-            },
-            onFail = {
-                handler.post {
                     hideLoading()
-                    showNetworkError()
+                    hideErrors()
+                    hideTrackHistory()
+                }
+
+                is SearchViewModel.SearchViewState.ProceedToTrack -> {
+                    var intent = Intent(this, TrackActivity::class.java)
+                    intent.putExtra("track", Gson().toJson(it.track))
+                    startActivity(intent)
                 }
             }
-        )
+        }
     }
 
     private fun setupRecyclerViews() {
-        searchAdapter = TrackListAdapter { track -> onTrackClick(track) }
-        searchHistoryAdapter = TrackListAdapter { track -> onTrackClick(track) }
+        searchAdapter = TrackListAdapter { track -> clickTrack(track) }
+        searchHistoryAdapter = TrackListAdapter { track -> clickTrack(track) }
 
         findViewById<RecyclerView>(R.id.RvSearchResult).apply {
             adapter = searchAdapter
@@ -155,22 +105,22 @@ class SearchActivity : AppCompatActivity() {
     private fun setupSearchInput() {
         val searchInput = findViewById<EditText>(R.id.search_et).apply {
             doOnTextChanged { text, _, _, _ ->
-                onSearchQuery(text.toString())
+                viewModel.search(text.toString())
             }
 
             setOnFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) {
-                    onSearchQuery(text.toString())
+                    viewModel.search(text.toString())
                 }
             }
         }
 
         findViewById<Button>(R.id.error_update_btn).apply {
-            setOnClickListener { onSearchQuery(searchQuery) }
+            setOnClickListener { viewModel.repeatSearch() }
         }
 
         findViewById<Button>(R.id.clear_history_btn).apply {
-            setOnClickListener { onClearHistoryClicked() }
+            setOnClickListener { viewModel.cleanHistory() }
         }
 
         findViewById<ImageView>(R.id.clear_search_iv).apply {
@@ -180,14 +130,6 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         findViewById<Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
-    }
-
-    private fun setupSavedSearchQuery() {
-        searchQuery = trackInteractor.getSavedSearchQuery()
-        if (searchQuery.isNotEmpty()) {
-            findViewById<EditText>(R.id.search_et).setText(searchQuery)
-            onSearchQuery(searchQuery)
-        }
     }
 
     private fun showLoading() {
@@ -243,17 +185,7 @@ class SearchActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.clear_search_iv).visibility = View.GONE
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, TOUCH_DEBOUNCE_IN_MILLIS)
-        }
-        return current
-    }
-
-    companion object {
-        const val SEARCH_DEBOUNCE_IN_MILLIS = 2000L
-        const val TOUCH_DEBOUNCE_IN_MILLIS = 1000L
+    fun clickTrack(track: Track) {
+        viewModel.clickTrack(track)
     }
 }

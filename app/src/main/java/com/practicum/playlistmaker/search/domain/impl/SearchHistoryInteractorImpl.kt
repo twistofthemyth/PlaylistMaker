@@ -13,17 +13,22 @@ class SearchHistoryInteractorImpl(private val repo: HistoryRepository) :
     }
 
     override fun addTrackToHistory(track: Track) {
-        repo.getSearchHistory().records.add(track)
+        var history = repo.getSearchHistory()
+        history.records.remove(track)
+        history.records.add(track)
+        repo.updateSearchHistory(history)
     }
 
     override fun clearSearchHistory() {
-        repo.getSearchHistory().apply {
-            records.clear()
-            query = ""
-        }
+        var history = repo.getSearchHistory()
+        history.records.clear()
+        history.query = ""
+        repo.updateSearchHistory(history)
     }
 
     override fun updateSearchQuery(query: String) {
-        repo.getSearchHistory().query = query
+        var history = repo.getSearchHistory()
+        history.query = query
+        repo.updateSearchHistory(history)
     }
 }
