@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.ui.view_model.MainViewModel
 import com.practicum.playlistmaker.media.ui.view.MediaActivity
@@ -27,13 +27,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java].apply {
-            when (getState().value?.theme) {
-                AppStyle.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                AppStyle.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                null -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
-        }
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     }
 
     private fun setupInput() {
@@ -53,9 +47,26 @@ class MainActivity : AppCompatActivity() {
     private fun observeNavigation() {
         viewModel.getNavigationEvent().observe(this, SingleLiveEventObserver { destination ->
             when (destination) {
-                MainViewModel.NavigationDestination.Media -> startActivity(Intent(this, MediaActivity::class.java))
-                MainViewModel.NavigationDestination.Search -> startActivity(Intent(this, SearchActivity::class.java))
-                MainViewModel.NavigationDestination.Settings -> startActivity(Intent(this, SettingsActivity::class.java))
+                MainViewModel.NavigationDestination.Media -> startActivity(
+                    Intent(
+                        this,
+                        MediaActivity::class.java
+                    )
+                )
+
+                MainViewModel.NavigationDestination.Search -> startActivity(
+                    Intent(
+                        this,
+                        SearchActivity::class.java
+                    )
+                )
+
+                MainViewModel.NavigationDestination.Settings -> startActivity(
+                    Intent(
+                        this,
+                        SettingsActivity::class.java
+                    )
+                )
             }
         })
     }

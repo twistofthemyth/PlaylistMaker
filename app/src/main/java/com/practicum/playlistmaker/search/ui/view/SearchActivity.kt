@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -19,6 +20,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 
 class SearchActivity : AppCompatActivity() {
@@ -43,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        viewModel = SearchViewModel(application)
+        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
         viewModel.getScreenState().observe(this) { screenState ->
             when (screenState) {
                 is SearchViewModel.SearchViewState.Loading -> {

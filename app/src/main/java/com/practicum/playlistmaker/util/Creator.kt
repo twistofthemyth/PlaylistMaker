@@ -16,7 +16,7 @@ import com.practicum.playlistmaker.search.domain.impl.SearchHistoryInteractorImp
 import com.practicum.playlistmaker.search.domain.impl.SearchInteractorImpl
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.settings.data.LocalSettingsRepository
-import com.practicum.playlistmaker.settings.domain.api.SettingAppStyleInteractor
+import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 import java.util.function.Consumer
@@ -45,7 +45,7 @@ object Creator {
         return SearchInteractorImpl(provideSearchRepo(context))
     }
 
-    fun provideSettingsInteractor(sharedPref: SharedPreferences): SettingAppStyleInteractor {
+    fun provideSettingsInteractor(sharedPref: SharedPreferences): SettingsInteractor {
         return SettingsInteractorImpl(provideSettingsRepo(sharedPref))
     }
 
