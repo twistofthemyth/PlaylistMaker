@@ -19,6 +19,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 
 class SearchActivity : AppCompatActivity() {
 
@@ -33,6 +34,7 @@ class SearchActivity : AppCompatActivity() {
         setupSearchInput()
         setupToolbar()
         setupViewModel()
+        observeNavigation()
     }
 
     override fun onRestart() {
@@ -42,8 +44,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         viewModel = SearchViewModel(application)
-        viewModel.getState().observe(this) {
-            when (it) {
+        viewModel.getScreenState().observe(this) { screenState ->
+            when (screenState) {
                 is SearchViewModel.SearchViewState.Loading -> {
                     showLoading()
                     hideTracks()
@@ -59,10 +61,10 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 is SearchViewModel.SearchViewState.ShowHistory -> {
-                    if (it.tracks.isEmpty()) {
+                    if (screenState.tracks.isEmpty()) {
                         hideTrackHistory()
                     } else {
-                        updateTrackHistory(it.tracks)
+                        updateTrackHistory(screenState.tracks)
                         showTrackHistory()
                     }
                     hideLoading()
@@ -72,20 +74,14 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 is SearchViewModel.SearchViewState.ShowSearchResult -> {
-                    if (it.tracks.isEmpty()) {
+                    if (screenState.tracks.isEmpty()) {
                         showNotFoundError()
                     } else {
-                        showTracks(it.tracks)
+                        showTracks(screenState.tracks)
                     }
                     hideLoading()
                     hideErrors()
                     hideTrackHistory()
-                }
-
-                is SearchViewModel.SearchViewState.ProceedToTrack -> {
-                    var intent = Intent(this, TrackActivity::class.java)
-                    intent.putExtra("track", Gson().toJson(it.track))
-                    startActivity(intent)
                 }
 
                 is SearchViewModel.SearchViewState.InitedSearchInput -> {
@@ -205,7 +201,20 @@ class SearchActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.clear_search_iv).visibility = View.GONE
     }
 
-    fun clickTrack(track: Track) {
+    private fun clickTrack(track: Track) {
         viewModel.clickTrack(track)
     }
+
+    private fun observeNavigation() {
+        viewModel.getNavigationEvent().observe(this, SingleLiveEventObserver { destination ->
+            when (destination) {
+                is SearchViewModel.NavigationDestination.ToTrack -> {
+                    var intent = Intent(this, TrackActivity::class.java)
+                    intent.putExtra("track", Gson().toJson(destination.track))
+                    startActivity(intent)
+                }
+            }
+        })
+    }
+
 }

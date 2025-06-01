@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.domain_utils.Resource
+import com.practicum.playlistmaker.util.event.Event
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -22,12 +23,14 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     )
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = setUpSearchRunnable()
+    private val screenState = MutableLiveData(setUpDefaultState())
+    private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
 
     private var isClickAllowed = true
     private var latestSearchQuery: String? = null
-    private var state = MutableLiveData(setUpDefaultState())
 
-    fun getState(): LiveData<SearchViewState> = state
+    fun getScreenState(): LiveData<SearchViewState> = screenState
+    fun getNavigationEvent(): LiveData<Event<NavigationDestination>> = navigationEvent
 
     fun repeatSearch() {
         if (latestSearchQuery != null) {
@@ -36,21 +39,21 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun cleanHistory() {
-        state.postValue(SearchViewState.Loading())
+        screenState.postValue(SearchViewState.Loading())
         latestSearchQuery = ""
         searchHistoryInteractor.clearSearchHistory()
-        state.postValue(SearchViewState.ShowHistory(emptyList()))
+        screenState.postValue(SearchViewState.ShowHistory(emptyList()))
     }
 
     fun clickTrack(track: Track) {
         if (isClickAllowed()) {
             searchHistoryInteractor.addTrackToHistory(track)
-            state.postValue(SearchViewState.ProceedToTrack(track))
+            navigationEvent.value = Event(NavigationDestination.ToTrack(track))
         }
     }
 
     fun resume() {
-        state.postValue(setUpDefaultState())
+        screenState.postValue(setUpDefaultState())
     }
 
     fun search(query: String) {
@@ -63,14 +66,14 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setUpSearchRunnable(): Runnable {
         return Runnable {
-            state.postValue(SearchViewState.Loading())
+            screenState.postValue(SearchViewState.Loading())
             searchInteractor.searchTracks(latestSearchQuery.toString()) {
                 val newState = when (it) {
                     is Resource.ClientError<*> -> SearchViewState.NetworkError()
                     is Resource.ServerError<*> -> SearchViewState.NetworkError()
                     is Resource.Success<*> -> SearchViewState.ShowSearchResult(it.data as List<Track>)
                 }
-                state.postValue(newState);
+                screenState.postValue(newState);
             }
         }
     }
@@ -100,9 +103,11 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
         class ShowSearchResult(val tracks: List<Track>) : SearchViewState
 
-        class ProceedToTrack(val track: Track) : SearchViewState
-
         class InitedSearchInput() : SearchViewState
+    }
+
+    sealed interface NavigationDestination {
+        class ToTrack(val track: Track) : NavigationDestination
     }
 
     companion object {
