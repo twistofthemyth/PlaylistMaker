@@ -10,41 +10,67 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.player.domain.PlayerState
+import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.player.data.PlayerHolder
 
 class TrackActivity : AppCompatActivity() {
 
-    lateinit var playerHolder: PlayerHolder
-    lateinit var track: Track
+    private lateinit var viewModel: TrackViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_track)
-
+        setupViewModel()
         setupToolbar()
-        setupTrackInfo()
-        setupPlayer()
+        setUpInput()
     }
 
     override fun onPause() {
         super.onPause()
-        playerHolder.pausePlayer()
+        viewModel.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        playerHolder.release()
+        viewModel.releasePlayer()
+    }
+
+    private fun setupViewModel() {
+        val track = Gson().fromJson(intent.getStringExtra("track"), Track::class.java)
+        viewModel = TrackViewModel(track, this.application)
+        viewModel.getScreenState().observe(this) {
+            when (it) {
+                is TrackViewModel.TrackScreenState.Content -> {
+                    setupTrackInfo(it.track)
+                }
+            }
+        }
+
+        val playIv = findViewById<ImageView>(R.id.play_track_iv)
+        val playPosition = findViewById<TextView>(R.id.time_tv)
+
+        viewModel.getPlayStatus().observe(this) {
+            playPosition.text = it.position
+            when (it.playerState) {
+                PlayerState.STATE_PLAYING -> playIv.setImageResource(R.drawable.button_pause_track)
+                PlayerState.STATE_DEFAULT,
+                PlayerState.STATE_PREPARED,
+                PlayerState.STATE_PAUSED -> playIv.setImageResource(R.drawable.button_play_track)
+            }
+        }
+    }
+
+    private fun setUpInput() {
+        findViewById<ImageView>(R.id.play_track_iv).setOnClickListener { viewModel.togglePlayer() }
     }
 
     private fun setupToolbar() {
         findViewById<ImageView>(R.id.arrow_back_iv).setOnClickListener { finish() }
     }
 
-    private fun setupTrackInfo() {
-        track = Gson().fromJson(intent.getStringExtra("track"), Track::class.java)
+    private fun setupTrackInfo(track: Track) {
         val albumNameTitle = findViewById<TextView>(R.id.album_name_tv)
-
         findViewById<TextView>(R.id.album_name_value_tv).apply {
             if (track.collectionName.isEmpty()) {
                 visibility = View.GONE
@@ -89,26 +115,6 @@ class TrackActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.track_duration_value_tv).apply {
             text = track.trackTime
-        }
-    }
-
-    private fun setupPlayer() {
-        val playPosition = findViewById<TextView>(R.id.time_tv)
-        val playIv = findViewById<ImageView>(R.id.play_track_iv).apply { isEnabled = false }
-
-        playerHolder = PlayerHolder(
-            url = track.previewUrl,
-            onPositionUpdateAction = { playPosition.text = it },
-            onPlayAction = { playIv.setImageResource(R.drawable.button_pause_track) },
-            onPauseAction = { playIv.setImageResource(R.drawable.button_play_track) },
-            onCompleteAction = { playIv.setImageResource(R.drawable.button_play_track) },
-            onPrepareAction = { playIv.isEnabled = true }
-        ).apply {
-            preparePlayer()
-        }
-
-        playIv.setOnClickListener {
-            playerHolder.playbackControl()
         }
     }
 }

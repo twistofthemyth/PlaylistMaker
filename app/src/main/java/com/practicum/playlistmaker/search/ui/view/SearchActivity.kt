@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
-import com.practicum.playlistmaker.player.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 
