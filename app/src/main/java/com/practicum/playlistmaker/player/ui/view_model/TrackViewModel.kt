@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.Creator
@@ -60,15 +58,11 @@ class TrackViewModel(track: Track, application: Application) : AndroidViewModel(
     class PlayState(var playerState: PlayerState, var position: String)
 
     companion object {
-        fun getViewModelFactory(track: Track): ViewModelProvider.Factory =
+        fun getViewModelFactory(track: Track, app: Application): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    modelClass: Class<T>,
-                    extras: CreationExtras
-                ): T {
-                    val application = checkNotNull(extras[APPLICATION_KEY])
-                    return TrackViewModel(track, application) as T
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return TrackViewModel(track, app) as T
                 }
             }
     }

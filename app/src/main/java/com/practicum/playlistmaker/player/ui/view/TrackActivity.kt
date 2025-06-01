@@ -38,7 +38,7 @@ class TrackActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         val track = Gson().fromJson(intent.getStringExtra("track"), Track::class.java)
-        viewModel = TrackViewModel.getViewModelFactory(track).create(TrackViewModel::class.java)
+        viewModel = TrackViewModel.getViewModelFactory(track, application).create(TrackViewModel::class.java)
         TrackViewModel(track, this.application)
         viewModel.getScreenState().observe(this) {
             when (it) {
