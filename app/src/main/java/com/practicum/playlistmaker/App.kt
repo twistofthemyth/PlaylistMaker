@@ -17,7 +17,8 @@ class App : Application() {
             getSharedPreferences(
                 "SettingsViewMode",
                 MODE_PRIVATE
-            ))
+            )
+        )
 
         when (settingsInteractor.getAppTheme()) {
             AppStyle.LIGHT -> setLightTheme()
@@ -31,9 +32,5 @@ class App : Application() {
 
     fun setLightTheme() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-    }
-
-    fun setSystemTheme() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 }
