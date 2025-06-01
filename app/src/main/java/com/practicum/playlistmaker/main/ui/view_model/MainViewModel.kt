@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.util.Creator
+import com.practicum.playlistmaker.util.event.Event
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -16,18 +17,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             MODE_PRIVATE
         )
     )
+    private val screenState = MutableLiveData(setUpDefaultState())
+    private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
 
-    private var state = MutableLiveData(setUpDefaultState())
+    fun getState(): LiveData<ScreenState> = screenState
+    fun getNavigationEvent(): LiveData<Event<NavigationDestination>> = navigationEvent
 
-    fun getState(): LiveData<MainState> = state
+    fun navigateTo(destination: NavigationDestination) {
+        navigationEvent.value = Event(destination)
+    }
 
-    private fun setUpDefaultState(): MainState {
+    private fun setUpDefaultState(): ScreenState {
         val theme = settingsInteractor.getAppTheme()
-        return MainState(theme)
+        return ScreenState(theme)
     }
 
 
-    class MainState(val theme: AppStyle) {
+    data class ScreenState(val theme: AppStyle)
 
+    sealed class NavigationDestination {
+        object Search : NavigationDestination()
+        object Media : NavigationDestination()
+        object Settings : NavigationDestination()
     }
 }
