@@ -18,27 +18,14 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupViewModel()
         setContentView(R.layout.activity_settings)
+        setupViewModel()
         setupToolbar()
         setupInput()
     }
 
     private fun setupViewModel() {
         viewModel = SettingsViewModel(application)
-        viewModel.getState().observe(this) {
-            when (it.theme) {
-                AppStyle.LIGHT -> {
-                    AppCompatDelegate.MODE_NIGHT_YES
-                    findViewById<SwitchMaterial>(R.id.settings_theme_button).isChecked = true
-                }
-
-                AppStyle.DARK -> {
-                    AppCompatDelegate.MODE_NIGHT_NO
-                    findViewById<SwitchMaterial>(R.id.settings_theme_button).isChecked = false
-                }
-            }
-        }
     }
 
     private fun setupToolbar() {
@@ -49,7 +36,19 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.settings_share_tv).setOnClickListener { startShareIntent() }
         findViewById<TextView>(R.id.settings_support_tv).setOnClickListener { startSupportIntent() }
         findViewById<TextView>(R.id.settings_agreement_tv).setOnClickListener { startViewAgreementIntent() }
-        findViewById<SwitchMaterial>(R.id.settings_theme_button).setOnClickListener { viewModel.toggleTheme() }
+
+        findViewById<SwitchMaterial>(R.id.settings_theme_button).apply {
+            isChecked = viewModel.getState().value?.theme == AppStyle.DARK
+
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.setTheme(if (isChecked) AppStyle.DARK else AppStyle.LIGHT)
+                when(viewModel.getState().value?.theme) {
+                    AppStyle.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    AppStyle.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    null -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+            }
+        }
     }
 
     private fun startShareIntent() {

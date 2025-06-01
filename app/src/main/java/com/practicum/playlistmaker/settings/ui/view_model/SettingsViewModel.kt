@@ -22,21 +22,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun getState(): LiveData<SettingsState> = state
 
-    fun toggleTheme() {
-        when (state.value?.theme) {
-            AppStyle.LIGHT -> {
-                state.value?.theme = AppStyle.DARK
-                settingsInteractor.changeAppTheme(AppStyle.DARK)
-            }
-
-            AppStyle.DARK -> {
-                state.value?.theme = AppStyle.LIGHT
-                settingsInteractor.changeAppTheme(AppStyle.LIGHT)
-            }
-
-            null -> {
-                state.value = getDefaultSettings()
-            }
+    fun setTheme(theme: AppStyle) {
+        if (state.value?.theme != theme) {
+            settingsInteractor.changeAppTheme(theme)
+            state.value?.theme = theme
+            state.postValue(state.value)
         }
     }
 
