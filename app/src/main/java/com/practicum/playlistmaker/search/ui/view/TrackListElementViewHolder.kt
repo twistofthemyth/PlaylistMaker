@@ -1,41 +1,31 @@
 package com.practicum.playlistmaker.search.ui.view
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.SearchResultItemBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 
-class TrackListElementViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.search_result_item, parent, false)
-) {
+class TrackListElementViewHolder(private val binding: SearchResultItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(data: Track) {
-        val ivAlbum = itemView.findViewById<ImageView>(R.id.IvAlbum)
         Glide.with(itemView)
             .load(data.artwork.toUri())
             .placeholder(R.drawable.placeholder_album)
             .centerInside()
             .transform(
                 RoundedCorners(
-                    ivAlbum.context.resources.getInteger(R.integer.list_item_image_corner)
+                    binding.IvAlbum.context.resources.getInteger(R.integer.list_item_image_corner)
                 )
             )
-            .into(ivAlbum)
+            .into(binding.IvAlbum)
 
-        val tvTrackAuthor = itemView.findViewById<TextView>(R.id.TvTrackAuthor)
-        tvTrackAuthor.text = cutIfRequired(data.artistName)
-
-        val tvTrackName = itemView.findViewById<TextView>(R.id.TvTrackName)
-        tvTrackName.text = cutIfRequired(data.trackName)
-
-        val tvTrackLength = itemView.findViewById<TextView>(R.id.TvTrackLength)
-        tvTrackLength.text = data.trackTime
+        binding.TvTrackAuthor.text = cutIfRequired(data.artistName)
+        binding.TvTrackName.text = cutIfRequired(data.trackName)
+        binding.TvTrackLength.text = data.trackTime
     }
 
     private fun cutIfRequired(origin: String): String {

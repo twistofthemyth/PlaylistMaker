@@ -2,44 +2,43 @@ package com.practicum.playlistmaker.main.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
+import com.practicum.playlistmaker.databinding.ActivityTrackBinding
 import com.practicum.playlistmaker.main.ui.view_model.MainViewModel
 import com.practicum.playlistmaker.media.ui.view.MediaActivity
 import com.practicum.playlistmaker.search.ui.view.SearchActivity
-import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view.SettingsActivity
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setupViewModel()
+
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         setupInput()
         observeNavigation()
     }
 
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-    }
-
     private fun setupInput() {
-        findViewById<Button>(R.id.search_button).setOnClickListener {
+        binding.searchButton.setOnClickListener {
             viewModel.navigateTo(MainViewModel.NavigationDestination.Search)
         }
 
-        findViewById<Button>(R.id.media_button).setOnClickListener {
+        binding.mediaButton.setOnClickListener {
             viewModel.navigateTo(MainViewModel.NavigationDestination.Media)
         }
 
-        findViewById<Button>(R.id.settings_button).setOnClickListener {
+        binding.settingsButton.setOnClickListener {
             viewModel.navigateTo(MainViewModel.NavigationDestination.Settings)
         }
     }

@@ -2,14 +2,12 @@ package com.practicum.playlistmaker.settings.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
@@ -17,43 +15,43 @@ import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SettingsViewModel
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        setupViewModel()
+        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupToolbar()
         setupInput()
         observeNavigation()
         observeThemeChange()
     }
 
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
-    }
-
     private fun setupToolbar() {
-        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun setupInput() {
-        findViewById<TextView>(R.id.settings_share_tv).setOnClickListener {
+        binding.settingsShareTv.setOnClickListener {
             viewModel.navigateTo(
                 SettingsViewModel.NavigationDestination.Share
             )
         }
-        findViewById<TextView>(R.id.settings_support_tv).setOnClickListener {
+
+        binding.settingsSupportTv.setOnClickListener {
             viewModel.navigateTo(
                 SettingsViewModel.NavigationDestination.Support
             )
         }
-        findViewById<TextView>(R.id.settings_agreement_tv).setOnClickListener {
+
+        binding.settingsAgreementTv.setOnClickListener {
             viewModel.navigateTo(
                 SettingsViewModel.NavigationDestination.Agreement
             )
         }
 
-        findViewById<SwitchMaterial>(R.id.settings_theme_button).apply {
+        binding.settingsThemeButton.apply {
             isChecked = viewModel.getScreenState().value?.theme == AppStyle.DARK
             setOnCheckedChangeListener { _, isChecked ->
                 handler.postDelayed(

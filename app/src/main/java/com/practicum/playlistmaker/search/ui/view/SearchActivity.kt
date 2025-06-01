@@ -3,38 +3,34 @@ package com.practicum.playlistmaker.search.ui.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.view.TrackActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SearchViewModel
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var searchAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        setupRecyclerViews()
-        setupSearchInput()
+        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         setupToolbar()
+        setupSearchInput()
+        setupRecyclerViews()
         setupViewModel()
         observeNavigation()
     }
@@ -45,7 +41,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
         viewModel.getScreenState().observe(this) { screenState ->
             when (screenState) {
                 is SearchViewModel.SearchViewState.Loading -> {
@@ -97,19 +92,19 @@ class SearchActivity : AppCompatActivity() {
         searchAdapter = TrackListAdapter { track -> clickTrack(track) }
         searchHistoryAdapter = TrackListAdapter { track -> clickTrack(track) }
 
-        findViewById<RecyclerView>(R.id.RvSearchResult).apply {
+        binding.RvSearchResult.apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
 
-        findViewById<RecyclerView>(R.id.RvSearchHistory).apply {
+        binding.RvSearchHistory.apply {
             adapter = searchHistoryAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
     }
 
     private fun setupSearchInput() {
-        val searchInput = findViewById<EditText>(R.id.search_et).apply {
+        binding.searchEt.apply {
             doOnTextChanged { text, _, _, _ ->
                 if (text?.isEmpty() != false) {
                     hideClearQueryButton()
@@ -126,65 +121,57 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.error_update_btn).apply {
-            setOnClickListener { viewModel.repeatSearch() }
-        }
-
-        findViewById<Button>(R.id.clear_history_btn).apply {
-            setOnClickListener { viewModel.cleanHistory() }
-        }
-
-        findViewById<ImageView>(R.id.clear_search_iv).apply {
-            setOnClickListener { searchInput.setText("") }
-        }
+        binding.errorUpdateBtn.setOnClickListener { viewModel.repeatSearch() }
+        binding.clearHistoryBtn.setOnClickListener { viewModel.cleanHistory() }
+        binding.clearSearchIv.setOnClickListener { binding.searchEt.setText("") }
     }
 
     private fun setupToolbar() {
-        findViewById<Toolbar>(R.id.toolbar).apply { setNavigationOnClickListener { finish() } }
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun showLoading() {
-        findViewById<ProgressBar>(R.id.search_pb).visibility = View.VISIBLE
+        binding.searchPb.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        findViewById<ProgressBar>(R.id.search_pb).visibility = View.GONE
+        binding.searchPb.visibility = View.GONE
     }
 
     private fun showNetworkError() {
-        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_net_error)
-        findViewById<TextView>(R.id.error_tv).setText(R.string.net_error)
-        findViewById<Button>(R.id.error_update_btn).visibility = View.VISIBLE
-        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
+        binding.errorIv.setImageResource(R.drawable.placeholder_net_error)
+        binding.errorTv.setText(R.string.net_error)
+        binding.errorUpdateBtn.visibility = View.VISIBLE
+        binding.errorLl.visibility = View.VISIBLE
     }
 
     private fun showNotFoundError() {
-        findViewById<ImageView>(R.id.error_iv).setImageResource(R.drawable.placeholder_not_found)
-        findViewById<TextView>(R.id.error_tv).setText(R.string.not_found)
-        findViewById<Button>(R.id.error_update_btn).visibility = View.GONE
-        findViewById<LinearLayout>(R.id.error_ll).visibility = View.VISIBLE
+        binding.errorIv.setImageResource(R.drawable.placeholder_not_found)
+        binding.errorTv.setText(R.string.not_found)
+        binding.errorUpdateBtn.visibility = View.GONE
+        binding.errorLl.visibility = View.VISIBLE
     }
 
     private fun hideErrors() {
-        findViewById<LinearLayout>(R.id.error_ll).visibility = View.GONE
+        binding.errorLl.visibility = View.GONE
     }
 
     private fun showTracks(tracks: List<Track>) {
         searchAdapter.updateList(tracks)
-        findViewById<RecyclerView>(R.id.RvSearchResult).visibility = View.VISIBLE
+        binding.RvSearchResult.visibility = View.VISIBLE
     }
 
     private fun hideTracks() {
         searchAdapter.updateList(listOf())
-        findViewById<RecyclerView>(R.id.RvSearchResult).visibility = View.GONE
+        binding.RvSearchResult.visibility = View.GONE
     }
 
     private fun showTrackHistory() {
-        findViewById<EditText>(R.id.search_et).apply {
+        binding.searchEt.apply {
             setText("")
             clearFocus()
         }
-        findViewById<LinearLayout>(R.id.search_history_ll).visibility = View.VISIBLE
+        binding.searchHistoryLl.visibility = View.VISIBLE
     }
 
     private fun updateTrackHistory(tracks: List<Track>) {
@@ -192,15 +179,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideTrackHistory() {
-        findViewById<LinearLayout>(R.id.search_history_ll).visibility = View.GONE
+        binding.searchHistoryLl.visibility = View.GONE
     }
 
     private fun showClearQueryButton() {
-        findViewById<ImageView>(R.id.clear_search_iv).visibility = View.VISIBLE
+        binding.clearSearchIv.visibility = View.VISIBLE
     }
 
     private fun hideClearQueryButton() {
-        findViewById<ImageView>(R.id.clear_search_iv).visibility = View.GONE
+        binding.clearSearchIv.visibility = View.GONE
     }
 
     private fun clickTrack(track: Track) {
