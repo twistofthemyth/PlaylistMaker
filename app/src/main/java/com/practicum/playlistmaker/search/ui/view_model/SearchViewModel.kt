@@ -50,10 +50,6 @@ class SearchViewModel() : ViewModel() {
         }
     }
 
-    fun resume() {
-        screenState.postValue(setUpDefaultState())
-    }
-
     fun search(query: String) {
         latestSearchQuery = query
         handler.removeCallbacks(searchRunnable)

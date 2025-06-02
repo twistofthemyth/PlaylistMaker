@@ -37,10 +37,6 @@ class SearchActivity : AppCompatActivity() {
         observeNavigation()
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        viewModel.resume()
-    }
 
     private fun setupViewModel() {
         viewModel.getScreenState().observe(this) { screenState ->
