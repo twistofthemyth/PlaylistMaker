@@ -21,8 +21,7 @@ class TrackActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val track = Gson().fromJson(intent.getStringExtra("track"), Track::class.java)
-        viewModel = TrackViewModel.getViewModelFactory(track, application)
-            .create(TrackViewModel::class.java)
+        viewModel = TrackViewModel.getViewModelFactory(track).create(TrackViewModel::class.java)
 
         binding = ActivityTrackBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -1,18 +1,16 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
-import android.app.Application
-import android.content.Context.MODE_PRIVATE
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import com.practicum.playlistmaker.util.event.Event
 
-class SearchViewModel(application: Application) : AndroidViewModel(application) {
+class SearchViewModel() : ViewModel() {
 
     private val searchInteractor = Creator.provideSearchInteractor()
     private val searchHistoryInteractor = Creator.provideSearchHistoryInteractor()

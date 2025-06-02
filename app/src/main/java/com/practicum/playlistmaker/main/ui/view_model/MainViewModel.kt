@@ -1,12 +1,11 @@
 package com.practicum.playlistmaker.main.ui.view_model
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.util.event.Event
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel() : ViewModel() {
     private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
 
     fun getNavigationEvent(): LiveData<Event<NavigationDestination>> = navigationEvent

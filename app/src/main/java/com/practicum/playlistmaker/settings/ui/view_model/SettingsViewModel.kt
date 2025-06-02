@@ -1,15 +1,13 @@
 package com.practicum.playlistmaker.settings.ui.view_model
 
-import android.app.Application
-import android.content.Context.MODE_PRIVATE
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.event.Event
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
+class SettingsViewModel() : ViewModel() {
 
     private val settingsInteractor = Creator.provideSettingsInteractor()
     private val screenState = MutableLiveData(getDefaultSettings())
