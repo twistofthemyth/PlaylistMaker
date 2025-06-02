@@ -9,10 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.function.Consumer
 
-class TrackPlayerImpl(
-    private val url: String,
-    private val positionConsumer: Consumer<String>
-) : TrackPlayer {
+class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
     private val mediaPlayer = MediaPlayer()
     private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
@@ -20,7 +17,7 @@ class TrackPlayerImpl(
     private val updateRunnable = object : Runnable {
         override fun run() {
             if (playerState == PlayerState.STATE_PLAYING) {
-                positionConsumer.accept(getPosition())
+                onPositionChangedListener.accept(this@TrackPlayerImpl)
                 updateHandler.postDelayed(this, 300)
             } else {
                 updateHandler.removeCallbacks(this)
@@ -28,12 +25,14 @@ class TrackPlayerImpl(
         }
     }
 
+    lateinit var onPositionChangedListener: Consumer<TrackPlayer>
+    lateinit var onCompleteListener: Consumer<TrackPlayer>
+
     private var playerState = PlayerState.STATE_DEFAULT
 
     override fun getState() = playerState
 
     override fun preparePlayer() {
-        positionConsumer.accept(getStartPosition())
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -42,7 +41,8 @@ class TrackPlayerImpl(
 
         mediaPlayer.setOnCompletionListener {
             playerState = PlayerState.STATE_PREPARED
-            positionConsumer.accept(getStartPosition())
+            onPositionChangedListener.accept(this)
+            onCompleteListener.accept(this)
         }
     }
 
@@ -79,11 +79,10 @@ class TrackPlayerImpl(
     }
 
     private fun getCurrentPosition(): Int {
-        return mediaPlayer.currentPosition
-    }
-
-    private fun getStartPosition(): String {
-        return timeFormat.format(0)
+        return when(getState()) {
+            PlayerState.STATE_DEFAULT,PlayerState.STATE_PREPARED -> 0
+            PlayerState.STATE_PLAYING,PlayerState.STATE_PAUSED  -> mediaPlayer.currentPosition
+        }
     }
 
     private fun startCurrentPositionUpdater() {

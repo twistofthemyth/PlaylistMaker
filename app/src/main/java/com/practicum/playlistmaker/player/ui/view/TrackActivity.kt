@@ -9,7 +9,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityTrackBinding
-import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 
@@ -29,7 +28,6 @@ class TrackActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
-        setupTrackInfo()
         setupPlayer()
     }
 
@@ -44,16 +42,10 @@ class TrackActivity : AppCompatActivity() {
     }
 
     private fun setupPlayer() {
-        viewModel.getPlayStatus().observe(this) {
+        viewModel.getNewScreenState().observe(this){
             binding.timeTv.text = it.position
-            binding.playTrackIv.apply {
-                when (it.playerState) {
-                    PlayerState.STATE_PLAYING -> setImageResource(R.drawable.button_pause_track)
-                    PlayerState.STATE_DEFAULT,
-                    PlayerState.STATE_PREPARED,
-                    PlayerState.STATE_PAUSED -> setImageResource(R.drawable.button_play_track)
-                }
-            }
+            binding.playTrackIv.setImageResource(it.iconResId)
+            setupTrackInfo(it.track)
         }
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
     }
@@ -62,40 +54,32 @@ class TrackActivity : AppCompatActivity() {
         binding.arrowBackIv.setOnClickListener { finish() }
     }
 
-    private fun setupTrackInfo() {
-        viewModel.getScreenState().observe(this) {
-            when (it) {
-                is TrackViewModel.TrackScreenState.Content -> {
-                    val track = it.track
-
-                    if (track.collectionName.isEmpty()) {
-                        binding.albumNameTv.visibility = View.GONE
-                        binding.albumNameValueTv.visibility = View.GONE
-                    } else {
-                        binding.albumNameTv.text = track.collectionName
-                    }
-
-                    binding.albumIv.apply {
-                        Glide.with(this.rootView)
-                            .load(track.coverArtwork.toUri())
-                            .placeholder(R.drawable.placeholder_album)
-                            .centerInside()
-                            .transform(RoundedCorners(resources.getInteger(R.integer.album_image_corner)))
-                            .into(this)
-                    }
-
-                    binding.trackNameTv.text = track.trackName
-                    binding.authorNameTv.text = track.artistName
-                    binding.trackYearValueTv.text = track.releaseDate.replaceRange(
-                        track.releaseDate.indexOf("-"),
-                        track.releaseDate.length,
-                        ""
-                    )
-                    binding.trackGenreValueTv.text = track.primaryGenreName
-                    binding.trackCountryValueTv.text = track.country
-                    binding.trackDurationValueTv.text = track.trackTime
-                }
+    private fun setupTrackInfo(track: Track) {
+            if (track.collectionName.isEmpty()) {
+                binding.albumNameTv.visibility = View.GONE
+                binding.albumNameValueTv.visibility = View.GONE
+            } else {
+                binding.albumNameValueTv.text = track.collectionName
             }
-        }
+
+            binding.albumIv.apply {
+                Glide.with(this.rootView)
+                    .load(track.coverArtwork.toUri())
+                    .placeholder(R.drawable.placeholder_album)
+                    .centerInside()
+                    .transform(RoundedCorners(resources.getInteger(R.integer.album_image_corner)))
+                    .into(this)
+            }
+
+            binding.trackNameTv.text = track.trackName
+            binding.authorNameTv.text = track.artistName
+            binding.trackYearValueTv.text = track.releaseDate.replaceRange(
+                track.releaseDate.indexOf("-"),
+                track.releaseDate.length,
+                ""
+            )
+            binding.trackGenreValueTv.text = track.primaryGenreName
+            binding.trackCountryValueTv.text = track.country
+            binding.trackDurationValueTv.text = track.trackTime
     }
 }

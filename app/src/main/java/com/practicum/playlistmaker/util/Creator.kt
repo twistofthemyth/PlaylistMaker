@@ -56,8 +56,13 @@ object Creator {
         return SettingsInteractorImpl(provideSettingsRepo())
     }
 
-    fun provideTrackPlayer(track: Track, positionConsumer: Consumer<String>): TrackPlayer {
-        return TrackPlayerImpl(track.previewUrl, positionConsumer)
+    fun provideTrackPlayer(track: Track,
+                           onPositionChangedListener: Consumer<TrackPlayer>,
+                           onCompleteListener: Consumer<TrackPlayer>): TrackPlayer {
+        var player =  TrackPlayerImpl(track.previewUrl)
+        player.onPositionChangedListener = onPositionChangedListener
+        player.onCompleteListener = onCompleteListener
+        return player
     }
 
     private fun provideSharedPref() : SharedPreferences {
