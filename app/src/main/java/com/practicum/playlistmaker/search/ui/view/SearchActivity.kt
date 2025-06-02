@@ -3,6 +3,7 @@ package com.practicum.playlistmaker.search.ui.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
@@ -58,27 +59,30 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 is SearchViewModel.SearchViewState.ShowHistory -> {
+                    binding.searchEt.apply {
+                        setText("")
+                        hideKeyboard(this)
+                    }
+                    hideTracks()
                     if (screenState.tracks.isEmpty()) {
                         hideTrackHistory()
+                        showNotFoundError()
                     } else {
+                        hideErrors()
                         updateTrackHistory(screenState.tracks)
                         showTrackHistory()
                     }
-                    hideLoading()
-                    hideErrors()
-                    hideTracks()
-                    hideClearQueryButton()
                 }
 
                 is SearchViewModel.SearchViewState.ShowSearchResult -> {
+                    hideLoading()
+                    hideErrors()
+                    hideTrackHistory()
                     if (screenState.tracks.isEmpty()) {
                         showNotFoundError()
                     } else {
                         showTracks(screenState.tracks)
                     }
-                    hideLoading()
-                    hideErrors()
-                    hideTrackHistory()
                 }
 
                 is SearchViewModel.SearchViewState.InitedSearchInput -> {
@@ -123,7 +127,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.errorUpdateBtn.setOnClickListener { viewModel.repeatSearch() }
         binding.clearHistoryBtn.setOnClickListener { viewModel.cleanHistory() }
-        binding.clearSearchIv.setOnClickListener { binding.searchEt.setText("") }
+        binding.clearSearchIv.setOnClickListener { viewModel.cleanSearchQuery() }
     }
 
     private fun setupToolbar() {
@@ -204,6 +208,11 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 }

@@ -33,6 +33,11 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun cleanSearchQuery() {
+        val history = searchHistoryInteractor.getSearchHistory()
+        screenState.postValue(SearchViewState.ShowHistory(history.records))
+    }
+
     fun cleanHistory() {
         screenState.postValue(SearchViewState.Loading())
         latestSearchQuery = ""
@@ -59,7 +64,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun setUpSearchRunnable(): Runnable {
+    private fun setUpSearchRunnable(): Runnable {
         return Runnable {
             screenState.postValue(SearchViewState.Loading())
             searchInteractor.searchTracks(latestSearchQuery.toString()) {
