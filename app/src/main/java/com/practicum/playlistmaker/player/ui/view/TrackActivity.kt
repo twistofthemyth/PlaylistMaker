@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
@@ -55,8 +56,8 @@ class TrackActivity : AppCompatActivity() {
 
     private fun setupTrackInfo(track: Track) {
             if (track.collectionName.isEmpty()) {
-                binding.albumNameTv.visibility = View.GONE
-                binding.albumNameValueTv.visibility = View.GONE
+                binding.albumNameTv.isVisible = false
+                binding.albumNameValueTv.isVisible = false
             } else {
                 binding.albumNameValueTv.text = track.collectionName
             }

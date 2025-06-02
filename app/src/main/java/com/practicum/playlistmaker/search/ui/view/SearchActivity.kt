@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -135,39 +136,39 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showLoading() {
-        binding.searchPb.visibility = View.VISIBLE
+        binding.searchPb.isVisible = true
     }
 
     private fun hideLoading() {
-        binding.searchPb.visibility = View.GONE
+        binding.searchPb.isVisible = false
     }
 
     private fun showNetworkError() {
         binding.errorIv.setImageResource(R.drawable.placeholder_net_error)
         binding.errorTv.setText(R.string.net_error)
-        binding.errorUpdateBtn.visibility = View.VISIBLE
-        binding.errorLl.visibility = View.VISIBLE
+        binding.errorUpdateBtn.isVisible = true
+        binding.errorLl.isVisible = true
     }
 
     private fun showNotFoundError() {
         binding.errorIv.setImageResource(R.drawable.placeholder_not_found)
         binding.errorTv.setText(R.string.not_found)
-        binding.errorUpdateBtn.visibility = View.GONE
-        binding.errorLl.visibility = View.VISIBLE
+        binding.errorUpdateBtn.isVisible = false
+        binding.errorLl.isVisible = true
     }
 
     private fun hideErrors() {
-        binding.errorLl.visibility = View.GONE
+        binding.errorLl.isVisible = false
     }
 
     private fun showTracks(tracks: List<Track>) {
         searchAdapter.updateList(tracks)
-        binding.RvSearchResult.visibility = View.VISIBLE
+        binding.RvSearchResult.isVisible = true
     }
 
     private fun hideTracks() {
         searchAdapter.updateList(listOf())
-        binding.RvSearchResult.visibility = View.GONE
+        binding.RvSearchResult.isVisible = false
     }
 
     private fun showTrackHistory() {
@@ -175,7 +176,7 @@ class SearchActivity : AppCompatActivity() {
             setText("")
             clearFocus()
         }
-        binding.searchHistoryLl.visibility = View.VISIBLE
+        binding.searchHistoryLl.isVisible = true
     }
 
     private fun updateTrackHistory(tracks: List<Track>) {
@@ -183,15 +184,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideTrackHistory() {
-        binding.searchHistoryLl.visibility = View.GONE
+        binding.searchHistoryLl.isVisible = false
     }
 
     private fun showClearQueryButton() {
-        binding.clearSearchIv.visibility = View.VISIBLE
+        binding.clearSearchIv.isVisible = true
     }
 
     private fun hideClearQueryButton() {
-        binding.clearSearchIv.visibility = View.GONE
+        binding.clearSearchIv.isVisible = false
     }
 
     private fun clickTrack(track: Track) {
