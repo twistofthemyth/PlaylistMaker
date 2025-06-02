@@ -67,7 +67,7 @@ class SearchViewModel() : ViewModel() {
                     is Resource.ServerError<*> -> SearchViewState.NetworkError()
                     is Resource.Success<*> -> SearchViewState.ShowSearchResult(it.data as List<Track>)
                 }
-                screenState.postValue(newState);
+                screenState.postValue(newState)
             }
         }
     }

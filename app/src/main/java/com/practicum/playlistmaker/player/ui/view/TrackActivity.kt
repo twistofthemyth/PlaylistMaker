@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.player.ui.view
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
