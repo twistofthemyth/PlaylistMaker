@@ -13,13 +13,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        settingsInteractor = Creator.provideSettingsInteractor(
-            getSharedPreferences(
-                "SettingsViewMode",
-                MODE_PRIVATE
-            )
-        )
+        Creator.init(this)
 
+        settingsInteractor = Creator.provideSettingsInteractor()
         when (settingsInteractor.getAppTheme()) {
             AppStyle.LIGHT -> setLightTheme()
             AppStyle.DARK -> setDarkTheme()

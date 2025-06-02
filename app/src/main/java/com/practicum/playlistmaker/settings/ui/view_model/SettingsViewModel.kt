@@ -11,14 +11,8 @@ import com.practicum.playlistmaker.util.event.Event
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val settingsInteractor = Creator.provideSettingsInteractor(
-        application.getSharedPreferences(
-            "SettingsViewMode",
-            MODE_PRIVATE
-        )
-    )
-
-    private val screenState = MutableLiveData<SettingsState>(getDefaultSettings())
+    private val settingsInteractor = Creator.provideSettingsInteractor()
+    private val screenState = MutableLiveData(getDefaultSettings())
     private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
     private val changeThemeEvent = MutableLiveData<Event<AppStyle>>()
 

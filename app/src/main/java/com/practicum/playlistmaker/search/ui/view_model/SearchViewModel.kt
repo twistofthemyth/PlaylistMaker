@@ -14,13 +14,8 @@ import com.practicum.playlistmaker.util.event.Event
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val searchInteractor = Creator.provideSearchInteractor(getApplication())
-    private val searchHistoryInteractor = Creator.provideSearchHistoryInteractor(
-        application.getSharedPreferences(
-            "SearchViewModel",
-            MODE_PRIVATE
-        )
-    )
+    private val searchInteractor = Creator.provideSearchInteractor()
+    private val searchHistoryInteractor = Creator.provideSearchHistoryInteractor()
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = setUpSearchRunnable()
     private val screenState = MutableLiveData(setUpDefaultState())

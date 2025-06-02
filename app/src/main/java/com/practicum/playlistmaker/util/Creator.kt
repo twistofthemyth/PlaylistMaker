@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.util
 
+import android.app.Application
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import com.practicum.playlistmaker.player.data.TrackPlayerImpl
@@ -23,33 +25,42 @@ import java.util.function.Consumer
 
 object Creator {
 
-    fun provideSearchRepo(context: Context): SearchRepository {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private lateinit var app: Application
+
+    fun init(app: Application) {
+        this.app = app
+    }
+
+    fun provideSearchRepo(): SearchRepository {
+        val connectivityManager = app.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return ITunesSearchRepository(ITunesClient(connectivityManager))
     }
 
-    fun provideSettingsRepo(sharedPref: SharedPreferences): SettingsRepository {
-        return LocalSettingsRepository(sharedPref)
+    fun provideSettingsRepo(): SettingsRepository {
+        return LocalSettingsRepository(provideSharedPref())
     }
 
-    fun provideHistoryRepo(sharedPref: SharedPreferences): HistoryRepository {
-        return LocalHistoryRepository(sharedPref)
+    fun provideHistoryRepo(): HistoryRepository {
+        return LocalHistoryRepository(provideSharedPref())
     }
 
-    fun provideSearchHistoryInteractor(sharedPref: SharedPreferences): SearchHistoryInteractor {
-        return SearchHistoryInteractorImpl(provideHistoryRepo(sharedPref))
+    fun provideSearchHistoryInteractor(): SearchHistoryInteractor {
+        return SearchHistoryInteractorImpl(provideHistoryRepo())
     }
 
-    fun provideSearchInteractor(context: Context): SearchInteractor {
-        return SearchInteractorImpl(provideSearchRepo(context))
+    fun provideSearchInteractor(): SearchInteractor {
+        return SearchInteractorImpl(provideSearchRepo())
     }
 
-    fun provideSettingsInteractor(sharedPref: SharedPreferences): SettingsInteractor {
-        return SettingsInteractorImpl(provideSettingsRepo(sharedPref))
+    fun provideSettingsInteractor(): SettingsInteractor {
+        return SettingsInteractorImpl(provideSettingsRepo())
     }
 
     fun provideTrackPlayer(track: Track, positionConsumer: Consumer<String>): TrackPlayer {
         return TrackPlayerImpl(track.previewUrl, positionConsumer)
+    }
+
+    private fun provideSharedPref() : SharedPreferences {
+        return app.getSharedPreferences("Creator", MODE_PRIVATE)
     }
 }
