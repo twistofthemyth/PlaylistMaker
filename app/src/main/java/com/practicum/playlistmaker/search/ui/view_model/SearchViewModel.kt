@@ -5,15 +5,17 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import com.practicum.playlistmaker.util.event.Event
 
-class SearchViewModel() : ViewModel() {
+class SearchViewModel(
+    val searchInteractor: SearchInteractor,
+    val searchHistoryInteractor: SearchHistoryInteractor
+) : ViewModel() {
 
-    private val searchInteractor = Creator.provideSearchInteractor()
-    private val searchHistoryInteractor = Creator.provideSearchHistoryInteractor()
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = setUpSearchRunnable()
     private val screenState = MutableLiveData(setUpDefaultState())

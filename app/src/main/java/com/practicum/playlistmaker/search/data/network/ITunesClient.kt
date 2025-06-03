@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.search.data.network
 
+import android.content.Context
 import android.net.ConnectivityManager
 import com.practicum.playlistmaker.search.data.dto.SearchSongRequest
 import com.practicum.playlistmaker.util.data_utils.AbstractNetworkClient
@@ -8,8 +9,8 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ITunesClient(connectivityManager: ConnectivityManager) : AbstractNetworkClient(
-    connectivityManager
+class ITunesClient(context: Context) : AbstractNetworkClient(
+    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 ) {
 
     private val url = "https://itunes.apple.com"

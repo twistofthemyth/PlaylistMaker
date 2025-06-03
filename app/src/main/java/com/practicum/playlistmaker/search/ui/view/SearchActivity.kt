@@ -7,7 +7,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
@@ -16,17 +15,18 @@ import com.practicum.playlistmaker.player.ui.view.TrackActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import org.koin.android.ext.android.inject
 
 class SearchActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by inject()
     private lateinit var binding: ActivitySearchBinding
     private lateinit var searchAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
+
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

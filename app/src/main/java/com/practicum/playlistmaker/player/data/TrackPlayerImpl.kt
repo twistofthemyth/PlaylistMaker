@@ -17,7 +17,7 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
     private val updateRunnable = object : Runnable {
         override fun run() {
             if (playerState == PlayerState.STATE_PLAYING) {
-                onPositionChangedListener.accept(this@TrackPlayerImpl)
+                onPositionChangedListener?.accept(this@TrackPlayerImpl)
                 updateHandler.postDelayed(this, 300)
             } else {
                 updateHandler.removeCallbacks(this)
@@ -25,8 +25,8 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
         }
     }
 
-    lateinit var onPositionChangedListener: Consumer<TrackPlayer>
-    lateinit var onCompleteListener: Consumer<TrackPlayer>
+    private var onPositionChangedListener: Consumer<TrackPlayer>? = null
+    private var onCompleteListener: Consumer<TrackPlayer>? = null
 
     private var playerState = PlayerState.STATE_DEFAULT
 
@@ -41,8 +41,8 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
         mediaPlayer.setOnCompletionListener {
             playerState = PlayerState.STATE_PREPARED
-            onPositionChangedListener.accept(this)
-            onCompleteListener.accept(this)
+            onPositionChangedListener?.accept(this)
+            onCompleteListener?.accept(this)
         }
     }
 
@@ -76,6 +76,14 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
     override fun getPosition(): String {
         return timeFormat.format(getCurrentPosition())
+    }
+
+    override fun setOnPositionChangedListener(listener: Consumer<TrackPlayer>) {
+        onPositionChangedListener = listener
+    }
+
+    override fun setOnCompleteListener(listener: Consumer<TrackPlayer>) {
+        onCompleteListener = listener
     }
 
     private fun getCurrentPosition(): Int {
