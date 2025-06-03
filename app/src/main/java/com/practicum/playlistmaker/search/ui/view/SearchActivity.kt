@@ -61,11 +61,10 @@ class SearchActivity : AppCompatActivity() {
                         hideKeyboard(this)
                     }
                     hideTracks()
+                    hideErrors()
                     if (screenState.tracks.isEmpty()) {
                         hideTrackHistory()
-                        showNotFoundError()
                     } else {
-                        hideErrors()
                         updateTrackHistory(screenState.tracks)
                         showTrackHistory()
                     }
