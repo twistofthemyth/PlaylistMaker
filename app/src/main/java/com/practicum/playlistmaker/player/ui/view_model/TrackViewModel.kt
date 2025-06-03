@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.PlayerState
+import com.practicum.playlistmaker.player.domain.TrackPlayer
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.Creator
+import java.util.function.Consumer
 
 class TrackViewModel(private val track: Track) : ViewModel() {
 
     private val screenState = MutableLiveData<ScreenState>()
-    private val trackPlayer = Creator.provideTrackPlayer(track,
-        onPositionChangedListener = { screenState.postValue(ScreenState.Playing(track, R.drawable.button_pause_track, it.getPosition()))},
-        onCompleteListener = { screenState.postValue(ScreenState.Playing(track, R.drawable.button_play_track, it.getPosition()))})
+    private val trackPlayer: TrackPlayer
 
     init {
+        trackPlayer = Creator.provideTrackPlayer(track, getPositionChangedListener(), getCompleteListener())
         trackPlayer.preparePlayer()
         screenState.postValue(ScreenState.Pause(track, R.drawable.button_play_track, trackPlayer.getPosition()))
     }
@@ -36,6 +37,14 @@ class TrackViewModel(private val track: Track) : ViewModel() {
 
     fun pausePlayer() {
         trackPlayer.stopPlayer()
+    }
+
+    private fun getPositionChangedListener(): Consumer<TrackPlayer> {
+        return Consumer<TrackPlayer> { screenState.postValue(ScreenState.Playing(track, R.drawable.button_pause_track, it.getPosition())) }
+    }
+
+    private fun getCompleteListener(): Consumer<TrackPlayer> {
+        return Consumer<TrackPlayer> {screenState.postValue(ScreenState.Playing(track, R.drawable.button_play_track, it.getPosition()))}
     }
 
     sealed interface ScreenState {
