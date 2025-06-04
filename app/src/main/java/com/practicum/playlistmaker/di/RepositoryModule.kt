@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
 import com.practicum.playlistmaker.search.domain.impl.SearchInteractorImpl
+import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.settings.data.LocalSettingsRepository
 import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
@@ -49,5 +50,9 @@ val repositoryModule = module {
 
     factory<TrackStorageInteractor> {
         TrackStorageInteractorImpl(get())
+    }
+
+    factory<Track>(qualifier = Qualifiers.trackForPlaying) {
+        get<TrackStorageInteractor>().getTrackForPlaying()
     }
 }

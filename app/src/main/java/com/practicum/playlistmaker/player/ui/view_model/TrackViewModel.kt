@@ -6,19 +6,16 @@ import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
-import com.practicum.playlistmaker.player.domain.api.TrackStorageInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import org.koin.core.component.KoinComponent
 import java.util.function.Consumer
 
-class TrackViewModel(private val trackPlayer: TrackPlayer,
-                     trackStorageInteractor: TrackStorageInteractor) : ViewModel(), KoinComponent {
+class TrackViewModel(private val track: Track,
+                     private val trackPlayer: TrackPlayer) : ViewModel(), KoinComponent {
 
     private val screenState = MutableLiveData<ScreenState>()
-    private lateinit var track: Track
 
     init {
-        track = trackStorageInteractor.getTrackForPlaying()
         trackPlayer.setOnPositionChangedListener(getPositionChangedListener())
         trackPlayer.setOnCompleteListener(getCompleteListener())
         trackPlayer.preparePlayer(track)
