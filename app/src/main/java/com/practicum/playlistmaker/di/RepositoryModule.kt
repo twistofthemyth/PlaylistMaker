@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.di
-import android.content.Context
+import com.practicum.playlistmaker.player.data.TrackPlayerRepositoryImpl
+import com.practicum.playlistmaker.player.domain.TrackStorageInteractorImpl
+import com.practicum.playlistmaker.player.domain.api.TrackPlayerRepository
+import com.practicum.playlistmaker.player.domain.api.TrackStorageInteractor
 import com.practicum.playlistmaker.search.data.ITunesSearchRepository
 import com.practicum.playlistmaker.search.data.LocalHistoryRepository
 import com.practicum.playlistmaker.search.domain.api.HistoryRepository
@@ -16,16 +19,20 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<SearchRepository> {
+    factory<SearchRepository> {
         ITunesSearchRepository(get())
     }
 
-    single<SettingsRepository> {
-        LocalSettingsRepository(get())
+    factory<SettingsRepository> {
+        LocalSettingsRepository(get(), get())
     }
 
-    single<HistoryRepository> {
-        LocalHistoryRepository(get())
+    factory<HistoryRepository> {
+        LocalHistoryRepository(get(), get())
+    }
+
+    factory<TrackPlayerRepository> {
+        TrackPlayerRepositoryImpl(get(), get())
     }
 
     factory<SearchHistoryInteractor> {
@@ -40,8 +47,7 @@ val repositoryModule = module {
         SettingsInteractorImpl(get())
     }
 
-    single {
-        val context = get<Context>()
-        context.getSharedPreferences("PM_REPOSITORY_MODULE", Context.MODE_PRIVATE)
+    factory<TrackStorageInteractor> {
+        TrackStorageInteractorImpl(get())
     }
 }

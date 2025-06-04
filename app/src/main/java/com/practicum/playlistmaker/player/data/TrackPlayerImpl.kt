@@ -4,14 +4,14 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.player.domain.PlayerState
-import com.practicum.playlistmaker.player.domain.TrackPlayer
+import com.practicum.playlistmaker.player.domain.api.TrackPlayer
+import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.function.Consumer
 
-class TrackPlayerImpl(private val url: String) : TrackPlayer {
+class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
 
-    private val mediaPlayer = MediaPlayer()
     private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
     private val updateHandler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
@@ -32,8 +32,8 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
     override fun getState() = playerState
 
-    override fun preparePlayer() {
-        mediaPlayer.setDataSource(url)
+    override fun preparePlayer(track: Track) {
+        mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             playerState = PlayerState.STATE_PREPARED

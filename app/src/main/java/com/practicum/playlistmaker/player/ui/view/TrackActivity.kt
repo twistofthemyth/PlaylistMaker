@@ -11,20 +11,17 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityTrackBinding
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.parameter.parametersOf
 
 class TrackActivity : AppCompatActivity(), KoinComponent {
 
-    private lateinit var viewModel: TrackViewModel
+    private val viewModel: TrackViewModel by viewModel()
     private lateinit var binding: ActivityTrackBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val track = Gson().fromJson(intent.getStringExtra("track"), Track::class.java)
-        viewModel = getKoin().get(null) { parametersOf(track) }
-
         binding = ActivityTrackBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

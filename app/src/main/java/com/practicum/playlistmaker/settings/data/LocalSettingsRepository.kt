@@ -9,7 +9,7 @@ import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import java.lang.reflect.Type
 
-class LocalSettingsRepository(private val sharedPreferences: SharedPreferences) : SettingsRepository {
+class LocalSettingsRepository(private val sharedPreferences: SharedPreferences, private val gson: Gson) : SettingsRepository {
 
     private val cachedSettings = loadSettings()
 
@@ -40,7 +40,6 @@ class LocalSettingsRepository(private val sharedPreferences: SharedPreferences) 
 
 
     companion object {
-        val gson = Gson()
         const val SETTINGS_PREF_KEY = "user_settings"
     }
 }

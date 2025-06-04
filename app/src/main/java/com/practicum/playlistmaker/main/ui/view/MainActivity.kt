@@ -9,11 +9,11 @@ import com.practicum.playlistmaker.media.ui.view.MediaActivity
 import com.practicum.playlistmaker.search.ui.view.SearchActivity
 import com.practicum.playlistmaker.settings.ui.view.SettingsActivity
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by inject()
+    private val viewModel: MainViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
