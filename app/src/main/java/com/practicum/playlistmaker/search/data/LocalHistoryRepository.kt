@@ -12,7 +12,10 @@ import com.practicum.playlistmaker.search.domain.models.SearchHistory
 import com.practicum.playlistmaker.search.domain.models.Track
 import java.lang.reflect.Type
 
-class LocalHistoryRepository(private val sharedPreferences: SharedPreferences) : HistoryRepository {
+class LocalHistoryRepository(
+    private val sharedPreferences: SharedPreferences,
+    private val gson: Gson) : HistoryRepository {
+
     override fun getSearchHistory(): SearchHistory {
         val query = loadLastQuery()
         val records = loadTrackHistory().map { convertHistoryTrackToTrack(it) }
@@ -55,9 +58,7 @@ class LocalHistoryRepository(private val sharedPreferences: SharedPreferences) :
     }
 
     companion object {
-        val gson = Gson()
         const val HISTORY_PREF_KEY = "track_history"
         const val HISTORY_QUERY_PREF_KEY = "search_input"
     }
-
 }

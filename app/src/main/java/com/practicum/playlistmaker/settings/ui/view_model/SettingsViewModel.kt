@@ -3,13 +3,14 @@ package com.practicum.playlistmaker.settings.ui.view_model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
-import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.event.Event
 
-class SettingsViewModel() : ViewModel() {
+class SettingsViewModel(
+    val settingsInteractor: SettingsInteractor
+) : ViewModel() {
 
-    private val settingsInteractor = Creator.provideSettingsInteractor()
     private val screenState = MutableLiveData(getDefaultSettings())
     private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
     private val changeThemeEvent = MutableLiveData<Event<AppStyle>>()

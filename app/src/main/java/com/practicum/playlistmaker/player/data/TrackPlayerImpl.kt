@@ -4,20 +4,20 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.player.domain.PlayerState
-import com.practicum.playlistmaker.player.domain.TrackPlayer
+import com.practicum.playlistmaker.player.domain.api.TrackPlayer
+import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.function.Consumer
 
-class TrackPlayerImpl(private val url: String) : TrackPlayer {
+class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
 
-    private val mediaPlayer = MediaPlayer()
     private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
     private val updateHandler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
             if (playerState == PlayerState.STATE_PLAYING) {
-                onPositionChangedListener.accept(this@TrackPlayerImpl)
+                onPositionChangedListener?.accept(this@TrackPlayerImpl)
                 updateHandler.postDelayed(this, 300)
             } else {
                 updateHandler.removeCallbacks(this)
@@ -25,15 +25,15 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
         }
     }
 
-    lateinit var onPositionChangedListener: Consumer<TrackPlayer>
-    lateinit var onCompleteListener: Consumer<TrackPlayer>
+    private var onPositionChangedListener: Consumer<TrackPlayer>? = null
+    private var onCompleteListener: Consumer<TrackPlayer>? = null
 
     private var playerState = PlayerState.STATE_DEFAULT
 
     override fun getState() = playerState
 
-    override fun preparePlayer() {
-        mediaPlayer.setDataSource(url)
+    override fun preparePlayer(track: Track) {
+        mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             playerState = PlayerState.STATE_PREPARED
@@ -41,8 +41,8 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
         mediaPlayer.setOnCompletionListener {
             playerState = PlayerState.STATE_PREPARED
-            onPositionChangedListener.accept(this)
-            onCompleteListener.accept(this)
+            onPositionChangedListener?.accept(this)
+            onCompleteListener?.accept(this)
         }
     }
 
@@ -76,6 +76,14 @@ class TrackPlayerImpl(private val url: String) : TrackPlayer {
 
     override fun getPosition(): String {
         return timeFormat.format(getCurrentPosition())
+    }
+
+    override fun setOnPositionChangedListener(listener: Consumer<TrackPlayer>) {
+        onPositionChangedListener = listener
+    }
+
+    override fun setOnCompleteListener(listener: Consumer<TrackPlayer>) {
+        onCompleteListener = listener
     }
 
     private fun getCurrentPosition(): Int {
