@@ -24,6 +24,7 @@
         />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        style="@style/PM.Nav"
         android:background="@color/background"
         android:id="@+id/nav_view"
         android:layout_width="0dp"
