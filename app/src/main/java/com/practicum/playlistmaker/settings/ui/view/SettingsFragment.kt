@@ -2,26 +2,37 @@ package com.practicum.playlistmaker.settings.ui.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
-    private val viewModel: SettingsViewModel by viewModel()
+    private val viewModel: SettingsViewModel by activityViewModel<SettingsViewModel>()
     private lateinit var binding: ActivitySettingsBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = ActivitySettingsBinding.inflate(inflater)
+        return binding.root
+    }
 
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupToolbar()
         setupInput()
         observeNavigation()
@@ -29,7 +40,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.toolbar.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun setupInput() {
@@ -63,16 +76,16 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun observeThemeChange() {
-        viewModel.getChangeThemeEvent().observe(this, SingleLiveEventObserver { newTheme ->
+        viewModel.getChangeThemeEvent().observe(viewLifecycleOwner, SingleLiveEventObserver { newTheme ->
             when (newTheme) {
-                AppStyle.LIGHT -> (application as App).setLightTheme()
-                AppStyle.DARK -> (application as App).setDarkTheme()
+                AppStyle.LIGHT -> (requireActivity().application as App).setLightTheme()
+                AppStyle.DARK -> (requireActivity().application  as App).setDarkTheme()
             }
         })
     }
 
     private fun observeNavigation() {
-        viewModel.getNavigationEvent().observe(this, SingleLiveEventObserver { destination ->
+        viewModel.getNavigationEvent().observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
             when (destination) {
                 is SettingsViewModel.NavigationDestination.Share -> {
                     val shareIntent = Intent(Intent.ACTION_SENDTO).apply {
@@ -89,7 +102,6 @@ class SettingsActivity : AppCompatActivity() {
                         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_default_subject))
                         putExtra(Intent.EXTRA_TEXT, getString(R.string.support_default_text))
                     }
-
                     startActivity(sendToSupportIntent)
                 }
 

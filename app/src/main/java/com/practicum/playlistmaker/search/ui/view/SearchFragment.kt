@@ -1,33 +1,51 @@
 package com.practicum.playlistmaker.search.ui.view
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.view.TrackActivity
+import com.practicum.playlistmaker.player.ui.view.TrackFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
 
-    private val viewModel: SearchViewModel by viewModel()
-    private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchAdapter: TrackListAdapter
-    private lateinit var searchHistoryAdapter: TrackListAdapter
+    private val viewModel: SearchViewModel by activityViewModel<SearchViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var _binding: ActivitySearchBinding? = null
+    private val binding get() = _binding!!
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    private var _searchAdapter: TrackListAdapter? = null
+    private val searchAdapter get() = _searchAdapter!!
+
+    private var _searchHistoryAdapter: TrackListAdapter? = null
+    private val searchHistoryAdapter get() = _searchHistoryAdapter!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = ActivitySearchBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupToolbar()
         setupSearchInput()
@@ -36,9 +54,15 @@ class SearchActivity : AppCompatActivity() {
         observeNavigation()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _searchAdapter = null
+        _searchHistoryAdapter = null
+    }
 
     private fun setupViewModel() {
-        viewModel.getScreenState().observe(this) { screenState ->
+        viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
             when (screenState) {
                 is SearchViewModel.SearchViewState.Loading -> {
                     showLoading()
@@ -88,16 +112,16 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerViews() {
-        searchAdapter = TrackListAdapter { track -> clickTrack(track) }
-        searchHistoryAdapter = TrackListAdapter { track -> clickTrack(track) }
+        _searchAdapter = TrackListAdapter { track -> clickTrack(track) }
+        _searchHistoryAdapter = TrackListAdapter { track -> clickTrack(track) }
 
         binding.RvSearchResult.apply {
-            adapter = searchAdapter
+            adapter = _searchAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
 
         binding.RvSearchHistory.apply {
-            adapter = searchHistoryAdapter
+            adapter = _searchHistoryAdapter
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
     }
@@ -126,7 +150,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
     }
 
     private fun showLoading() {
@@ -194,18 +218,20 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun observeNavigation() {
-        viewModel.getNavigationEvent().observe(this, SingleLiveEventObserver { destination ->
+        viewModel.getNavigationEvent().observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
             when (destination) {
                 is SearchViewModel.NavigationDestination.ToTrack -> {
-                    var intent = Intent(this, TrackActivity::class.java)
-                    startActivity(intent)
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container_view, TrackFragment(), "TrackFragment")
+                        .addToBackStack("SearchFragment")
+                        .commit()
                 }
             }
         })
     }
 
     private fun hideKeyboard(view: View) {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
