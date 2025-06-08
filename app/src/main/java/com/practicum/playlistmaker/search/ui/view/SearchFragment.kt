@@ -11,9 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.view.TrackFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
@@ -26,7 +27,7 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by activityViewModel<SearchViewModel>()
 
-    private var _binding: ActivitySearchBinding? = null
+    private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
     private var _searchAdapter: TrackListAdapter? = null
@@ -40,14 +41,13 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = ActivitySearchBinding.inflate(inflater)
+        _binding = FragmentSearchBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()
         setupSearchInput()
         setupRecyclerViews()
         setupViewModel()
@@ -149,10 +149,6 @@ class SearchFragment : Fragment() {
         binding.clearSearchIv.setOnClickListener { viewModel.cleanSearchQuery() }
     }
 
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
-    }
-
     private fun showLoading() {
         binding.searchPb.isVisible = true
     }
@@ -221,10 +217,7 @@ class SearchFragment : Fragment() {
         viewModel.getNavigationEvent().observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
             when (destination) {
                 is SearchViewModel.NavigationDestination.ToTrack -> {
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_view, TrackFragment(), "TrackFragment")
-                        .addToBackStack("SearchFragment")
-                        .commit()
+                    findNavController().navigate(R.id.action_searchFragment_to_trackFragment)
                 }
             }
         })

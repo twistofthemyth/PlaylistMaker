@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    tools:context=".player.ui.view.TrackFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/startBorder"
@@ -31,9 +32,9 @@
         android:id="@+id/arrow_back_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_toolbar_back"
-        android:layout_marginTop="4dp"
         android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/ic_toolbar_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,8 +104,8 @@
         app:layout_constraintTop_toTopOf="@id/play_track_iv" />
 
     <TextView
-        style="@style/PM.Text.TrackAuthorName"
         android:id="@+id/time_tv"
+        style="@style/PM.Text.TrackAuthorName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"

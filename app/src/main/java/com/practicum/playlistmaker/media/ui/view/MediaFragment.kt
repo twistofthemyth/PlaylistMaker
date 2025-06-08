@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityMediaBinding
+import com.practicum.playlistmaker.databinding.FragmentMediaBinding
 
 class MediaFragment : Fragment() {
-    private var _binding: ActivityMediaBinding? = null
+    private var _binding: FragmentMediaBinding? = null
     private val binding get() = _binding!!
 
     private var _tabMediator: TabLayoutMediator? = null
@@ -21,22 +21,17 @@ class MediaFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = ActivityMediaBinding.inflate(inflater)
+        _binding = FragmentMediaBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar()
         setupViewPager()
     }
 
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
-    }
-
     private fun setupViewPager() {
-        binding.viewPager.adapter = MediaViewPagerAdapter(parentFragmentManager, lifecycle)
+        binding.viewPager.adapter = MediaViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
         _tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = resources.getString(R.string.favorites_tab)

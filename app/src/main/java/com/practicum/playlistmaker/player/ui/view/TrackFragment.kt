@@ -4,27 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityTrackBinding
+import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.parameter.parametersOf
 
 class TrackFragment : Fragment() {
 
     private val viewModel: TrackViewModel by activityViewModel<TrackViewModel>()
 
-    private var _binding: ActivityTrackBinding? = null
+    private var _binding: FragmentTrackBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -32,7 +27,7 @@ class TrackFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = ActivityTrackBinding.inflate(layoutInflater)
+        _binding = FragmentTrackBinding.inflate(layoutInflater)
         return binding.root
     }
 

@@ -6,16 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".media.ui.view.MediaFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <TextView
+        style="@style/PM.Text.ScreenTitle"
         android:id="@+id/toolbar"
-        style="@style/ToolbarWithBackButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/media_button_txt" />
+        android:text="@string/media_button_txt" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
