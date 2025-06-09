@@ -22,4 +22,9 @@
     <string name="track_year">Год</string>
     <string name="track_genre">Жанр</string>
     <string name="track_country">Страна</string>
+    <string name="new_playlist_button">Новый плейлист</string>
+    <string name="favorites_tab">Избранные треки</string>
+    <string name="playlists_tab">Плейлисты</string>
+    <string name="empty_favorites">Ваша медиатека пуста</string>
+    <string name="empty_playlists">Вы не создали\nни одного плейлиста</string>
 </resources>
