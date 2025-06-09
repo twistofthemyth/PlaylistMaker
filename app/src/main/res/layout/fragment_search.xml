@@ -5,19 +5,20 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".search.ui.view.SearchFragment">
 
     <TextView
-        style="@style/PM.Text.ScreenTitle"
         android:id="@+id/toolbar"
+        style="@style/PM.Text.ScreenTitle"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
+        android:text="@string/search_button_txt"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/search_button_txt" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:layout_width="match_parent"

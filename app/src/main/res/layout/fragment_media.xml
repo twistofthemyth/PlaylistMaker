@@ -10,13 +10,13 @@
     tools:context=".media.ui.view.MediaFragment">
 
     <TextView
-        style="@style/PM.Text.ScreenTitle"
         android:id="@+id/toolbar"
+        style="@style/PM.Text.ScreenTitle"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:text="@string/media_button_txt"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/media_button_txt" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

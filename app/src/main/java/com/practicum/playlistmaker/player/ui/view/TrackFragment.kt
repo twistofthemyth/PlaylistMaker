@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -63,7 +64,7 @@ class TrackFragment : Fragment() {
     private fun setupFragment() {
         viewModel.getScreenState().observe(viewLifecycleOwner) {
             when (it) {
-                is TrackViewModel.ScreenState.Loading -> TODO()
+                is TrackViewModel.ScreenState.Loading -> {}
 
                 is TrackViewModel.ScreenState.Content -> {
                     binding.timeTv.text = it.position
@@ -71,7 +72,7 @@ class TrackFragment : Fragment() {
                     setupTrackInfo(it.track)
                 }
 
-                is TrackViewModel.ScreenState.Error -> TODO()
+                is TrackViewModel.ScreenState.Error -> {}
             }
         }
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }

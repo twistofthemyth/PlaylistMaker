@@ -75,6 +75,7 @@ class TrackViewModel(
     }
 
     private fun initState(trackId: String) {
+        screenState.postValue(ScreenState.Loading())
         searchInteractor.searchTracks(trackId) {
             val initState = when (it) {
                 is Resource.Success<*> -> {
