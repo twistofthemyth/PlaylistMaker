@@ -11,7 +11,7 @@ class MediaViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecyc
         return when(position) {
             0 -> FavoritesTrackFragment()
             1 -> PlaylistsFragment()
-            else -> throw IllegalArgumentException()
+            else -> PlaylistsFragment()
         }
     }
 
