@@ -15,25 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
-            android:screenOrientation="portrait"
-            android:name=".media.ui.view.MediaActivity"
-            android:exported="false" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".search.ui.view.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".settings.ui.view.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".player.ui.view.TrackActivity"
-            android:exported="false" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".main.ui.view.MainActivity"
-            android:exported="true">
+            android:name=".main.ui.view.HostActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

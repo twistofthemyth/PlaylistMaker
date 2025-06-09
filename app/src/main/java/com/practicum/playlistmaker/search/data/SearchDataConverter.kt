@@ -13,6 +13,7 @@ object SearchDataConverter {
 
     fun convertNetworkTrackToTrack(iTunesTrackDto: ITunesTrackDto): Track {
         return Track(
+            iTunesTrackDto.trackId,
             iTunesTrackDto.trackName,
             iTunesTrackDto.artistName,
             if (iTunesTrackDto.trackTimeMillis == 0L) "0:00" else TRACK_TIME_FORMATTER.format(
@@ -30,6 +31,7 @@ object SearchDataConverter {
 
     fun convertHistoryTrackToTrack(historyTrackDto: HistoryTrackDto): Track {
         return Track(
+            historyTrackDto.trackId ?: "0",
             historyTrackDto.trackName,
             historyTrackDto.artistName,
             historyTrackDto.trackTime,
@@ -45,6 +47,7 @@ object SearchDataConverter {
 
     fun convertTrackToHistoryTrack(track: Track): HistoryTrackDto {
         return HistoryTrackDto(
+            track.trackId,
             track.trackName,
             track.artistName,
             track.trackTime,

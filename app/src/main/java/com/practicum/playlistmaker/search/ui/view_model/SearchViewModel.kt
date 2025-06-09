@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.player.domain.api.TrackStorageInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -14,9 +13,7 @@ import com.practicum.playlistmaker.util.event.Event
 
 class SearchViewModel(
     val searchInteractor: SearchInteractor,
-    val searchHistoryInteractor: SearchHistoryInteractor,
-    val trackStorageInteractor: TrackStorageInteractor
-) : ViewModel() {
+    val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = setUpSearchRunnable()
@@ -50,7 +47,6 @@ class SearchViewModel(
     fun clickTrack(track: Track) {
         if (isClickAllowed()) {
             searchHistoryInteractor.addTrackToHistory(track)
-            trackStorageInteractor.setTrackForPlaying(track)
             navigationEvent.value = Event(NavigationDestination.ToTrack(track))
         }
     }

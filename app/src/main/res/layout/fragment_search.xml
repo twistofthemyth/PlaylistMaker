@@ -5,17 +5,20 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".search.ui.view.SearchActivity"
-    android:background="@color/background">
+    tools:context=".search.ui.view.SearchFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <TextView
         android:id="@+id/toolbar"
-        style="@style/ToolbarWithBackButton"
+        style="@style/PM.Text.ScreenTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginBottom="8dp"
-        app:title="@string/search_button_txt" />
+        android:text="@string/search_button_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:layout_width="match_parent"
