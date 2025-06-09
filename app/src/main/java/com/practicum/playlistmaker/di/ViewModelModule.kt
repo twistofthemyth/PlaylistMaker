@@ -15,11 +15,11 @@ val viewModelModule = module {
     }
 
     viewModel {
-        TrackViewModel(get(Qualifiers.trackForPlaying), get())
+        (trackId: String) -> TrackViewModel(trackId, get(), get())
     }
 
     viewModel {
-        SearchViewModel(get(), get(), get())
+        SearchViewModel(get(), get())
     }
 
     viewModel {

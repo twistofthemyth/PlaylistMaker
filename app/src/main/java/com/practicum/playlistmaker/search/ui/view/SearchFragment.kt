@@ -1,13 +1,11 @@
 package com.practicum.playlistmaker.search.ui.view
 
 import android.content.Context.INPUT_METHOD_SERVICE
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -20,8 +18,6 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class SearchFragment : Fragment() {
 
@@ -214,13 +210,15 @@ class SearchFragment : Fragment() {
     }
 
     private fun observeNavigation() {
-        viewModel.getNavigationEvent().observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
-            when (destination) {
-                is SearchViewModel.NavigationDestination.ToTrack -> {
-                    findNavController().navigate(R.id.action_searchFragment_to_trackFragment)
+        viewModel.getNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
+                when (destination) {
+                    is SearchViewModel.NavigationDestination.ToTrack -> {
+                        findNavController().navigate(R.id.action_searchFragment_to_trackFragment,
+                            TrackFragment.createArgs(destination.track.trackId))
+                    }
                 }
-            }
-        })
+            })
     }
 
     private fun hideKeyboard(view: View) {
