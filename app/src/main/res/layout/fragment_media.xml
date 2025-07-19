@@ -5,35 +5,34 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".media.ui.view.MediaActivity"
     android:background="@color/background"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".media.ui.view.MediaFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <TextView
         android:id="@+id/toolbar"
-        style="@style/ToolbarWithBackButton"
+        style="@style/PM.Text.ScreenTitle"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:text="@string/media_button_txt"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/media_button_txt" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
-        style="@style/PM.Tab"
         android:id="@+id/tabLayout"
+        style="@style/PM.Tab"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

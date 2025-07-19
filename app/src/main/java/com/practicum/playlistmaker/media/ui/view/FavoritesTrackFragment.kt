@@ -20,17 +20,15 @@ class FavoritesTrackFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if(savedInstanceState == null) {
-            _binding = FragmentFavoritesBinding.inflate(layoutInflater)
-        }
+        _binding = FragmentFavoritesBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getFavoritesState().observe(viewLifecycleOwner){
-            when(it) {
+        viewModel.getFavoritesState().observe(viewLifecycleOwner) {
+            when (it) {
 
                 is MediaViewModel.FavoritesState.Empty -> {
                     binding.errorIv.isVisible = true

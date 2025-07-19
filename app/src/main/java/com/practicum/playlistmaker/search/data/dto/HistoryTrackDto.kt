@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.data.dto
 
 data class HistoryTrackDto(
+    val trackId: String?,
     val trackName: String,
     val artistName: String,
     val trackTime: String,

@@ -27,4 +27,7 @@
     <string name="playlists_tab">Плейлисты</string>
     <string name="empty_favorites">Ваша медиатека пуста</string>
     <string name="empty_playlists">Вы не создали\nни одного плейлиста</string>
+    <string name="search_nav_item">Поиск</string>
+    <string name="media_nav_item">Медиатека</string>
+    <string name="settings_nav_item">Настройки</string>
 </resources>

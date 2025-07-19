@@ -53,8 +53,10 @@ class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
     }
 
     override fun stopPlayer() {
-        mediaPlayer.pause()
-        playerState = PlayerState.STATE_PAUSED
+        if(playerState == PlayerState.STATE_PLAYING) {
+            mediaPlayer.pause()
+            playerState = PlayerState.STATE_PAUSED
+        }
     }
 
     override fun togglePlayer() {
