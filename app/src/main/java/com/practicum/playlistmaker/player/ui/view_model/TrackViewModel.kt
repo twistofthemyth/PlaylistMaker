@@ -12,6 +12,7 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import java.util.function.Consumer
@@ -24,25 +25,27 @@ class TrackViewModel(
 
     private val screenState = MutableLiveData<ScreenState>()
     private lateinit var track: Track
-    private var timerJob : Job? = null
+    private var timerJob: Job? = null
 
     init {
         screenState.postValue(ScreenState.Loading())
-        searchInteractor.searchTracks(trackId) {
-            val initState = when (it) {
-                is Resource.Success<*> -> {
-                    if (it.data != null && it.data.isNotEmpty()) {
-                        track = it.data[0]
-                        trackPlayer.preparePlayer(track)
-                        stoppedState()
-                    } else {
-                        ScreenState.Error()
+        viewModelScope.launch {
+            searchInteractor.searchTracks(trackId).collect {
+                val initState = when (it) {
+                    is Resource.Success<*> -> {
+                        if (it.data != null && it.data.isNotEmpty()) {
+                            track = it.data[0]
+                            trackPlayer.preparePlayer(track)
+                            stoppedState()
+                        } else {
+                            ScreenState.Error()
+                        }
                     }
-                }
 
-                else -> ScreenState.Error()
+                    else -> ScreenState.Error()
+                }
+                screenState.postValue(initState)
             }
-            screenState.postValue(initState)
         }
     }
 
@@ -81,7 +84,7 @@ class TrackViewModel(
         screenState.postValue(stoppedState())
     }
 
-    private fun playingState() : ScreenState {
+    private fun playingState(): ScreenState {
         return ScreenState.Content(
             track,
             R.drawable.button_pause_track,
@@ -89,7 +92,7 @@ class TrackViewModel(
         )
     }
 
-    private fun stoppedState() : ScreenState {
+    private fun stoppedState(): ScreenState {
         return ScreenState.Content(
             track,
             R.drawable.button_play_track,

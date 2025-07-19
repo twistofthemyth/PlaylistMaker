@@ -68,13 +68,15 @@ class SearchViewModel(
 
     private fun setUpSearchRunnable() {
         screenState.postValue(SearchViewState.Loading())
-        searchInteractor.searchTracks(latestSearchQuery.toString()) {
-            val newState = when (it) {
-                is Resource.ClientError<*> -> SearchViewState.NetworkError()
-                is Resource.ServerError<*> -> SearchViewState.NetworkError()
-                is Resource.Success<*> -> SearchViewState.ShowSearchResult(it.data as List<Track>)
+        viewModelScope.launch {
+            searchInteractor.searchTracks(latestSearchQuery.toString()).collect {
+                val newState = when (it) {
+                    is Resource.ClientError<*> -> SearchViewState.NetworkError()
+                    is Resource.ServerError<*> -> SearchViewState.NetworkError()
+                    is Resource.Success<*> -> SearchViewState.ShowSearchResult(it.data as List<Track>)
+                }
+                screenState.postValue(newState)
             }
-            screenState.postValue(newState)
         }
     }
 
