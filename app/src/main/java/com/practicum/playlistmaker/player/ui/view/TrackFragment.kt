@@ -58,7 +58,7 @@ class TrackFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pausePlayer()
+        viewModel.stopPlayer()
     }
 
     private fun setupFragment() {
