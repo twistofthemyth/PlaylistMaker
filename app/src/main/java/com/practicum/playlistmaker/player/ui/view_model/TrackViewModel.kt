@@ -106,6 +106,6 @@ class TrackViewModel(
     }
 
     companion object {
-        private val TRACK_UPDATE_DELAY = 300L
+        private const val TRACK_UPDATE_DELAY = 300L
     }
 }
