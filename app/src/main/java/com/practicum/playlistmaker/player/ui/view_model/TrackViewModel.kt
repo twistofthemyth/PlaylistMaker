@@ -69,9 +69,10 @@ class TrackViewModel(
 
     fun startPlayer() {
         trackPlayer.startPlayer()
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (trackPlayer.getState() == PlayerState.STATE_PLAYING) {
-                delay(300L)
+                delay(TRACK_UPDATE_DELAY)
                 screenState.postValue(playingState())
             }
             screenState.postValue(stoppedState())
@@ -104,5 +105,9 @@ class TrackViewModel(
         class Loading() : ScreenState
         data class Content(val track: Track, val iconResId: Int, val position: String) : ScreenState
         class Error() : ScreenState
+    }
+
+    companion object {
+        private val TRACK_UPDATE_DELAY = 300L
     }
 }
