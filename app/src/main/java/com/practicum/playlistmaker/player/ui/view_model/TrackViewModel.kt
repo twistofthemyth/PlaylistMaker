@@ -12,10 +12,8 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import java.util.function.Consumer
 
 class TrackViewModel(
     trackId: String,
