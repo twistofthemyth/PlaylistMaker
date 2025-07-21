@@ -5,21 +5,25 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import com.practicum.playlistmaker.util.event.Event
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     val searchInteractor: SearchInteractor,
-    val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
+    val searchHistoryInteractor: SearchHistoryInteractor
+) : ViewModel() {
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = setUpSearchRunnable()
     private val screenState = MutableLiveData(setUpDefaultState())
     private val navigationEvent = MutableLiveData<Event<NavigationDestination>>()
 
+    private var searchJob: Job? = null
     private var isClickAllowed = true
     private var latestSearchQuery: String? = null
 
@@ -53,16 +57,19 @@ class SearchViewModel(
 
     fun search(query: String) {
         latestSearchQuery = query
-        handler.removeCallbacks(searchRunnable)
         if (latestSearchQuery != null && !latestSearchQuery.toString().isEmpty()) {
-            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                setUpSearchRunnable()
+            }
         }
     }
 
-    private fun setUpSearchRunnable(): Runnable {
-        return Runnable {
-            screenState.postValue(SearchViewState.Loading())
-            searchInteractor.searchTracks(latestSearchQuery.toString()) {
+    private fun setUpSearchRunnable() {
+        screenState.postValue(SearchViewState.Loading())
+        viewModelScope.launch {
+            searchInteractor.searchTracks(latestSearchQuery.toString()).collect {
                 val newState = when (it) {
                     is Resource.ClientError<*> -> SearchViewState.NetworkError()
                     is Resource.ServerError<*> -> SearchViewState.NetworkError()
@@ -81,10 +88,10 @@ class SearchViewModel(
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed(
-                { isClickAllowed = true },
-                TOUCH_DEBOUNCE_IN_MILLIS
-            )
+            viewModelScope.launch {
+                delay(TOUCH_DEBOUNCE_IN_MILLIS)
+                isClickAllowed = true
+            }
         }
         return current
     }

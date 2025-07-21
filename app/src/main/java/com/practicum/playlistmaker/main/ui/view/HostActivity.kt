@@ -14,6 +14,7 @@ import com.practicum.playlistmaker.databinding.ActivityHostBinding
 class HostActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHostBinding
+    private var navBarEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,28 +22,39 @@ class HostActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityHostBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupNavBarVisibility()
         bindNavBarAndController()
-
-        
     }
 
     private fun bindNavBarAndController() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
         val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            navBarEnabled = when (destination.id) {
+                R.id.trackFragment -> false
+                else -> true
+            }
+        }
+
         binding.navView.setupWithNavController(navController)
+        setupNavBarInsets()
     }
 
-    private fun setupNavBarVisibility() {
+    private fun setupNavBarInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
             val navBarVisible = insets.isVisible(WindowInsetsCompat.Type.navigationBars())
-            binding.navView.isVisible = !imeVisible
+            binding.navView.isVisible = !imeVisible && navBarEnabled
 
             if (!imeVisible && navBarVisible) {
-                binding.navView.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom)
+                binding.navView.setPadding(
+                    0,
+                    0,
+                    0,
+                    insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+                )
             } else {
-                binding.navView.setPadding(0, 0, 0, 0)
+                binding.navView.setPadding(0, 0,0 ,0)
             }
 
             insets

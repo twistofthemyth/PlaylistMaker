@@ -8,8 +8,8 @@ import retrofit2.http.Query
 interface ITunesApiService {
 
     @GET("/search")
-    fun searchSong(
+    suspend fun searchSong(
         @Query("entity") searchEntity: String,
         @Query("term") searchQuery: String
-    ): Call<SearchSongResponse>
+    ): SearchSongResponse
 }
