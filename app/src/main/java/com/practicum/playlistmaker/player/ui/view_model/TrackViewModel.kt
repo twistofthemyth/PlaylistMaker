@@ -3,28 +3,48 @@ package com.practicum.playlistmaker.player.ui.view_model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import java.util.function.Consumer
 
 class TrackViewModel(
     trackId: String,
-    private val searchInteractor: SearchInteractor,
+    searchInteractor: SearchInteractor,
     private val trackPlayer: TrackPlayer
 ) : ViewModel(), KoinComponent {
 
     private val screenState = MutableLiveData<ScreenState>()
     private lateinit var track: Track
+    private var timerJob: Job? = null
 
     init {
-        trackPlayer.setOnPositionChangedListener(getPositionChangedListener())
-        trackPlayer.setOnCompleteListener(getCompleteListener())
-        initState(trackId)
+        screenState.postValue(ScreenState.Loading())
+        viewModelScope.launch {
+            searchInteractor.searchTracks(trackId).collect {
+                val initState = when (it) {
+                    is Resource.Success<*> -> {
+                        if (it.data != null && it.data.isNotEmpty()) {
+                            track = it.data[0]
+                            trackPlayer.preparePlayer(track)
+                            stoppedState()
+                        } else {
+                            ScreenState.Error()
+                        }
+                    }
+
+                    else -> ScreenState.Error()
+                }
+                screenState.postValue(initState)
+            }
+        }
     }
 
     fun getScreenState(): LiveData<ScreenState> = screenState
@@ -34,73 +54,58 @@ class TrackViewModel(
     }
 
     fun togglePlayer() {
-        trackPlayer.togglePlayer()
-        if (trackPlayer.getState() == PlayerState.STATE_PAUSED) {
-            screenState.postValue(
-                ScreenState.Content(
-                    track,
-                    R.drawable.button_play_track,
-                    trackPlayer.getPosition()
-                )
-            )
-        }
-    }
-
-    fun pausePlayer() {
-        trackPlayer.stopPlayer()
-    }
-
-    private fun getPositionChangedListener(): Consumer<TrackPlayer> {
-        return Consumer<TrackPlayer> {
-            screenState.postValue(
-                ScreenState.Content(
-                    track,
-                    R.drawable.button_pause_track,
-                    it.getPosition()
-                )
-            )
-        }
-    }
-
-    private fun getCompleteListener(): Consumer<TrackPlayer> {
-        return Consumer<TrackPlayer> {
-            screenState.postValue(
-                ScreenState.Content(
-                    track,
-                    R.drawable.button_play_track,
-                    it.getPosition()
-                )
-            )
-        }
-    }
-
-    private fun initState(trackId: String) {
-        screenState.postValue(ScreenState.Loading())
-        searchInteractor.searchTracks(trackId) {
-            val initState = when (it) {
-                is Resource.Success<*> -> {
-                    if (it.data != null && it.data.isNotEmpty()) {
-                        track = it.data[0]
-                        trackPlayer.preparePlayer(track)
-                        ScreenState.Content(
-                            track,
-                            R.drawable.button_play_track,
-                            trackPlayer.getPosition()
-                        )
-                    } else {
-                        ScreenState.Error()
-                    }
-                }
-
-                else -> ScreenState.Error()
+        when (trackPlayer.getState()) {
+            PlayerState.STATE_PLAYING -> {
+                stopPlayer()
             }
-            screenState.postValue(initState)
+
+            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED, PlayerState.STATE_DEFAULT -> {
+                startPlayer()
+            }
         }
+    }
+
+    fun startPlayer() {
+        trackPlayer.startPlayer()
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (trackPlayer.getState() == PlayerState.STATE_PLAYING) {
+                delay(TRACK_UPDATE_DELAY)
+                screenState.postValue(playingState())
+            }
+            screenState.postValue(stoppedState())
+        }
+    }
+
+    fun stopPlayer() {
+        trackPlayer.stopPlayer()
+        timerJob?.cancel()
+        screenState.postValue(stoppedState())
+    }
+
+    private fun playingState(): ScreenState {
+        return ScreenState.Content(
+            track,
+            R.drawable.button_pause_track,
+            trackPlayer.getPosition()
+        )
+    }
+
+    private fun stoppedState(): ScreenState {
+        return ScreenState.Content(
+            track,
+            R.drawable.button_play_track,
+            trackPlayer.getPosition()
+        )
     }
 
     sealed interface ScreenState {
         class Loading() : ScreenState
         data class Content(val track: Track, val iconResId: Int, val position: String) : ScreenState
         class Error() : ScreenState
+    }
+
+    companion object {
+        private const val TRACK_UPDATE_DELAY = 300L
     }
 }

@@ -9,10 +9,6 @@ interface TrackPlayer {
     fun preparePlayer(track: Track)
     fun startPlayer()
     fun stopPlayer()
-    fun togglePlayer()
     fun releasePlayer()
     fun getPosition(): String
-
-    fun setOnPositionChangedListener(listener: Consumer<TrackPlayer>)
-    fun setOnCompleteListener(listener: Consumer<TrackPlayer>)
 }
