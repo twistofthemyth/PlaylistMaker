@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.search.data.dto.SearchSongResponse
 import com.practicum.playlistmaker.search.data.network.ITunesClient
 import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.util.data_utils.DataConverter
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,7 +21,7 @@ class ITunesSearchRepository(
             -1 -> emit(Resource.ClientError())
             200 -> {
                 val data = (result as SearchSongResponse).results.map {
-                    SearchDataConverter.convertNetworkTrackToTrack(it)
+                    DataConverter.convertNetworkTrackToTrack(it)
                 }
                 emit(Resource.Success(data))
             }

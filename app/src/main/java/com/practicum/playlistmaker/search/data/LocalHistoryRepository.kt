@@ -4,12 +4,12 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.search.data.SearchDataConverter.convertHistoryTrackToTrack
-import com.practicum.playlistmaker.search.data.SearchDataConverter.convertTrackToHistoryTrack
 import com.practicum.playlistmaker.search.data.dto.HistoryTrackDto
 import com.practicum.playlistmaker.search.domain.api.HistoryRepository
 import com.practicum.playlistmaker.search.domain.models.SearchHistory
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.util.data_utils.DataConverter.convertHistoryTrackToTrack
+import com.practicum.playlistmaker.util.data_utils.DataConverter.convertTrackToHistoryTrack
 import java.lang.reflect.Type
 
 class LocalHistoryRepository(
