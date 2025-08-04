@@ -42,6 +42,8 @@ class SearchViewModel(
     }
 
     fun search(query: String) {
+        if (latestSearchQuery == query) return
+
         latestSearchQuery = query
         if (latestSearchQuery != null && !latestSearchQuery.toString().isEmpty()) {
             searchJob?.cancel()

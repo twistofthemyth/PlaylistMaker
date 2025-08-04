@@ -28,5 +28,7 @@ data class TrackEntity(
     @ColumnInfo(name = "country_name")
     val country: String,
     @ColumnInfo(name = "track_url")
-    val previewUrl: String
+    val previewUrl: String,
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long = System.currentTimeMillis()
 )

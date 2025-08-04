@@ -22,6 +22,6 @@ interface FavoriteTrackDao {
     @Query("SELECT COUNT(*) FROM favorite_tracks_table WHERE track_id = :id")
     suspend fun countTrackById(id: Long): Int
 
-    @Query("SELECT * FROM favorite_tracks_table")
+    @Query("SELECT * FROM favorite_tracks_table ORDER BY created_at DESC")
     suspend fun getAllTracks(): List<TrackEntity>
 }

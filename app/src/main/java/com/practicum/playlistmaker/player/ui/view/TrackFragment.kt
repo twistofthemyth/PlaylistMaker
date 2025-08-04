@@ -8,6 +8,7 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -82,7 +83,7 @@ class TrackFragment : Fragment() {
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
         binding.likeTrackIv.setOnClickListener {
             viewModel.toggleTrackFavorites()
-            mediaViewModel.updateTrackList()
+            lifecycleScope.run { mediaViewModel.updateTrackList() }
         }
     }
 
