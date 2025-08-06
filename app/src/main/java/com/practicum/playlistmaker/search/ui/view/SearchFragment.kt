@@ -17,6 +17,7 @@ import com.practicum.playlistmaker.player.ui.view.TrackFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SearchFragment : Fragment() {
@@ -125,12 +126,12 @@ class SearchFragment : Fragment() {
     private fun setupSearchInput() {
         binding.searchEt.apply {
             doOnTextChanged { text, _, _, _ ->
-                if (text?.isEmpty() != false) {
+                if (text?.isEmpty() == true) {
                     hideClearQueryButton()
                 } else {
                     showClearQueryButton()
+                    viewModel.search(text.toString())
                 }
-                viewModel.search(text.toString())
             }
 
             setOnFocusChangeListener { _, hasFocus ->
@@ -213,7 +214,7 @@ class SearchFragment : Fragment() {
         viewModel.getNavigationEvent()
             .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
                 when (destination) {
-                    is SearchViewModel.NavigationDestination.ToTrack -> {
+                    is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
                         findNavController().navigate(R.id.action_searchFragment_to_trackFragment,
                             TrackFragment.createArgs(destination.track.trackId))
                     }

@@ -4,17 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentTrackBinding
+import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,6 +29,8 @@ class TrackFragment : Fragment() {
             )
         )
     }
+
+    private val mediaViewModel: MediaViewModel by activityViewModel<MediaViewModel>()
 
     private var _binding: FragmentTrackBinding? = null
     private val binding get() = _binding!!
@@ -69,6 +73,7 @@ class TrackFragment : Fragment() {
                 is TrackViewModel.ScreenState.Content -> {
                     binding.timeTv.text = it.position
                     binding.playTrackIv.setImageResource(it.iconResId)
+                    binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
                 }
 
@@ -76,6 +81,10 @@ class TrackFragment : Fragment() {
             }
         }
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
+        binding.likeTrackIv.setOnClickListener {
+            viewModel.toggleTrackFavorites()
+            lifecycleScope.run { mediaViewModel.updateTrackList() }
+        }
     }
 
     private fun setupToolbar() {
