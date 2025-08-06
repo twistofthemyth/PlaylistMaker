@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.createplaylist.ui.view
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
@@ -8,19 +11,29 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.createplaylist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentPlaylistCreateBinding
+import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-import java.net.URI
+import java.io.FileOutputStream
+import java.util.UUID
 
 class CreatePlaylistFragment : Fragment() {
 
-    private val viewModel: CreatePlaylistViewModel by activityViewModel<CreatePlaylistViewModel>()
+    private val createPlaylistModel: CreatePlaylistViewModel by viewModel<CreatePlaylistViewModel>()
+    private val playlistViewModel: MediaViewModel by activityViewModel<MediaViewModel>()
     private var _binding: FragmentPlaylistCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -36,19 +49,41 @@ class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.arrowBackIv.setOnClickListener {
-            findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+            when (createPlaylistModel.getState().value) {
+                is CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate,
+                is CreatePlaylistViewModel.CreatePlaylistState.InEdit -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Завершить создание плейлиста?")
+                        .setMessage("Все несохраненные данные будут потеряны")
+                        .setNegativeButton("Нет") { dialog, which -> }
+                        .setPositiveButton("Да") { dialog, which ->
+                            findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+                        }
+                        .show()
+                }
+
+                else -> findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+            }
         }
 
-        viewModel.getState().observe(viewLifecycleOwner) {
+        createPlaylistModel.getState().observe(viewLifecycleOwner) {
             when (it) {
-                is CreatePlaylistViewModel.CreatePlaylistState.Completed -> binding.createBtn.isEnabled =
-                    true
+                is CreatePlaylistViewModel.CreatePlaylistState.Created -> {
+                    findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+                    (requireActivity().application as App).showToast(
+                        binding.root,
+                        "Плейлист ${binding.nameEt.text} создан"
+                    )
+                }
 
                 is CreatePlaylistViewModel.CreatePlaylistState.Empty -> binding.createBtn.isEnabled =
                     false
 
                 is CreatePlaylistViewModel.CreatePlaylistState.InEdit -> binding.createBtn.isEnabled =
                     false
+
+                is CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate -> binding.createBtn.isEnabled =
+                    true
             }
         }
 
@@ -59,13 +94,21 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.nameEt.doOnTextChanged { text, start, before, count ->
             if (text != null && text.isNotEmpty()) {
-                viewModel.setName(text.toString())
+                createPlaylistModel.setName(text.toString())
             }
         }
 
         binding.descriptionEt.doOnTextChanged { text, start, before, count ->
             if (text != null && text.isNotEmpty()) {
-                viewModel.setDescription(text.toString())
+                createPlaylistModel.setDescription(text.toString())
+            }
+        }
+
+        binding.createBtn.setOnClickListener {
+            createPlaylistModel.createPlaylist()
+            lifecycleScope.async {
+                delay(100)
+                playlistViewModel.updatePlaylist()
             }
         }
     }
@@ -79,13 +122,19 @@ class CreatePlaylistFragment : Fragment() {
         return registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
                 binding.addImageView.setImageURI(uri)
-                viewModel.setImage(uri)
+                createPlaylistModel.setImage(saveImageToStorage(uri))
             }
         }
     }
 
-    private fun saveImageToStorage(uri: URI) {
+    private fun saveImageToStorage(uri: Uri): Uri {
         val path = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        File(path, "123.jpg")
+        val file = File(path, UUID.randomUUID().toString())
+        val inputStream = requireActivity().contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        BitmapFactory
+            .decodeStream(inputStream)
+            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+        return file.toUri()
     }
 }

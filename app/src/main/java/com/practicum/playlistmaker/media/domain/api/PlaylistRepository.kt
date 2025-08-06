@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistRepository {
     suspend fun isTrackInFavorites(track: Track): Boolean
     fun getFavoritesTrack(): Flow<Track>
+    suspend fun addPlaylist(playlist: Playlist)
     suspend fun removePlaylist(playlist: Playlist)
+    fun getPlaylists(): Flow<Playlist>
     fun getTracksInPlaylist(playlist: Playlist): Flow<Track>
     suspend fun addTrackToPlaylist(playlist: Playlist, track: Track)
     suspend fun addTrackToFavorites(track: Track)

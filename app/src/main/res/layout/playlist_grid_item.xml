@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/image_iv"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/placeholder_album" />
+
+    <TextView
+        android:id="@+id/name_tv"
+        style="@style/PM.Text.ListTitle.Grid"
+        android:gravity="start"
+        android:maxWidth="160dp"
+        android:maxLines="1"
+        android:layout_marginTop="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Best Songs 2007" />
+
+    <TextView
+        android:id="@+id/count_tv"
+        android:gravity="start"
+        style="@style/PM.Text.ListTitle.Grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="98 треков" />
+</LinearLayout>

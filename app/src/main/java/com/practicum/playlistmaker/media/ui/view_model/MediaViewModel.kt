@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
+import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import kotlinx.coroutines.flow.toList
@@ -21,14 +22,23 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
     init {
         favoritesState = MutableLiveData(FavoritesState.Empty())
         playlistsState = MutableLiveData(PlaylistState.Empty())
-        updateTrackList()
+        updateFavoritePlayList()
+        updatePlaylist()
     }
 
-    fun updateTrackList() {
+    fun updateFavoritePlayList() {
         viewModelScope.launch {
             favoritesState.postValue(FavoritesState.Empty())
             val trackList = playlistRepository.getFavoritesTrack().toList()
             favoritesState.postValue(FavoritesState.Content(trackList))
+        }
+    }
+
+    fun updatePlaylist() {
+        viewModelScope.launch {
+            playlistsState.postValue(PlaylistState.Empty())
+            val playlistList = playlistRepository.getPlaylists().toList()
+            playlistsState.postValue(PlaylistState.Content(playlistList))
         }
     }
 
@@ -38,6 +48,7 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
     }
 
     sealed interface PlaylistState {
+        class Content(val playlists: List<Playlist>) : PlaylistState
         class Empty() : PlaylistState
     }
 }

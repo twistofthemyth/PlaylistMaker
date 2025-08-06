@@ -87,7 +87,7 @@ class TrackFragment : Fragment() {
             viewModel.toggleTrackFavorites()
             lifecycleScope.async {
                 delay(200)
-                mediaViewModel.updateTrackList()
+                mediaViewModel.updateFavoritePlayList()
             }
         }
     }

@@ -40,13 +40,6 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="26dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalBorder"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <EditText
         android:id="@+id/name_et"
         android:layout_width="0dp"
