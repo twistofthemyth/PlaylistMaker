@@ -16,6 +16,8 @@ import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -83,7 +85,10 @@ class TrackFragment : Fragment() {
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
         binding.likeTrackIv.setOnClickListener {
             viewModel.toggleTrackFavorites()
-            lifecycleScope.run { mediaViewModel.updateTrackList() }
+            lifecycleScope.async {
+                delay(200)
+                mediaViewModel.updateTrackList()
+            }
         }
     }
 

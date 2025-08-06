@@ -14,6 +14,9 @@
             app:destination="@id/trackFragment"
             app:enterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -37,4 +40,12 @@
         android:name="com.practicum.playlistmaker.player.ui.view.TrackFragment"
         android:label="fragment_track"
         tools:layout="@layout/fragment_track" />
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.practicum.playlistmaker.createplaylist.ui.view.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment">
+        <action
+            android:id="@+id/action_createPlaylistFragment_to_mediaFragment"
+            app:destination="@id/mediaFragment" />
+    </fragment>
 </navigation>

@@ -30,4 +30,6 @@
     <string name="search_nav_item">Поиск</string>
     <string name="media_nav_item">Медиатека</string>
     <string name="settings_nav_item">Настройки</string>
+    <string name="create_playlist">Новый плейлист</string>
+    <string name="create_playlist_button">Создать</string>
 </resources>

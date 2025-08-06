@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -37,6 +39,10 @@ class PlaylistsFragment : Fragment() {
                     binding.actionBtn.isVisible = true
                 }
             }
+        }
+
+        binding.actionBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mediaFragment_to_createPlaylistFragment)
         }
     }
 }

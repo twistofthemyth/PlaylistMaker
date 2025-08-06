@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.util.data_utils
 
+import com.practicum.playlistmaker.media.data.db.PlaylistEntity
 import com.practicum.playlistmaker.media.data.db.TrackEntity
+import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.data.dto.HistoryTrackDto
 import com.practicum.playlistmaker.search.data.dto.ITunesTrackDto
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -89,6 +91,31 @@ object DataConverter {
             track.primaryGenreName,
             track.country,
             track.previewUrl
+        )
+    }
+
+    fun convertPlaylistToPlaylistEntity(playlist: Playlist): PlaylistEntity {
+        return PlaylistEntity(
+            0,
+            playlist.name,
+            playlist.description,
+            playlist.image
+        )
+    }
+
+    fun convertPlaylistEntityToPlaylist(playlist: PlaylistEntity): Playlist {
+        return convertPlaylistEntityToPlaylist(playlist, mutableListOf())
+    }
+
+    fun convertPlaylistEntityToPlaylist(
+        playlist: PlaylistEntity,
+        tracks: List<TrackEntity>
+    ): Playlist {
+        return Playlist(
+            playlist.name,
+            playlist.description,
+            playlist.image,
+            tracks.map { convertTrackEntityToTrack(it) }
         )
     }
 }

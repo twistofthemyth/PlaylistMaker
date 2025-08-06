@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.media.domain.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
@@ -19,7 +19,7 @@ import org.koin.core.component.KoinComponent
 class TrackViewModel(
     private val trackId: String,
     private val searchInteractor: SearchInteractor,
-    private val favoriteTracksRepository: FavoriteTracksRepository,
+    private val playlistRepository: PlaylistRepository,
     private val trackPlayer: TrackPlayer
 ) : ViewModel(), KoinComponent {
 
@@ -37,7 +37,7 @@ class TrackViewModel(
                         if (it.data != null && it.data.isNotEmpty()) {
                             track = it.data[0]
                             trackPlayer.preparePlayer(track)
-                            cachedFavoriteState = favoriteTracksRepository.isTrackInFavorites(track)
+                            cachedFavoriteState = playlistRepository.isTrackInFavorites(track)
                             contentState()
                         } else {
                             ScreenState.Error()
@@ -90,7 +90,7 @@ class TrackViewModel(
         cachedFavoriteState = true
         screenState.postValue(contentState())
         viewModelScope.launch {
-            favoriteTracksRepository.addTrackToFavorites(track)
+            playlistRepository.addTrackToFavorites(track)
         }
     }
 
@@ -98,7 +98,7 @@ class TrackViewModel(
         cachedFavoriteState = false
         screenState.postValue(contentState())
         viewModelScope.launch {
-            favoriteTracksRepository.removeTrackFromFavorites(track)
+            playlistRepository.removeTrackFromFavorites(track)
         }
     }
 
