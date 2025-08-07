@@ -96,7 +96,7 @@ object DataConverter {
 
     fun convertPlaylistToPlaylistEntity(playlist: Playlist): PlaylistEntity {
         return PlaylistEntity(
-            0,
+            playlist.id,
             playlist.name,
             playlist.description,
             playlist.image
@@ -112,6 +112,7 @@ object DataConverter {
         tracks: List<TrackEntity>
     ): Playlist {
         return Playlist(
+            playlist.id,
             playlist.name,
             playlist.description,
             playlist.image,

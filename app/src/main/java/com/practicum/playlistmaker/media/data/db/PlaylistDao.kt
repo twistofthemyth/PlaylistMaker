@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.media.data.db
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.OnConflictStrategy.Companion.REPLACE
@@ -17,8 +16,14 @@ interface PlaylistDao {
     @Insert(entity = PlaylistEntity::class, onConflict = REPLACE)
     suspend fun addPlaylist(playlist: PlaylistEntity)
 
-    @Delete(entity = PlaylistEntity::class)
-    suspend fun removePlaylist(playlist: PlaylistEntity)
+    @Transaction
+    suspend fun removePlaylist(playlistId: Long) {
+        removeAllTracksFromPlaylist(playlistId)
+        deletePlaylist(playlistId)
+    }
+
+    @Query("DELETE FROM playlists_table WHERE id = :playlistId")
+    suspend fun deletePlaylist(playlistId: Long)
 
     @Query("SELECT * FROM playlists_table WHERE is_system = 0")
     suspend fun getAllPlaylists(): List<PlaylistEntity>
@@ -53,8 +58,8 @@ interface PlaylistDao {
     @Insert(onConflict = REPLACE)
     suspend fun addTrackToPlaylist(association: PlaylistTrackAssociationEntity)
 
-    @Delete
-    suspend fun removeTrackFromPlaylist(association: PlaylistTrackAssociationEntity)
+    @Query("DELETE FROM playlist_association_table WHERE playlist_id = :playlistId")
+    suspend fun removeAllTracksFromPlaylist(playlistId: Long)
 
     @Query("DELETE FROM playlist_association_table WHERE track_id = :trackId AND playlist_id = :playlistId")
     suspend fun removeTrackFromPlaylist(trackId: Long, playlistId: Long)

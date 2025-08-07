@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
-import com.practicum.playlistmaker.media.ui.view_model.PlaylistAdapter
+import com.practicum.playlistmaker.media.ui.view_model.PlaylistGridAdapter
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class PlaylistsFragment : Fragment() {
     private val viewModel: MediaViewModel by activityViewModel<MediaViewModel>()
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
-    private var _playlistAdapter: PlaylistAdapter? = null
+    private var _playlistAdapter: PlaylistGridAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
 
     override fun onCreateView(
@@ -34,7 +34,7 @@ class PlaylistsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _playlistAdapter = PlaylistAdapter {}
+        _playlistAdapter = PlaylistGridAdapter {}
 
         viewModel.getPlaylistState().observe(viewLifecycleOwner){
             when(it) {

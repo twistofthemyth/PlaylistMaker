@@ -28,6 +28,13 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
         ) > 0
     }
 
+    override suspend fun isTrackInPlaylist(playlist: Playlist, track: Track): Boolean {
+        return appDatabase.getPlaylistDao().isTrackInPlaylist(
+            DataConverter.convertTrackToTrackEntity(track).trackId,
+            playlist.id
+        ) > 0
+    }
+
     override fun getFavoritesTrack(): Flow<Track> {
         return getTracksInPlaylist(favoritesPlaylistId)
     }
@@ -38,19 +45,16 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
     }
 
     override suspend fun removePlaylist(playlist: Playlist) {
-        appDatabase.getPlaylistDao()
-            .removePlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
+        appDatabase.getPlaylistDao().removePlaylist(playlist.id)
     }
 
     override fun getPlaylists(): Flow<Playlist> {
         return flow {
             appDatabase.getPlaylistDao().getAllPlaylists()
                 .forEach {
+                    val tracks = appDatabase.getPlaylistDao().getTracksInPlaylist(it.id)
                     emit(
-                        DataConverter.convertPlaylistEntityToPlaylist(
-                            it,
-                            appDatabase.getPlaylistDao().getTracksInPlaylist(it.id)
-                        )
+                        DataConverter.convertPlaylistEntityToPlaylist(it, tracks)
                     )
                 }
         }
@@ -61,9 +65,8 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
     }
 
     override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track) {
-        val playlistEntity = DataConverter.convertPlaylistToPlaylistEntity(playlist)
         val trackEntity = DataConverter.convertTrackToTrackEntity(track)
-        addTrackToPlaylist(playlistEntity.id, trackEntity)
+        addTrackToPlaylist(playlist.id, trackEntity)
     }
 
     override suspend fun addTrackToFavorites(track: Track) {

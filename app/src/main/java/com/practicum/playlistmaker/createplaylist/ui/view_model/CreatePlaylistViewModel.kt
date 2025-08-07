@@ -50,6 +50,7 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
         viewModelScope.async {
             playlistRepository.addPlaylist(
                 Playlist(
+                    0,
                     name,
                     description,
                     image.toString(),

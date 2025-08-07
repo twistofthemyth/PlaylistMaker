@@ -32,4 +32,5 @@
     <string name="settings_nav_item">Настройки</string>
     <string name="create_playlist">Новый плейлист</string>
     <string name="create_playlist_button">Создать</string>
+    <string name="add_to_playlist_title">Добавить в плейлист</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
+import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
@@ -13,6 +14,7 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -27,6 +29,7 @@ class TrackViewModel(
     private lateinit var track: Track
     private var timerJob: Job? = null
     private var cachedFavoriteState: Boolean? = null
+    private var cachedPlaylists: List<Playlist> = mutableListOf()
 
     init {
         screenState.postValue(ScreenState.Loading())
@@ -38,6 +41,7 @@ class TrackViewModel(
                             track = it.data[0]
                             trackPlayer.preparePlayer(track)
                             cachedFavoriteState = playlistRepository.isTrackInFavorites(track)
+                            cachedPlaylists = playlistRepository.getPlaylists().toList()
                             contentState()
                         } else {
                             ScreenState.Error()
@@ -110,6 +114,19 @@ class TrackViewModel(
         }
     }
 
+    fun addTrackToPlaylist(playlist: Playlist): Boolean {
+        if (!playlist.track.contains(track)) {
+            viewModelScope.launch {
+                playlistRepository.addTrackToPlaylist(playlist, track)
+                cachedPlaylists = playlistRepository.getPlaylists().toList()
+                screenState.postValue(contentState())
+            }
+            return true
+        } else {
+            return false
+        }
+    }
+
     private fun isTrackInFavorites(): Boolean {
         return cachedFavoriteState ?: false
     }
@@ -119,7 +136,8 @@ class TrackViewModel(
             track,
             if (trackPlayer.getState() == PlayerState.STATE_PLAYING) R.drawable.button_pause_track else R.drawable.button_play_track,
             trackPlayer.getPosition(),
-            isTrackInFavorites()
+            isTrackInFavorites(),
+            cachedPlaylists
         )
     }
 
@@ -129,7 +147,8 @@ class TrackViewModel(
             val track: Track,
             val iconResId: Int,
             val position: String,
-            var isFavorite: Boolean
+            var isFavorite: Boolean,
+            val playlists: List<Playlist>
         ) : ScreenState
         class Error() : ScreenState
     }

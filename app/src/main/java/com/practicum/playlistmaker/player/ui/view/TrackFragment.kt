@@ -4,16 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
+import com.practicum.playlistmaker.media.ui.view_model.PlaylistAdapter
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
@@ -37,6 +43,9 @@ class TrackFragment : Fragment() {
     private var _binding: FragmentTrackBinding? = null
     private val binding get() = _binding!!
 
+    private var _playlistAdapter: PlaylistAdapter? = null
+    private val playlistAdapter get() = _playlistAdapter!!
+
     companion object {
         const val TRACK_ID_LABEL = "track_id"
         fun createArgs(trackId: String): Bundle = bundleOf(TRACK_ID_LABEL to trackId)
@@ -52,6 +61,17 @@ class TrackFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _playlistAdapter = PlaylistAdapter {
+            val isAdded = viewModel.addTrackToPlaylist(it)
+            if (isAdded) {
+                mediaViewModel.updatePlaylist()
+            } else {
+                (requireActivity().application as App).showToast(
+                    binding.root,
+                    "Трек уже добавлен в плейлист ${it.name}"
+                )
+            }
+        }
         setupToolbar()
         setupFragment()
     }
@@ -60,6 +80,7 @@ class TrackFragment : Fragment() {
         super.onDestroyView()
         viewModel.releasePlayer()
         _binding = null
+        _playlistAdapter = null
     }
 
     override fun onPause() {
@@ -77,11 +98,18 @@ class TrackFragment : Fragment() {
                     binding.playTrackIv.setImageResource(it.iconResId)
                     binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
+                    playlistAdapter.updateList(it.playlists)
                 }
 
                 is TrackViewModel.ScreenState.Error -> {}
             }
         }
+
+        binding.playlistsRv.apply {
+            adapter = playlistAdapter
+            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        }
+
         binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
         binding.likeTrackIv.setOnClickListener {
             viewModel.toggleTrackFavorites()
@@ -89,6 +117,16 @@ class TrackFragment : Fragment() {
                 delay(200)
                 mediaViewModel.updateFavoritePlayList()
             }
+        }
+
+        val behavior = BottomSheetBehavior.from<LinearLayout>(binding.standardBottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        binding.addTrackIv.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+
+        binding.actionBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
         }
     }
 
