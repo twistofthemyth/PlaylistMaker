@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -30,26 +30,13 @@ import org.koin.core.parameter.parametersOf
 
 class TrackFragment : Fragment() {
 
-    private val viewModel: TrackViewModel by viewModel {
-        parametersOf(
-            requireArguments().getString(
-                TRACK_ID_LABEL
-            )
-        )
-    }
-
+    private val args by navArgs<TrackFragmentArgs>()
+    private val viewModel: TrackViewModel by viewModel { parametersOf(args.trackId) }
     private val mediaViewModel: MediaViewModel by activityViewModel<MediaViewModel>()
-
     private var _binding: FragmentTrackBinding? = null
     private val binding get() = _binding!!
-
     private var _playlistAdapter: PlaylistAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
-
-    companion object {
-        const val TRACK_ID_LABEL = "track_id"
-        fun createArgs(trackId: String): Bundle = bundleOf(TRACK_ID_LABEL to trackId)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,6 +51,11 @@ class TrackFragment : Fragment() {
         _playlistAdapter = PlaylistAdapter {
             val isAdded = viewModel.addTrackToPlaylist(it)
             if (isAdded) {
+                hideBottomSheet()
+                (requireActivity().application as App).showToast(
+                    binding.root,
+                    "Трек добавлен в плейлист ${it.name}"
+                )
                 mediaViewModel.updatePlaylist()
             } else {
                 (requireActivity().application as App).showToast(
@@ -119,15 +111,24 @@ class TrackFragment : Fragment() {
             }
         }
 
-        val behavior = BottomSheetBehavior.from<LinearLayout>(binding.standardBottomSheet)
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        binding.addTrackIv.setOnClickListener {
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-        }
+        hideBottomSheet()
+        binding.addTrackIv.setOnClickListener { showBottomSheet() }
 
         binding.actionBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
+            val direction =
+                TrackFragmentDirections.actionTrackFragmentToCreatePlaylistFragment(args.trackId)
+            findNavController().navigate(direction)
         }
+    }
+
+    private fun hideBottomSheet() {
+        val behavior = BottomSheetBehavior.from<LinearLayout>(binding.standardBottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun showBottomSheet() {
+        val behavior = BottomSheetBehavior.from<LinearLayout>(binding.standardBottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
     private fun setupToolbar() {

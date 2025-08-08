@@ -47,6 +47,7 @@ class TrackViewModel(
                             ScreenState.Error()
                         }
                     }
+
                     else -> ScreenState.Error()
                 }
                 screenState.postValue(initState)
@@ -150,6 +151,7 @@ class TrackViewModel(
             var isFavorite: Boolean,
             val playlists: List<Playlist>
         ) : ScreenState
+
         class Error() : ScreenState
     }
 

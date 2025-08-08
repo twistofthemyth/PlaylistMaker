@@ -17,6 +17,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.createplaylist.ui.view_model.CreatePlaylistViewModel
@@ -32,6 +33,7 @@ import java.util.UUID
 
 class CreatePlaylistFragment : Fragment() {
 
+    private val args by navArgs<CreatePlaylistFragmentArgs>()
     private val createPlaylistModel: CreatePlaylistViewModel by viewModel<CreatePlaylistViewModel>()
     private val playlistViewModel: MediaViewModel by activityViewModel<MediaViewModel>()
     private var _binding: FragmentPlaylistCreateBinding? = null
@@ -57,19 +59,19 @@ class CreatePlaylistFragment : Fragment() {
                         .setMessage("Все несохраненные данные будут потеряны")
                         .setNegativeButton("Нет") { dialog, which -> }
                         .setPositiveButton("Да") { dialog, which ->
-                            findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+                            navigateToPrevScreen()
                         }
                         .show()
                 }
 
-                else -> findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+                else -> navigateToPrevScreen()
             }
         }
 
         createPlaylistModel.getState().observe(viewLifecycleOwner) {
             when (it) {
                 is CreatePlaylistViewModel.CreatePlaylistState.Created -> {
-                    findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+                    navigateToPrevScreen()
                     (requireActivity().application as App).showToast(
                         binding.root,
                         "Плейлист ${binding.nameEt.text} создан"
@@ -116,6 +118,16 @@ class CreatePlaylistFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun navigateToPrevScreen() {
+        if (args.trackId.isEmpty()) {
+            findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+        } else {
+            val direction =
+                CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToTrackFragment(args.trackId)
+            findNavController().navigate(direction)
+        }
     }
 
     private fun registerPickMedia(): ActivityResultLauncher<PickVisualMediaRequest> {
