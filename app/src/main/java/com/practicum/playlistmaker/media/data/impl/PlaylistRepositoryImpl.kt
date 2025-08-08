@@ -8,6 +8,7 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.data_utils.DataConverter
+import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -44,8 +45,8 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
             .addPlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
     }
 
-    override suspend fun removePlaylist(playlist: Playlist) {
-        appDatabase.getPlaylistDao().removePlaylist(playlist.id)
+    override suspend fun removePlaylist(playlistId: Long) {
+        appDatabase.getPlaylistDao().removePlaylist(playlistId)
     }
 
     override fun getPlaylists(): Flow<Playlist> {
@@ -57,6 +58,15 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
                         DataConverter.convertPlaylistEntityToPlaylist(it, tracks)
                     )
                 }
+        }
+    }
+
+    override suspend fun getPlaylist(playlistId: Long): Resource<Playlist> {
+        val playlistEntity = appDatabase.getPlaylistDao().getPlaylistById(playlistId)
+        return if (playlistEntity != null) {
+            Resource.Success(DataConverter.convertPlaylistEntityToPlaylist(playlistEntity))
+        } else {
+            Resource.ClientError(null)
         }
     }
 

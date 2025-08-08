@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
 import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -57,6 +60,14 @@ class PlaylistFragment : Fragment() {
                     binding.yearTv.text = it.playlist.description
                     binding.durationTv.text = it.duration
                     binding.trackCountTv.text = it.count
+
+                    binding.optionIv.setOnClickListener {
+                        debounceOptionButton()
+                        BottomSheetPlaylistOptionsFragment(args.playlistId).show(
+                            parentFragmentManager,
+                            BottomSheetPlaylistOptionsFragment.TAG
+                        )
+                    }
                 }
 
                 is PlaylistViewModel.PlaylistState.Loading -> {
@@ -71,6 +82,14 @@ class PlaylistFragment : Fragment() {
                     binding.progressBar.isVisible = true
                 }
             }
+        }
+    }
+
+    fun debounceOptionButton() {
+        lifecycleScope.async {
+            binding.optionIv.isClickable = false
+            delay(200)
+            binding.optionIv.isClickable = true
         }
     }
 
