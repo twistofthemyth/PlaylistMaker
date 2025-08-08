@@ -24,7 +24,11 @@ class PlaylistViewHolder(private val binding: SearchResultItemBinding) :
             .into(binding.IvAlbum)
 
         binding.TvTrackName.text = data.name
-        binding.TvTrackAuthor.text = "${data.track.size} треков"
+        binding.TvTrackAuthor.text = binding.TvTrackAuthor.resources.getQuantityString(
+            R.plurals.plular_track,
+            data.track.size,
+            data.track.size
+        )
         binding.TvTrackLength.isVisible = false
         binding.IvDotDelimiter.isVisible = false
     }

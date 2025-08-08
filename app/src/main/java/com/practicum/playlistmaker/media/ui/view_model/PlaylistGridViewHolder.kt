@@ -23,6 +23,10 @@ class PlaylistGridViewHolder(private val binding: PlaylistGridItemBinding) :
             .into(binding.imageIv)
 
         binding.nameTv.text = data.name
-        binding.countTv.text = "${data.track.size} треков"
+        binding.countTv.text = binding.countTv.resources.getQuantityString(
+            R.plurals.plular_track,
+            data.track.size,
+            data.track.size
+        )
     }
 }
