@@ -17,7 +17,7 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
     private var image: Uri?
 
     init {
-        state = MutableLiveData(CreatePlaylistState.Empty())
+        state = MutableLiveData(CreatePlaylistState.Empty)
         name = ""
         description = ""
         image = null
@@ -41,10 +41,10 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
     }
 
     private fun postAfterEditState() {
-        if (name.isNotEmpty()) {
-            state.postValue(CreatePlaylistState.ReadyForCreate())
+        if (name.trim().isNotEmpty()) {
+            state.postValue(CreatePlaylistState.ReadyForCreate)
         } else {
-            state.postValue(CreatePlaylistState.InEdit())
+            state.postValue(CreatePlaylistState.InEdit)
         }
     }
 
@@ -60,13 +60,13 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
                 )
             )
         }
-        state.postValue(CreatePlaylistState.Created())
+        state.postValue(CreatePlaylistState.Created)
     }
 
     sealed interface CreatePlaylistState {
-        class Empty : CreatePlaylistState
-        class InEdit : CreatePlaylistState
-        class ReadyForCreate : CreatePlaylistState
-        class Created : CreatePlaylistState
+        data object Empty : CreatePlaylistState
+        data object InEdit : CreatePlaylistState
+        data object ReadyForCreate : CreatePlaylistState
+        data object Created : CreatePlaylistState
     }
 }

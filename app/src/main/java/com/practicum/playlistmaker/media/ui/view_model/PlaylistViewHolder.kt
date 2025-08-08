@@ -15,7 +15,7 @@ class PlaylistViewHolder(private val binding: SearchResultItemBinding) :
         Glide.with(itemView)
             .load(data.image.toUri())
             .placeholder(R.drawable.placeholder_album)
-            .centerInside()
+            .centerCrop()
             .transform(
                 RoundedCorners(
                     binding.IvAlbum.context.resources.getInteger(R.integer.album_image_corner)

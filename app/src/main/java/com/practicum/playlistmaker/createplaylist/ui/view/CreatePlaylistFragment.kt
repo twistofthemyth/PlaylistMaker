@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.createplaylist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentPlaylistCreateBinding
@@ -131,7 +132,10 @@ class CreatePlaylistFragment : Fragment() {
     private fun registerPickMedia(): ActivityResultLauncher<PickVisualMediaRequest> {
         return registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
-                binding.addImageView.setImageURI(uri)
+                Glide.with(binding.addImageView)
+                    .load(uri)
+                    .centerCrop()
+                    .into(binding.addImageView)
                 createPlaylistModel.setImage(saveImageToStorage(uri))
             }
         }

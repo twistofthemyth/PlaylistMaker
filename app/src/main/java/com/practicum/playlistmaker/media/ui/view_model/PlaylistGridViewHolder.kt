@@ -11,10 +11,10 @@ import com.practicum.playlistmaker.media.domain.models.Playlist
 class PlaylistGridViewHolder(private val binding: PlaylistGridItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(data: Playlist) {
-        Glide.with(itemView)
+        Glide.with(binding.imageIv)
             .load(data.image.toUri())
             .placeholder(R.drawable.placeholder_album)
-            .centerInside()
+            .centerCrop()
             .transform(
                 RoundedCorners(
                     binding.imageIv.context.resources.getInteger(R.integer.album_image_corner)
