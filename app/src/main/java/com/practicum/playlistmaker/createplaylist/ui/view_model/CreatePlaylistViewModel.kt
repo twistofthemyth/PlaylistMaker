@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository) : ViewModel() {
 
@@ -27,27 +27,29 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
 
     fun setName(value: String) {
         name = value
-        if (name.isNotEmpty()) {
-            state.postValue(CreatePlaylistState.ReadyForCreate())
-        }
+        postAfterEditState()
     }
 
     fun setDescription(value: String) {
         description = value
-        if (name.isEmpty()) {
-            state.postValue(CreatePlaylistState.InEdit())
-        }
+        postAfterEditState()
     }
 
     fun setImage(value: Uri) {
         image = value
-        if (name.isEmpty()) {
+        postAfterEditState()
+    }
+
+    private fun postAfterEditState() {
+        if (name.isNotEmpty()) {
+            state.postValue(CreatePlaylistState.ReadyForCreate())
+        } else {
             state.postValue(CreatePlaylistState.InEdit())
         }
     }
 
     fun createPlaylist() {
-        viewModelScope.async {
+        viewModelScope.launch {
             playlistRepository.addPlaylist(
                 Playlist(
                     0,

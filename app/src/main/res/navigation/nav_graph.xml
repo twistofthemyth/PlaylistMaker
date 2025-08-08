@@ -16,7 +16,13 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment" />
+            app:destination="@id/createPlaylistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="tab_id"
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -41,7 +47,9 @@
         tools:layout="@layout/fragment_track">
         <action
             android:id="@+id/action_trackFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment" />
+            app:destination="@id/createPlaylistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="track_id"
             app:argType="string" />
@@ -53,16 +61,18 @@
         <action
             android:id="@+id/action_createPlaylistFragment_to_mediaFragment"
             app:destination="@id/mediaFragment"
+            app:enterAnim="@anim/slide_in_left"
             app:popUpTo="@id/mediaFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_createPlaylistFragment_to_trackFragment"
             app:destination="@id/trackFragment"
+            app:enterAnim="@anim/slide_in_left"
             app:popUpTo="@id/trackFragment"
             app:popUpToInclusive="true" />
         <argument
             android:name="track_id"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 </navigation>

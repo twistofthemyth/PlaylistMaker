@@ -7,6 +7,8 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
@@ -35,8 +37,9 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
     }
 
     fun updatePlaylist() {
-        viewModelScope.launch {
-            playlistsState.postValue(PlaylistState.Empty())
+        viewModelScope.async {
+            playlistsState.postValue(PlaylistState.Loading())
+            delay(500)
             val playlistList = playlistRepository.getPlaylists().toList()
             playlistsState.postValue(PlaylistState.Content(playlistList))
         }
@@ -48,6 +51,7 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
     }
 
     sealed interface PlaylistState {
+        class Loading() : PlaylistState
         class Content(val playlists: List<Playlist>) : PlaylistState
         class Empty() : PlaylistState
     }

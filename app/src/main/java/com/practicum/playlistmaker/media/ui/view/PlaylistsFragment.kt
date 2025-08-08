@@ -42,6 +42,7 @@ class PlaylistsFragment : Fragment() {
                     binding.actionBtn.isVisible = true
                     binding.playlistsRv.isVisible = false
                     binding.playlistsRvSpacer.isVisible = false
+                    binding.progressBar.isVisible = false
                 }
 
                 is MediaViewModel.PlaylistState.Content -> {
@@ -50,10 +51,20 @@ class PlaylistsFragment : Fragment() {
                     binding.actionBtn.isVisible = true
                     binding.playlistsRv.isVisible = true
                     binding.playlistsRvSpacer.isVisible = true
+                    binding.progressBar.isVisible = false
 
                     binding.playlistsRv.layoutManager = GridLayoutManager(requireContext(), 2)
                     binding.playlistsRv.adapter = playlistAdapter
                     playlistAdapter.updateList(it.playlists)
+                }
+
+                is MediaViewModel.PlaylistState.Loading -> {
+                    binding.errorIv.isVisible = false
+                    binding.errorTv.isVisible = false
+                    binding.actionBtn.isVisible = true
+                    binding.playlistsRv.isVisible = false
+                    binding.playlistsRvSpacer.isVisible = false
+                    binding.progressBar.isVisible = true
                 }
             }
         }

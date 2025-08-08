@@ -8,6 +8,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,13 +19,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.createplaylist.ui.view_model.CreatePlaylistViewModel
 import com.practicum.playlistmaker.databinding.FragmentPlaylistCreateBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -55,10 +54,10 @@ class CreatePlaylistFragment : Fragment() {
                 is CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate,
                 is CreatePlaylistViewModel.CreatePlaylistState.InEdit -> {
                     AlertDialog.Builder(requireContext())
-                        .setTitle("Завершить создание плейлиста?")
-                        .setMessage("Все несохраненные данные будут потеряны")
-                        .setNegativeButton("Нет") { dialog, which -> }
-                        .setPositiveButton("Да") { dialog, which ->
+                        .setTitle(requireActivity().getString(R.string.cancel_playlist_creating_title))
+                        .setMessage(requireActivity().getString(R.string.cancel_playlist_creating_subtitle))
+                        .setNeutralButton(requireActivity().getString(R.string.dialog_cancel)) { dialog, which -> }
+                        .setPositiveButton(requireActivity().getString(R.string.dialog_complete)) { dialog, which ->
                             navigateToPrevScreen()
                         }
                         .show()
@@ -72,10 +71,11 @@ class CreatePlaylistFragment : Fragment() {
             when (it) {
                 is CreatePlaylistViewModel.CreatePlaylistState.Created -> {
                     navigateToPrevScreen()
-                    (requireActivity().application as App).showToast(
-                        binding.root,
-                        "Плейлист ${binding.nameEt.text} создан"
-                    )
+                    Toast.makeText(
+                        requireContext(),
+                        requireActivity().getString(R.string.playlist_created)
+                            .format(binding.nameEt.text), Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 is CreatePlaylistViewModel.CreatePlaylistState.Empty -> binding.createBtn.isEnabled =
@@ -95,21 +95,20 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         binding.nameEt.doOnTextChanged { text, start, before, count ->
-            if (text != null && text.isNotEmpty()) {
+            if (text != null) {
                 createPlaylistModel.setName(text.toString())
             }
         }
 
         binding.descriptionEt.doOnTextChanged { text, start, before, count ->
-            if (text != null && text.isNotEmpty()) {
+            if (text != null) {
                 createPlaylistModel.setDescription(text.toString())
             }
         }
 
         binding.createBtn.setOnClickListener {
-            createPlaylistModel.createPlaylist()
-            lifecycleScope.async {
-                delay(100)
+            lifecycleScope.launch {
+                createPlaylistModel.createPlaylist()
                 playlistViewModel.updatePlaylist()
             }
         }
@@ -121,13 +120,12 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun navigateToPrevScreen() {
-        if (args.trackId.isEmpty()) {
-            findNavController().navigate(R.id.action_createPlaylistFragment_to_mediaFragment)
+        val direction = if (args.trackId.isEmpty()) {
+            CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToMediaFragment(1)
         } else {
-            val direction =
-                CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToTrackFragment(args.trackId)
-            findNavController().navigate(direction)
+            CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToTrackFragment(args.trackId)
         }
+        findNavController().navigate(direction)
     }
 
     private fun registerPickMedia(): ActivityResultLauncher<PickVisualMediaRequest> {

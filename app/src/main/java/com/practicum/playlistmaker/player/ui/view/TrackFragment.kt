@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -15,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
@@ -52,16 +52,18 @@ class TrackFragment : Fragment() {
             val isAdded = viewModel.addTrackToPlaylist(it)
             if (isAdded) {
                 hideBottomSheet()
-                (requireActivity().application as App).showToast(
-                    binding.root,
-                    "Трек добавлен в плейлист ${it.name}"
-                )
+                Toast.makeText(
+                    requireContext(),
+                    requireActivity().getString(R.string.track_added_to_playlist)
+                        .format(it.name), Toast.LENGTH_SHORT
+                ).show()
                 mediaViewModel.updatePlaylist()
             } else {
-                (requireActivity().application as App).showToast(
-                    binding.root,
-                    "Трек уже добавлен в плейлист ${it.name}"
-                )
+                Toast.makeText(
+                    requireContext(),
+                    requireActivity().getString(R.string.track_already_in_playlist)
+                        .format(it.name), Toast.LENGTH_SHORT
+                ).show()
             }
         }
         setupToolbar()
