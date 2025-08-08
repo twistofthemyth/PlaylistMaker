@@ -59,8 +59,8 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
                     mutableListOf()
                 )
             )
+            state.postValue(CreatePlaylistState.Created)
         }
-        state.postValue(CreatePlaylistState.Created)
     }
 
     sealed interface CreatePlaylistState {

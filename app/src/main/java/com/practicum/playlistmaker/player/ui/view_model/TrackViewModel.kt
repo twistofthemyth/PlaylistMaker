@@ -40,7 +40,8 @@ class TrackViewModel(
                         if (it.data != null && it.data.isNotEmpty()) {
                             track = it.data[0]
                             trackPlayer.preparePlayer(track)
-                            cachedFavoriteState = playlistRepository.isTrackInFavorites(track)
+                            cachedFavoriteState =
+                                playlistRepository.isTrackInFavorites(track.trackId.toLong())
                             cachedPlaylists = playlistRepository.getPlaylists().toList()
                             contentState()
                         } else {
@@ -103,7 +104,7 @@ class TrackViewModel(
         cachedFavoriteState = false
         screenState.postValue(contentState())
         viewModelScope.launch {
-            playlistRepository.removeTrackFromFavorites(track)
+            playlistRepository.removeTrackFromFavorites(track.trackId.toLong())
         }
     }
 
@@ -116,16 +117,15 @@ class TrackViewModel(
     }
 
     fun addTrackToPlaylist(playlist: Playlist): Boolean {
-        if (!playlist.track.contains(track)) {
-            viewModelScope.launch {
-                playlistRepository.addTrackToPlaylist(playlist, track)
+        var result = false
+        viewModelScope.launch {
+            result = playlistRepository.addTrackToPlaylist(playlist.id, track)
+            if (result) {
                 cachedPlaylists = playlistRepository.getPlaylists().toList()
                 screenState.postValue(contentState())
             }
-            return true
-        } else {
-            return false
         }
+        return result
     }
 
     private fun isTrackInFavorites(): Boolean {
