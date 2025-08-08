@@ -35,13 +35,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/name_et"
+        app:layout_constraintBottom_toTopOf="@id/name_et_layout"
         app:layout_constraintDimensionRatio="1:1"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="26dp" />
 
-    <EditText
-        android:id="@+id/name_et"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/name_et_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Название *"
@@ -49,20 +49,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="17dp"
-        android:layout_marginTop="32dp" />
+        android:layout_marginTop="32dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-    <EditText
-        android:id="@+id/description_et"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/description_et_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Описание"
-        app:layout_constraintTop_toBottomOf="@id/name_et"
+        app:layout_constraintTop_toBottomOf="@id/name_et_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="17dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/PM.Button.Main"
         android:id="@+id/create_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

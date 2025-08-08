@@ -26,9 +26,7 @@ class PlaylistsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if(savedInstanceState == null) {
-            _binding = FragmentPlaylistsBinding.inflate(layoutInflater)
-        }
+        _binding = FragmentPlaylistsBinding.inflate(layoutInflater)
         return binding.root
     }
 
