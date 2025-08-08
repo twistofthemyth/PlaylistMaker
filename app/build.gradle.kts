@@ -1,6 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("androidx.navigation.safeargs.kotlin")
     id("kotlin-kapt")
 }
 
@@ -42,23 +43,30 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.gson)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.github.glide)
-    implementation(libs.koin.android)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    val retrofitVersion = "2.11.0"
+    val navVersion = "2.9.0"
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.core", "core-ktx", "1.15.0")
+    implementation("androidx.appcompat", "appcompat", "1.6.1")
+    implementation("com.google.android.material", "material", "1.10.0")
+    implementation("androidx.activity", "activity", "1.9.3")
+    implementation("androidx.constraintlayout", "constraintlayout", "2.1.4")
+    implementation("com.google.code.gson", "gson", "2.12.1")
+    implementation("com.squareup.retrofit2", "retrofit", retrofitVersion)
+    implementation("com.squareup.retrofit2", "converter-gson", retrofitVersion)
+    implementation("com.github.bumptech.glide", "glide", "4.14.2")
+    implementation("io.insert-koin", "koin-android", "3.3.0")
+    implementation("androidx.navigation", "navigation-fragment-ktx", navVersion)
+    implementation("androidx.navigation", "navigation-ui-ktx", navVersion)
+    implementation("androidx.room", "room-runtime", roomVersion)
+    implementation("androidx.room", "room-ktx", roomVersion)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-android", "1.6.4")
+
+    testImplementation("junit", "junit", "4.13.2")
+
+    androidTestImplementation("androidx.test.ext", "junit", "1.2.1")
+    androidTestImplementation("androidx.test.espresso", "espresso-core", "3.6.1")
+
+    kapt("androidx.room", "room-compiler", roomVersion)
 }
