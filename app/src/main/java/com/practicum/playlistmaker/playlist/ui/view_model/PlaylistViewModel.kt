@@ -38,8 +38,8 @@ class PlaylistViewModel(val playlistRepository: PlaylistRepository, val playlist
             state.postValue(
                 PlaylistState.Content(
                     playlist,
-                    "${playlist.track.size} треков",
-                    "${computeDuration(playlist)} минут"
+                    playlist.track.size,
+                    computeDuration(playlist)
                 )
             )
         }
@@ -56,7 +56,7 @@ class PlaylistViewModel(val playlistRepository: PlaylistRepository, val playlist
 
     sealed interface PlaylistState {
         class Loading() : PlaylistState
-        class Content(val playlist: Playlist, val count: String, val duration: String) :
+        class Content(val playlist: Playlist, val count: Int, val duration: Int) :
             PlaylistState
     }
 }

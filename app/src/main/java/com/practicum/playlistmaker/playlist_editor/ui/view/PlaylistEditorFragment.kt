@@ -13,7 +13,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -21,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.practicum.playlistmaker.media.domain.models.Playlist
@@ -206,7 +206,7 @@ class PlaylistEditorFragment : Fragment() {
             when (createPlaylistModel.getState().value) {
                 is PlaylistEditorViewModel.CreatePlaylistState.ReadyForCreate,
                 is PlaylistEditorViewModel.CreatePlaylistState.InEdit -> {
-                    AlertDialog.Builder(requireContext())
+                    MaterialAlertDialogBuilder(requireContext())
                         .setTitle(requireActivity().getString(R.string.cancel_playlist_creating_title))
                         .setMessage(requireActivity().getString(R.string.cancel_playlist_creating_subtitle))
                         .setNeutralButton(requireActivity().getString(R.string.dialog_cancel)) { dialog, which -> }

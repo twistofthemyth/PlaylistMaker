@@ -112,8 +112,13 @@ class PlaylistFragment : Fragment() {
 
                     binding.nameTv.text = it.playlist.name
                     binding.yearTv.text = it.playlist.description
-                    binding.durationTv.text = it.duration
-                    binding.trackCountTv.text = it.count
+                    binding.durationTv.text = resources.getQuantityString(
+                        R.plurals.plular_minutes,
+                        it.duration,
+                        it.duration
+                    )
+                    binding.trackCountTv.text =
+                        resources.getQuantityString(R.plurals.plular_track, it.count, it.count)
 
                     binding.optionIv.setOnClickListener {
                         debounceOptionButton()
