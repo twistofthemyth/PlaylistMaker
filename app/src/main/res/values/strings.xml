@@ -32,7 +32,9 @@
     <string name="media_nav_item">Медиатека</string>
     <string name="settings_nav_item">Настройки</string>
     <string name="create_playlist">Новый плейлист</string>
+    <string name="edit_playlist">Редактировать плейлист</string>
     <string name="create_playlist_button">Создать</string>
+    <string name="save_playlist_button">Сохранить</string>
     <string name="add_to_playlist_title">Добавить в плейлист</string>
     <string name="cancel_playlist_creating_title">Завершить создание плейлиста?</string>
     <string name="cancel_playlist_creating_subtitle">Все несохраненные данные будут потеряны</string>
@@ -41,6 +43,7 @@
     <string name="dialog_yes">Да</string>
     <string name="dialog_no">Нет</string>
     <string name="playlist_created">Плейлист %s создан</string>
+    <string name="playlist_saved">Плейлист %s сохранен</string>
     <string name="playlist_deleted">Плейлист %s удален</string>
     <string name="track_deleted">Трек удален из плейлиста</string>
     <string name="track_added_to_playlist">Трек добавлен в плейлист %s</string>

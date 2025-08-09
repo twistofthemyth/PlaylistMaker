@@ -147,28 +147,14 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/round_thing" />
 
-        <ImageView
-            android:id="@+id/error_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/placeholder_not_found"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/error_tv"
             style="@style/PM.Text.Notification.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:text="@string/empty_playlist"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/error_iv" />
+            android:layout_marginTop="32dp"
+            android:text="@string/empty_playlist" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tacks_rv"

@@ -9,7 +9,8 @@ interface PlaylistRepository {
     suspend fun isTrackInFavorites(trackId: Long): Boolean
     suspend fun isTrackInPlaylist(playlistId: Long, trackId: Long): Boolean
     fun getFavoritesTrack(): Flow<Track>
-    suspend fun addPlaylist(playlist: Playlist): List<Playlist>
+    suspend fun addPlaylist(playlist: Playlist)
+    suspend fun updatePlaylist(playlist: Playlist)
     suspend fun removePlaylist(playlistId: Long)
     suspend fun getPlaylist(playlistId: Long): Resource<Playlist>
     suspend fun getPlaylists(): List<Playlist>

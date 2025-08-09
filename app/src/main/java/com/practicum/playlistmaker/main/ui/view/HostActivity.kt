@@ -31,7 +31,7 @@ class HostActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             navBarEnabled = when (destination.id) {
-                R.id.trackFragment, R.id.createPlaylistFragment, R.id.playlistFragment -> false
+                R.id.trackFragment, R.id.playlistEditorFragment, R.id.playlistFragment -> false
                 else -> true
             }
         }

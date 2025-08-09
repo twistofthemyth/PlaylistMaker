@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.net.toUri
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -62,6 +63,15 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
                     )
 
                     binding.deleteTv.setOnClickListener { showAlert() }
+
+                    binding.editTv.setOnClickListener {
+                        val direction =
+                            PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistEditorFragment(
+                                playlistId
+                            )
+                        findNavController().navigate(direction)
+                        dismiss()
+                    }
                 }
 
                 BottomSheetPlaylistOptionsViewModel.BottomSheetPlaylistOptionsState.Error -> dismiss()

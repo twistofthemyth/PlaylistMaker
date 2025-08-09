@@ -125,10 +125,8 @@ class PlaylistFragment : Fragment() {
 
                     if (it.playlist.track.isEmpty()) {
                         binding.errorTv.isVisible = true
-                        binding.errorIv.isVisible = true
                     } else {
                         binding.errorTv.isVisible = false
-                        binding.errorIv.isVisible = false
                         trackListAdapter.updateList(it.playlist.track)
                     }
                 }
@@ -144,7 +142,6 @@ class PlaylistFragment : Fragment() {
                     binding.optionIv.isVisible = false
                     binding.progressBar.isVisible = true
                     binding.errorTv.isVisible = false
-                    binding.errorIv.isVisible = false
                 }
             }
         }

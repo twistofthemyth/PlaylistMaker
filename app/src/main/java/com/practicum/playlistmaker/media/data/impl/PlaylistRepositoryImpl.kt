@@ -34,10 +34,16 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
         return getTracksInPlaylist(favoritesPlaylistId)
     }
 
-    override suspend fun addPlaylist(playlist: Playlist): List<Playlist> {
+    override suspend fun addPlaylist(playlist: Playlist) {
         appDatabase.getPlaylistDao()
             .addPlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
-        return getPlaylists()
+    }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        if (playlist.id != favoritesPlaylistId) {
+            appDatabase.getPlaylistDao()
+                .updatePlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
+        }
     }
 
     override suspend fun removePlaylist(playlistId: Long) {
@@ -58,7 +64,7 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
                 .forEach { emit(DataConverter.convertTrackEntityToTrack(it)) }
         }
     }
-        
+
     override suspend fun getPlaylist(playlistId: Long): Resource<Playlist> {
         val playlistEntity = appDatabase.getPlaylistDao().getPlaylistById(playlistId)
         return if (playlistEntity != null) {
