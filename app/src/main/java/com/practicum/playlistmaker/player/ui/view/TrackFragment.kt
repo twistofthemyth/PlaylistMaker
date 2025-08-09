@@ -86,21 +86,8 @@ class TrackFragment : Fragment() {
     }
 
     private fun setupFragment() {
-        viewModel.getScreenState().observe(viewLifecycleOwner) {
-            when (it) {
-                is TrackViewModel.ScreenState.Loading -> {}
-
-                is TrackViewModel.ScreenState.Content -> {
-                    binding.timeTv.text = it.position
-                    binding.playTrackIv.setImageResource(it.iconResId)
-                    binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
-                    setupTrackInfo(it.track)
-                    playlistAdapter.updateList(it.playlists)
-                }
-
-                is TrackViewModel.ScreenState.Error -> {}
-            }
-        }
+        observeTrackState()
+        observePlaylistsState()
 
         binding.playlistsRv.apply {
             adapter = playlistAdapter
@@ -120,7 +107,40 @@ class TrackFragment : Fragment() {
         binding.addTrackIv.setOnClickListener { showBottomSheet() }
 
         binding.actionBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
+            val direction =
+                TrackFragmentDirections.actionTrackFragmentToCreatePlaylistFragment(trackId = args.trackId)
+            findNavController().navigate(direction)
+        }
+    }
+
+    private fun observeTrackState() {
+        viewModel.getScreenState().observe(viewLifecycleOwner) {
+            when (it) {
+                is TrackViewModel.TrackState.Loading -> {}
+
+                is TrackViewModel.TrackState.Content -> {
+                    binding.timeTv.text = it.position
+                    binding.playTrackIv.setImageResource(it.iconResId)
+                    binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
+                    setupTrackInfo(it.track)
+                }
+
+                is TrackViewModel.TrackState.Error -> {}
+            }
+        }
+    }
+
+    private fun observePlaylistsState() {
+        viewModel.getPlaylistsState().observe(viewLifecycleOwner) {
+            when (it) {
+                is TrackViewModel.PlaylistsState.Content -> {
+                    playlistAdapter.updateList(it.playlists)
+                }
+
+                TrackViewModel.PlaylistsState.Loading -> {
+                    playlistAdapter.updateList(emptyList())
+                }
+            }
         }
     }
 

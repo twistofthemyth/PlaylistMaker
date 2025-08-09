@@ -67,12 +67,23 @@
             android:name="playlist_id"
             android:defaultValue="-1L"
             app:argType="long" />
+        <argument
+            android:name="track_id"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_playlistEditorFragment_to_playlistFragment"
             app:destination="@id/playlistFragment"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_in_right"
             app:popUpTo="@id/playlistFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_playlistEditorFragment_to_trackFragment"
+            app:destination="@id/trackFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_in_right"
+            app:popUpTo="@id/trackFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

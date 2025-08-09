@@ -65,7 +65,7 @@ class PlaylistEditorViewModel(val playlistRepository: PlaylistRepository, val pl
     fun exitEditor(): Playlist {
         state.postValue(CreatePlaylistState.Created)
         return Playlist(
-            playlistId,
+            if (playlistId < 0) 0 else playlistId,
             name,
             description,
             image.toString(),

@@ -36,7 +36,7 @@ import java.util.UUID
 
 class PlaylistEditorFragment : Fragment() {
     private val args by navArgs<PlaylistEditorFragmentArgs>()
-    private val createPlaylistModel: PlaylistEditorViewModel by viewModel<PlaylistEditorViewModel>() {
+    private val createPlaylistModel: PlaylistEditorViewModel by viewModel<PlaylistEditorViewModel> {
         parametersOf(
             args.playlistId
         )
@@ -115,7 +115,16 @@ class PlaylistEditorFragment : Fragment() {
                 val newPlaylist = createPlaylistModel.exitEditor()
                 playlistViewModel.createPlaylist(newPlaylist)
 
-                parentFragmentManager.popBackStack()
+                if (args.trackId.isNotEmpty()) {
+                    val direction =
+                        PlaylistEditorFragmentDirections.actionPlaylistEditorFragmentToTrackFragment(
+                            args.trackId
+                        )
+                    findNavController().navigate(direction)
+                } else {
+                    parentFragmentManager.popBackStack()
+                }
+
 
                 Toast.makeText(
                     requireContext(),
