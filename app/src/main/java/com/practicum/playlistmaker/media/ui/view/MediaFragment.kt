@@ -5,16 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediaBinding
 
 class MediaFragment : Fragment() {
+    private val args by navArgs<MediaFragmentArgs>()
     private var _binding: FragmentMediaBinding? = null
     private val binding get() = _binding!!
 
     private var _tabMediator: TabLayoutMediator? = null
-    private val tabMediator get() = _tabMediator!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,8 +38,12 @@ class MediaFragment : Fragment() {
                 0 -> tab.text = resources.getString(R.string.favorites_tab)
                 1 -> tab.text = resources.getString(R.string.playlists_tab)
             }
+        }.apply {
+            attach()
+            binding.viewPager.post {
+                binding.viewPager.currentItem = args.tabId
+            }
         }
-        tabMediator.attach()
     }
 
     override fun onDestroy() {

@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
-import com.practicum.playlistmaker.player.ui.view.TrackFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
@@ -215,8 +214,9 @@ class SearchFragment : Fragment() {
             .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
                 when (destination) {
                     is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
-                        findNavController().navigate(R.id.action_searchFragment_to_trackFragment,
-                            TrackFragment.createArgs(destination.track.trackId))
+                        val direction =
+                            SearchFragmentDirections.actionSearchFragmentToTrackFragment(destination.track.trackId)
+                        findNavController().navigate(direction)
                     }
                 }
             })

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "favorite_tracks_table")
+@Entity(tableName = "tracks_table")
 data class TrackEntity(
     @PrimaryKey
     @ColumnInfo(name = "track_id")
@@ -28,7 +28,5 @@ data class TrackEntity(
     @ColumnInfo(name = "country_name")
     val country: String,
     @ColumnInfo(name = "track_url")
-    val previewUrl: String,
-    @ColumnInfo(name = "created_at")
-    val createdAt: Long = System.currentTimeMillis()
+    val previewUrl: String
 )

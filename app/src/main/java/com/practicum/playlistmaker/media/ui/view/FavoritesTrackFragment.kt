@@ -8,10 +8,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoritesBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
-import com.practicum.playlistmaker.player.ui.view.TrackFragment
 import com.practicum.playlistmaker.search.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
@@ -60,10 +58,9 @@ class FavoritesTrackFragment : Fragment() {
             .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
                 when (destination) {
                     is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
-                        findNavController().navigate(
-                            R.id.action_mediaFragment_to_trackFragment,
-                            TrackFragment.createArgs(destination.track.trackId)
-                        )
+                        val direction =
+                            MediaFragmentDirections.actionMediaFragmentToTrackFragment(destination.track.trackId)
+                        findNavController().navigate(direction)
                     }
                 }
             })
