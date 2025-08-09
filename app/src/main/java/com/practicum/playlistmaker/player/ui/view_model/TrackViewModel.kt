@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.media.domain.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
+import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
@@ -19,7 +20,7 @@ import org.koin.core.component.KoinComponent
 class TrackViewModel(
     private val trackId: String,
     private val searchInteractor: SearchInteractor,
-    private val favoriteTracksRepository: FavoriteTracksRepository,
+    private val playlistRepository: PlaylistRepository,
     private val trackPlayer: TrackPlayer
 ) : ViewModel(), KoinComponent {
 
@@ -27,9 +28,10 @@ class TrackViewModel(
     private lateinit var track: Track
     private var timerJob: Job? = null
     private var cachedFavoriteState: Boolean? = null
+    private var cachedPlaylists: List<Playlist> = mutableListOf()
 
     init {
-        screenState.postValue(ScreenState.Loading())
+        screenState.postValue(ScreenState.Loading)
         viewModelScope.launch {
             searchInteractor.searchTracks(trackId).collect {
                 val initState = when (it) {
@@ -37,13 +39,16 @@ class TrackViewModel(
                         if (it.data != null && it.data.isNotEmpty()) {
                             track = it.data[0]
                             trackPlayer.preparePlayer(track)
-                            cachedFavoriteState = favoriteTracksRepository.isTrackInFavorites(track)
+                            cachedFavoriteState =
+                                playlistRepository.isTrackInFavorites(track.trackId.toLong())
+                            cachedPlaylists = playlistRepository.getPlaylists()
                             contentState()
                         } else {
-                            ScreenState.Error()
+                            ScreenState.Error
                         }
                     }
-                    else -> ScreenState.Error()
+
+                    else -> ScreenState.Error
                 }
                 screenState.postValue(initState)
             }
@@ -90,7 +95,7 @@ class TrackViewModel(
         cachedFavoriteState = true
         screenState.postValue(contentState())
         viewModelScope.launch {
-            favoriteTracksRepository.addTrackToFavorites(track)
+            playlistRepository.addTrackToFavorites(track)
         }
     }
 
@@ -98,7 +103,7 @@ class TrackViewModel(
         cachedFavoriteState = false
         screenState.postValue(contentState())
         viewModelScope.launch {
-            favoriteTracksRepository.removeTrackFromFavorites(track)
+            playlistRepository.removeTrackFromFavorites(track.trackId.toLong())
         }
     }
 
@@ -110,6 +115,10 @@ class TrackViewModel(
         }
     }
 
+    suspend fun addTrackToPlaylist(playlist: Playlist): Boolean {
+        return playlistRepository.addTrackToPlaylist(playlist.id, track)
+    }
+
     private fun isTrackInFavorites(): Boolean {
         return cachedFavoriteState ?: false
     }
@@ -119,19 +128,22 @@ class TrackViewModel(
             track,
             if (trackPlayer.getState() == PlayerState.STATE_PLAYING) R.drawable.button_pause_track else R.drawable.button_play_track,
             trackPlayer.getPosition(),
-            isTrackInFavorites()
+            isTrackInFavorites(),
+            cachedPlaylists
         )
     }
 
     sealed interface ScreenState {
-        class Loading() : ScreenState
+        data object Loading : ScreenState
         data class Content(
             val track: Track,
             val iconResId: Int,
             val position: String,
-            var isFavorite: Boolean
+            var isFavorite: Boolean,
+            val playlists: List<Playlist>,
         ) : ScreenState
-        class Error() : ScreenState
+
+        data object Error : ScreenState
     }
 
     companion object {

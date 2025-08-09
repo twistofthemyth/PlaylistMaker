@@ -1,6 +1,12 @@
 <resources>
 
-    <style name="Base.Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Base.Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
+        </item>
+        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox
+        </item>
+        <item name="colorPrimary">@color/primary_color</item>
+    </style>
 
     <style name="Toolbar" parent="Widget.Material3.Toolbar">
         <item name="contentInsetStartWithNavigation">@dimen/default_padding</item>
@@ -35,12 +41,25 @@
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="PM.Button.Main">
-        <item name="cornerRadius">@dimen/button_corner</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconPadding">@dimen/default_padding</item>
-        <item name="iconTint">@color/main_button_text_color</item>
+    <style name="PM.Button.Main" parent="Widget.Material3.Button">
+        <item name="android:textAppearance">@style/MainButtonStyle.TextAppearance</item>
+        <item name="android:textColor">@color/main_toolbar_text_color</item>
+        <item name="shapeAppearance">@style/MainButtonStyle</item>
     </style>
+
+    <style name="MainButtonStyle" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/main_button_corner</item>
+        <item name="android:textColor">@color/main_toolbar_text_color</item>
+    </style>
+
+    <style name="MainButtonStyle.TextAppearance" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
 
     <style name="PM.Button.Notification">
         <item name="cornerRadius">@dimen/button_notification_corner</item>
@@ -132,6 +151,15 @@
         <item name="android:paddingVertical">@dimen/list_item_vertical_padding</item>
     </style>
 
+    <style name="PM.Text.ListTitle.Grid">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">@integer/list_item_max_length</item>
+    </style>
+
     <style name="PM.Text.ListTitle.Settings.Switch">
         <item name="materialThemeOverlay">@style/SwitchThemeOverlay</item>
         <item name="android:gravity">center_vertical</item>
@@ -157,6 +185,7 @@
         <item name="android:background">@drawable/rounded_bg</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:inputType">text</item>
+        <item name="android:paddingStart">40dp</item>
         <item name="android:paddingHorizontal">40dp</item>
         <item name="android:paddingVertical">10dp</item>
         <item name="android:textColor">@color/et_text_color</item>
