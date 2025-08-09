@@ -32,7 +32,10 @@ class PlaylistsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _playlistAdapter = PlaylistGridAdapter {}
+        _playlistAdapter = PlaylistGridAdapter {
+            val direction = MediaFragmentDirections.actionMediaFragmentToPlaylistFragment(it.id)
+            findNavController().navigate(direction)
+        }
 
         viewModel.getPlaylistState().observe(viewLifecycleOwner){
             when(it) {

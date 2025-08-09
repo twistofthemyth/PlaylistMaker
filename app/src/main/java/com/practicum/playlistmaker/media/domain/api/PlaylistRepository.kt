@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.media.domain.api
 
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
