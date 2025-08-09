@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class MediaViewModel(val playlistRepository: PlaylistRepository) :
     TrackNavigatableViewModel() {
-
     private val favoritesState: MutableLiveData<FavoritesState>
     private val playlistsState: MutableLiveData<PlaylistState>
 
@@ -38,15 +37,25 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
         }
     }
 
+    fun createPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistRepository.addPlaylist(playlist)
+            runPlaylistUpdate()
+        }
+    }
+
     fun updatePlaylist() {
         viewModelScope.launch {
-            val playlistList = playlistRepository.getPlaylists().toList()
-            if (playlistList.isEmpty()) {
-                playlistsState.postValue(PlaylistState.Empty)
-            } else {
-                playlistsState.postValue(PlaylistState.Content(playlistList))
-            }
+            runPlaylistUpdate()
+        }
+    }
 
+    private suspend fun runPlaylistUpdate() {
+        val playlistList = playlistRepository.getPlaylists()
+        if (playlistList.isEmpty()) {
+            playlistsState.postValue(PlaylistState.Empty)
+        } else {
+            playlistsState.postValue(PlaylistState.Content(playlistList))
         }
     }
 

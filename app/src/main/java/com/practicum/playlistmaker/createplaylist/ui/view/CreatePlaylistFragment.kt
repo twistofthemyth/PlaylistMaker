@@ -109,8 +109,8 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.createBtn.setOnClickListener {
             lifecycleScope.launch {
-                createPlaylistModel.createPlaylist()
-                playlistViewModel.updatePlaylist()
+                val newPlaylist = createPlaylistModel.exitEditor()
+                playlistViewModel.createPlaylist(newPlaylist)
             }
         }
     }

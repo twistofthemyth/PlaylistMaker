@@ -14,7 +14,6 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -42,7 +41,7 @@ class TrackViewModel(
                             trackPlayer.preparePlayer(track)
                             cachedFavoriteState =
                                 playlistRepository.isTrackInFavorites(track.trackId.toLong())
-                            cachedPlaylists = playlistRepository.getPlaylists().toList()
+                            cachedPlaylists = playlistRepository.getPlaylists()
                             contentState()
                         } else {
                             ScreenState.Error()
@@ -116,16 +115,8 @@ class TrackViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlist: Playlist): Boolean {
-        var result = false
-        viewModelScope.launch {
-            result = playlistRepository.addTrackToPlaylist(playlist.id, track)
-            if (result) {
-                cachedPlaylists = playlistRepository.getPlaylists().toList()
-                screenState.postValue(contentState())
-            }
-        }
-        return result
+    suspend fun addTrackToPlaylist(playlist: Playlist): Boolean {
+        return playlistRepository.addTrackToPlaylist(playlist.id, track)
     }
 
     private fun isTrackInFavorites(): Boolean {
@@ -149,7 +140,7 @@ class TrackViewModel(
             val iconResId: Int,
             val position: String,
             var isFavorite: Boolean,
-            val playlists: List<Playlist>
+            val playlists: List<Playlist>,
         ) : ScreenState
 
         class Error() : ScreenState
