@@ -24,6 +24,7 @@ import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -49,21 +50,23 @@ class TrackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _playlistAdapter = PlaylistAdapter {
-            val isAdded = viewModel.addTrackToPlaylist(it)
-            if (isAdded) {
-                hideBottomSheet()
-                Toast.makeText(
-                    requireContext(),
-                    requireActivity().getString(R.string.track_added_to_playlist)
-                        .format(it.name), Toast.LENGTH_SHORT
-                ).show()
-                mediaViewModel.updatePlaylist()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    requireActivity().getString(R.string.track_already_in_playlist)
-                        .format(it.name), Toast.LENGTH_SHORT
-                ).show()
+            lifecycleScope.launch {
+                val isAdded = viewModel.addTrackToPlaylist(it)
+                if (isAdded) {
+                    hideBottomSheet()
+                    Toast.makeText(
+                        requireContext(),
+                        requireActivity().getString(R.string.track_added_to_playlist)
+                            .format(it.name), Toast.LENGTH_SHORT
+                    ).show()
+                    mediaViewModel.updatePlaylist()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        requireActivity().getString(R.string.track_already_in_playlist)
+                            .format(it.name), Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
         setupToolbar()

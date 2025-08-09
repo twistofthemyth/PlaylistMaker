@@ -9,11 +9,8 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediaBinding
-import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class MediaFragment : Fragment() {
-    private val viewModel: MediaViewModel by activityViewModel<MediaViewModel>()
     private val args by navArgs<MediaFragmentArgs>()
     private var _binding: FragmentMediaBinding? = null
     private val binding get() = _binding!!

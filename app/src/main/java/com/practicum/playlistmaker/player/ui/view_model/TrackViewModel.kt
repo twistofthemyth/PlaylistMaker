@@ -14,7 +14,6 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -32,7 +31,7 @@ class TrackViewModel(
     private var cachedPlaylists: List<Playlist> = mutableListOf()
 
     init {
-        screenState.postValue(ScreenState.Loading())
+        screenState.postValue(ScreenState.Loading)
         viewModelScope.launch {
             searchInteractor.searchTracks(trackId).collect {
                 val initState = when (it) {
@@ -40,15 +39,16 @@ class TrackViewModel(
                         if (it.data != null && it.data.isNotEmpty()) {
                             track = it.data[0]
                             trackPlayer.preparePlayer(track)
-                            cachedFavoriteState = playlistRepository.isTrackInFavorites(track)
-                            cachedPlaylists = playlistRepository.getPlaylists().toList()
+                            cachedFavoriteState =
+                                playlistRepository.isTrackInFavorites(track.trackId.toLong())
+                            cachedPlaylists = playlistRepository.getPlaylists()
                             contentState()
                         } else {
-                            ScreenState.Error()
+                            ScreenState.Error
                         }
                     }
 
-                    else -> ScreenState.Error()
+                    else -> ScreenState.Error
                 }
                 screenState.postValue(initState)
             }
@@ -103,7 +103,7 @@ class TrackViewModel(
         cachedFavoriteState = false
         screenState.postValue(contentState())
         viewModelScope.launch {
-            playlistRepository.removeTrackFromFavorites(track)
+            playlistRepository.removeTrackFromFavorites(track.trackId.toLong())
         }
     }
 
@@ -115,17 +115,8 @@ class TrackViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlist: Playlist): Boolean {
-        if (!playlist.track.contains(track)) {
-            viewModelScope.launch {
-                playlistRepository.addTrackToPlaylist(playlist, track)
-                cachedPlaylists = playlistRepository.getPlaylists().toList()
-                screenState.postValue(contentState())
-            }
-            return true
-        } else {
-            return false
-        }
+    suspend fun addTrackToPlaylist(playlist: Playlist): Boolean {
+        return playlistRepository.addTrackToPlaylist(playlist.id, track)
     }
 
     private fun isTrackInFavorites(): Boolean {
@@ -143,16 +134,16 @@ class TrackViewModel(
     }
 
     sealed interface ScreenState {
-        class Loading() : ScreenState
+        data object Loading : ScreenState
         data class Content(
             val track: Track,
             val iconResId: Int,
             val position: String,
             var isFavorite: Boolean,
-            val playlists: List<Playlist>
+            val playlists: List<Playlist>,
         ) : ScreenState
 
-        class Error() : ScreenState
+        data object Error : ScreenState
     }
 
     companion object {

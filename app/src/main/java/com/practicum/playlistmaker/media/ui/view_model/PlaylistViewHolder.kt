@@ -15,7 +15,7 @@ class PlaylistViewHolder(private val binding: SearchResultItemBinding) :
         Glide.with(itemView)
             .load(data.image.toUri())
             .placeholder(R.drawable.placeholder_album)
-            .centerInside()
+            .centerCrop()
             .transform(
                 RoundedCorners(
                     binding.IvAlbum.context.resources.getInteger(R.integer.album_image_corner)
@@ -24,7 +24,11 @@ class PlaylistViewHolder(private val binding: SearchResultItemBinding) :
             .into(binding.IvAlbum)
 
         binding.TvTrackName.text = data.name
-        binding.TvTrackAuthor.text = "${data.track.size} треков"
+        binding.TvTrackAuthor.text = binding.TvTrackAuthor.resources.getQuantityString(
+            R.plurals.plular_track,
+            data.track.size,
+            data.track.size
+        )
         binding.TvTrackLength.isVisible = false
         binding.IvDotDelimiter.isVisible = false
     }
