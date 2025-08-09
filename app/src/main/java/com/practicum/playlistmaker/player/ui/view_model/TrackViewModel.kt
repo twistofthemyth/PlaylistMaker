@@ -31,7 +31,7 @@ class TrackViewModel(
     private var cachedPlaylists: List<Playlist> = mutableListOf()
 
     init {
-        screenState.postValue(ScreenState.Loading())
+        screenState.postValue(ScreenState.Loading)
         viewModelScope.launch {
             searchInteractor.searchTracks(trackId).collect {
                 val initState = when (it) {
@@ -44,11 +44,11 @@ class TrackViewModel(
                             cachedPlaylists = playlistRepository.getPlaylists()
                             contentState()
                         } else {
-                            ScreenState.Error()
+                            ScreenState.Error
                         }
                     }
 
-                    else -> ScreenState.Error()
+                    else -> ScreenState.Error
                 }
                 screenState.postValue(initState)
             }
@@ -134,7 +134,7 @@ class TrackViewModel(
     }
 
     sealed interface ScreenState {
-        class Loading() : ScreenState
+        data object Loading : ScreenState
         data class Content(
             val track: Track,
             val iconResId: Int,
@@ -143,7 +143,7 @@ class TrackViewModel(
             val playlists: List<Playlist>,
         ) : ScreenState
 
-        class Error() : ScreenState
+        data object Error : ScreenState
     }
 
     companion object {

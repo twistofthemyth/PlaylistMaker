@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,9 +49,8 @@ class CreatePlaylistFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.arrowBackIv.setOnClickListener {
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
             when (createPlaylistModel.getState().value) {
                 is CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate,
                 is CreatePlaylistViewModel.CreatePlaylistState.InEdit -> {
@@ -67,27 +67,17 @@ class CreatePlaylistFragment : Fragment() {
                 else -> navigateToPrevScreen()
             }
         }
+    }
 
-        createPlaylistModel.getState().observe(viewLifecycleOwner) {
-            when (it) {
-                is CreatePlaylistViewModel.CreatePlaylistState.Created -> {
-                    navigateToPrevScreen()
-                    Toast.makeText(
-                        requireContext(),
-                        requireActivity().getString(R.string.playlist_created)
-                            .format(binding.nameEt.text), Toast.LENGTH_SHORT
-                    ).show()
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
 
-                is CreatePlaylistViewModel.CreatePlaylistState.Empty -> binding.createBtn.isEnabled =
-                    false
-
-                is CreatePlaylistViewModel.CreatePlaylistState.InEdit -> binding.createBtn.isEnabled =
-                    false
-
-                is CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate -> binding.createBtn.isEnabled =
-                    true
-            }
+        binding.arrowBackIv.setOnClickListener {
+            backPressedCallback.handleOnBackPressed()
         }
 
         val pickMedia = registerPickMedia()
@@ -107,17 +97,37 @@ class CreatePlaylistFragment : Fragment() {
             }
         }
 
-        binding.createBtn.setOnClickListener {
-            lifecycleScope.launch {
-                val newPlaylist = createPlaylistModel.exitEditor()
-                playlistViewModel.createPlaylist(newPlaylist)
-            }
-        }
+        setupCreateBtn()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupCreateBtn() {
+        binding.createBtn.apply {
+            createPlaylistModel.getState().observe(viewLifecycleOwner) { state ->
+                isEnabled = when (state) {
+                    CreatePlaylistViewModel.CreatePlaylistState.Created,
+                    CreatePlaylistViewModel.CreatePlaylistState.ReadyForCreate -> true
+
+                    else -> false
+                }
+            }
+            setOnClickListener {
+                lifecycleScope.launch {
+                    val newPlaylist = createPlaylistModel.exitEditor()
+                    playlistViewModel.createPlaylist(newPlaylist)
+                    navigateToPrevScreen()
+                    Toast.makeText(
+                        requireContext(),
+                        requireActivity().getString(R.string.playlist_created)
+                            .format(binding.nameEt.text), Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun navigateToPrevScreen() {
