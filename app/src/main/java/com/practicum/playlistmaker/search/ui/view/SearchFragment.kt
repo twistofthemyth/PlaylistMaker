@@ -108,8 +108,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        _searchAdapter = TrackListAdapter { track -> clickTrack(track) }
-        _searchHistoryAdapter = TrackListAdapter { track -> clickTrack(track) }
+        _searchAdapter = TrackListAdapter(onTrackClicked = { track -> clickTrack(track) })
+        _searchHistoryAdapter = TrackListAdapter(onTrackClicked = { track -> clickTrack(track) })
 
         binding.RvSearchResult.apply {
             adapter = _searchAdapter

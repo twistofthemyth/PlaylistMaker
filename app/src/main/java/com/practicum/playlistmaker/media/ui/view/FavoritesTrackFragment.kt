@@ -67,7 +67,8 @@ class FavoritesTrackFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        _favoritesAdapter = TrackListAdapter { track -> viewModel.clickTrack(track) }
+        _favoritesAdapter =
+            TrackListAdapter(onTrackClicked = { track -> viewModel.clickTrack(track) })
 
         binding.RvFavorites.apply {
             adapter = favoritesAdapter

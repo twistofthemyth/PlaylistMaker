@@ -52,10 +52,15 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
                 is BottomSheetPlaylistOptionsViewModel.BottomSheetPlaylistOptionsState.Content -> {
                     Glide.with(binding.imageIv)
                         .load(it.playlist.image.toUri())
+                        .centerCrop()
                         .placeholder(R.drawable.placeholder_album)
                         .into(binding.imageIv)
                     binding.nameTv.text = it.playlist.name
-                    binding.countTv.text = "${it.playlist.track.size} + треков"
+                    binding.countTv.text = resources.getQuantityString(
+                        R.plurals.plular_track,
+                        it.playlist.track.size,
+                        it.playlist.track.size
+                    )
 
                     binding.deleteTv.setOnClickListener { showAlert() }
                 }
@@ -72,8 +77,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
             .setMessage(R.string.dialog_delete_playlist_message)
             .setNegativeButton(R.string.dialog_no) { dialog, which -> }
             .setPositiveButton(R.string.dialog_yes) { dialog, which ->
-                bottomSheetViewModel.deletePlaylist()
-                mediaViewModel.updatePlaylist()
+                mediaViewModel.deletePlaylist(playlistId)
                 dismiss()
                 findNavController().navigate(R.id.action_playlistFragment_to_mediaFragment)
                 showToast()
@@ -82,8 +86,11 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
     }
 
     fun showToast() {
-        Toast.makeText(requireContext(), R.string.playlist_item_delete, Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(
+            requireContext(),
+            requireActivity().getString(R.string.playlist_deleted).format(binding.nameTv.text),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onDestroy() {

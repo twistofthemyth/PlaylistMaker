@@ -44,6 +44,13 @@ class MediaViewModel(val playlistRepository: PlaylistRepository) :
         }
     }
 
+    fun deletePlaylist(playlistId: Long) {
+        viewModelScope.launch {
+            playlistRepository.removePlaylist(playlistId)
+            runPlaylistUpdate()
+        }
+    }
+
     fun updatePlaylist() {
         viewModelScope.launch {
             runPlaylistUpdate()

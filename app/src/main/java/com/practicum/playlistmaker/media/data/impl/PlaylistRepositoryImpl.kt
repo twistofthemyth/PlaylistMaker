@@ -57,11 +57,13 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
             appDatabase.getPlaylistDao().getTracksInPlaylist(playlistId)
                 .forEach { emit(DataConverter.convertTrackEntityToTrack(it)) }
         }
+    }
         
     override suspend fun getPlaylist(playlistId: Long): Resource<Playlist> {
         val playlistEntity = appDatabase.getPlaylistDao().getPlaylistById(playlistId)
         return if (playlistEntity != null) {
-            Resource.Success(DataConverter.convertPlaylistEntityToPlaylist(playlistEntity))
+            val tracks = appDatabase.getPlaylistDao().getTracksInPlaylist(playlistEntity.id)
+            Resource.Success(DataConverter.convertPlaylistEntityToPlaylist(playlistEntity, tracks))
         } else {
             Resource.ClientError(null)
         }

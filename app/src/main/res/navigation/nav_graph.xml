@@ -89,5 +89,8 @@
         <action
             android:id="@+id/action_playlistFragment_to_mediaFragment"
             app:destination="@id/mediaFragment" />
+        <action
+            android:id="@+id/action_playlistFragment_to_trackFragment"
+            app:destination="@id/trackFragment" />
     </fragment>
 </navigation>
