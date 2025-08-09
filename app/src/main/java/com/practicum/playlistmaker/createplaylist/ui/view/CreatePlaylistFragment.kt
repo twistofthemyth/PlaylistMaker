@@ -18,8 +18,6 @@ import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.createplaylist.ui.view_model.CreatePlaylistViewModel
@@ -33,8 +31,6 @@ import java.io.FileOutputStream
 import java.util.UUID
 
 class CreatePlaylistFragment : Fragment() {
-
-    private val args by navArgs<CreatePlaylistFragmentArgs>()
     private val createPlaylistModel: CreatePlaylistViewModel by viewModel<CreatePlaylistViewModel>()
     private val playlistViewModel: MediaViewModel by activityViewModel<MediaViewModel>()
     private var _binding: FragmentPlaylistCreateBinding? = null
@@ -59,12 +55,12 @@ class CreatePlaylistFragment : Fragment() {
                         .setMessage(requireActivity().getString(R.string.cancel_playlist_creating_subtitle))
                         .setNeutralButton(requireActivity().getString(R.string.dialog_cancel)) { dialog, which -> }
                         .setPositiveButton(requireActivity().getString(R.string.dialog_complete)) { dialog, which ->
-                            navigateToPrevScreen()
+                            parentFragmentManager.popBackStack()
                         }
                         .show()
                 }
 
-                else -> navigateToPrevScreen()
+                else -> parentFragmentManager.popBackStack()
             }
         }
     }
@@ -119,7 +115,7 @@ class CreatePlaylistFragment : Fragment() {
                 lifecycleScope.launch {
                     val newPlaylist = createPlaylistModel.exitEditor()
                     playlistViewModel.createPlaylist(newPlaylist)
-                    navigateToPrevScreen()
+                    parentFragmentManager.popBackStack()
                     Toast.makeText(
                         requireContext(),
                         requireActivity().getString(R.string.playlist_created)
@@ -128,15 +124,6 @@ class CreatePlaylistFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun navigateToPrevScreen() {
-        val direction = if (args.trackId.isEmpty()) {
-            CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToMediaFragment(1)
-        } else {
-            CreatePlaylistFragmentDirections.actionCreatePlaylistFragmentToTrackFragment(args.trackId)
-        }
-        findNavController().navigate(direction)
     }
 
     private fun registerPickMedia(): ActivityResultLauncher<PickVisualMediaRequest> {

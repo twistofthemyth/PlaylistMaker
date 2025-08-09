@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.net.toUri
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -79,7 +78,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
             .setPositiveButton(R.string.dialog_yes) { dialog, which ->
                 mediaViewModel.deletePlaylist(playlistId)
                 dismiss()
-                findNavController().navigate(R.id.action_playlistFragment_to_mediaFragment)
+                parentFragmentManager.popBackStack()
                 showToast()
             }
             .show()

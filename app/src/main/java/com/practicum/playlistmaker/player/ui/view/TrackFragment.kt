@@ -120,9 +120,7 @@ class TrackFragment : Fragment() {
         binding.addTrackIv.setOnClickListener { showBottomSheet() }
 
         binding.actionBtn.setOnClickListener {
-            val direction =
-                TrackFragmentDirections.actionTrackFragmentToCreatePlaylistFragment(args.trackId)
-            findNavController().navigate(direction)
+            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
         }
     }
 

@@ -53,6 +53,7 @@ class PlaylistFragment : Fragment() {
         observeNavigation()
         observeViewState()
         setupBottomSheet()
+        setupToolbar()
     }
 
     fun setupTrackList() {
@@ -162,6 +163,10 @@ class PlaylistFragment : Fragment() {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
+    }
+
+    private fun setupToolbar() {
+        binding.arrowBackIv.setOnClickListener { parentFragmentManager.popBackStack() }
     }
 
     fun showDeleteTrackAlert(track: Track) {
