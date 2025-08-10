@@ -1,24 +1,44 @@
-package com.practicum.playlistmaker.createplaylist.ui.view_model
+package com.practicum.playlistmaker.playlist_editor.ui.view_model
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
+import kotlinx.coroutines.launch
 
-class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository) : ViewModel() {
+class PlaylistEditorViewModel(val playlistRepository: PlaylistRepository, val playlistId: Long) :
+    ViewModel() {
 
     private val state: MutableLiveData<CreatePlaylistState>
-    private var name: String
-    private var description: String
-    private var image: Uri?
+    private var name: String = ""
+    private var description: String = ""
+    private var image: Uri? = null
 
     init {
-        state = MutableLiveData(CreatePlaylistState.Empty)
-        name = ""
-        description = ""
-        image = null
+        state = MutableLiveData(CreatePlaylistState.InEdit)
+        if (playlistId > 0) {
+            viewModelScope.launch {
+                val resource = playlistRepository.getPlaylist(playlistId)
+                if (resource.data != null) {
+                    initEditState(resource.data)
+                    state.postValue(CreatePlaylistState.InitEdition(resource.data))
+                } else {
+                    state.postValue(CreatePlaylistState.InitCreation)
+                }
+            }
+        } else {
+            state.postValue(CreatePlaylistState.InitCreation)
+        }
+    }
+
+    private fun initEditState(playlist: Playlist) {
+        name = playlist.name
+        description = playlist.description
+        image = playlist.image.toUri()
     }
 
     fun getState() = state as LiveData<CreatePlaylistState>
@@ -49,7 +69,7 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
     fun exitEditor(): Playlist {
         state.postValue(CreatePlaylistState.Created)
         return Playlist(
-            0,
+            if (playlistId < 0) 0 else playlistId,
             name,
             description,
             image.toString(),
@@ -58,7 +78,8 @@ class CreatePlaylistViewModel(private val playlistRepository: PlaylistRepository
     }
 
     sealed interface CreatePlaylistState {
-        data object Empty : CreatePlaylistState
+        data object InitCreation : CreatePlaylistState
+        data class InitEdition(val playlist: Playlist) : CreatePlaylistState
         data object InEdit : CreatePlaylistState
         data object ReadyForCreate : CreatePlaylistState
         data object Created : CreatePlaylistState

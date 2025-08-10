@@ -12,7 +12,6 @@ import com.practicum.playlistmaker.databinding.FragmentFavoritesBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.search.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
-import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class FavoritesTrackFragment : Fragment() {
@@ -54,20 +53,17 @@ class FavoritesTrackFragment : Fragment() {
             }
         }
 
-        viewModel.getNavigationEvent()
-            .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
-                when (destination) {
-                    is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
-                        val direction =
-                            MediaFragmentDirections.actionMediaFragmentToTrackFragment(destination.track.trackId)
-                        findNavController().navigate(direction)
-                    }
-                }
+        viewModel.getTrackNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { track ->
+                val direction =
+                    MediaFragmentDirections.actionMediaFragmentToTrackFragment(track.trackId)
+                findNavController().navigate(direction)
             })
     }
 
     private fun setupRecyclerViews() {
-        _favoritesAdapter = TrackListAdapter { track -> viewModel.clickTrack(track) }
+        _favoritesAdapter =
+            TrackListAdapter(onTrackClicked = { track -> viewModel.clickTrack(track) })
 
         binding.RvFavorites.apply {
             adapter = favoritesAdapter

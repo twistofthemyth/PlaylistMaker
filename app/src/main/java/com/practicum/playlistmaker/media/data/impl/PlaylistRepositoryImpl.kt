@@ -8,6 +8,7 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.util.data_utils.DataConverter
+import com.practicum.playlistmaker.util.domain_utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -33,10 +34,16 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
         return getTracksInPlaylist(favoritesPlaylistId)
     }
 
-    override suspend fun addPlaylist(playlist: Playlist): List<Playlist> {
+    override suspend fun addPlaylist(playlist: Playlist) {
         appDatabase.getPlaylistDao()
             .addPlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
-        return getPlaylists()
+    }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        if (playlist.id != favoritesPlaylistId) {
+            appDatabase.getPlaylistDao()
+                .updatePlaylist(DataConverter.convertPlaylistToPlaylistEntity(playlist))
+        }
     }
 
     override suspend fun removePlaylist(playlistId: Long) {
@@ -55,6 +62,16 @@ class PlaylistRepositoryImpl(val appDatabase: AppDatabase) : PlaylistRepository 
         return flow {
             appDatabase.getPlaylistDao().getTracksInPlaylist(playlistId)
                 .forEach { emit(DataConverter.convertTrackEntityToTrack(it)) }
+        }
+    }
+
+    override suspend fun getPlaylist(playlistId: Long): Resource<Playlist> {
+        val playlistEntity = appDatabase.getPlaylistDao().getPlaylistById(playlistId)
+        return if (playlistEntity != null) {
+            val tracks = appDatabase.getPlaylistDao().getTracksInPlaylist(playlistEntity.id)
+            Resource.Success(DataConverter.convertPlaylistEntityToPlaylist(playlistEntity, tracks))
+        } else {
+            Resource.ClientError(null)
         }
     }
 

@@ -5,4 +5,9 @@
         <item quantity="few">%d трека</item>
         <item quantity="other">%d треков</item>
     </plurals>
+    <plurals name="plular_minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минут</item>
+        <item quantity="other">%d минуты</item>
+    </plurals>
 </resources>
