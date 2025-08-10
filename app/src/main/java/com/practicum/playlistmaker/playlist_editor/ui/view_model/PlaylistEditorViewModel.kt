@@ -19,15 +19,19 @@ class PlaylistEditorViewModel(val playlistRepository: PlaylistRepository, val pl
     private var image: Uri? = null
 
     init {
-        state = MutableLiveData(CreatePlaylistState.InitCreation)
+        state = MutableLiveData(CreatePlaylistState.InEdit)
         if (playlistId > 0) {
             viewModelScope.launch {
                 val resource = playlistRepository.getPlaylist(playlistId)
                 if (resource.data != null) {
                     initEditState(resource.data)
                     state.postValue(CreatePlaylistState.InitEdition(resource.data))
+                } else {
+                    state.postValue(CreatePlaylistState.InitCreation)
                 }
             }
+        } else {
+            state.postValue(CreatePlaylistState.InitCreation)
         }
     }
 

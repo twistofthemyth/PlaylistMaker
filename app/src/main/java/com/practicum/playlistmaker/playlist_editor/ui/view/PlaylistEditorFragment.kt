@@ -57,7 +57,6 @@ class PlaylistEditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeState()
-        setupNavigation()
         setupPickMedia()
         setupTextFields()
     }
@@ -84,6 +83,7 @@ class PlaylistEditorFragment : Fragment() {
         binding.createBtn.text = requireActivity().getString(R.string.create_playlist_button)
         disableConfirmButton()
         setupConfirmButtonForCreating()
+        setupCreateModeNavigation()
     }
 
     private fun enableEditMode(playlist: Playlist) {
@@ -96,9 +96,10 @@ class PlaylistEditorFragment : Fragment() {
         }
         enableConfirmButton()
         setupConfirmButtonForEditing()
+        setupEditModeNavigation()
     }
 
-    private fun setupNavigation() {
+    private fun setupCreateModeNavigation() {
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             backPressedCallback
@@ -106,6 +107,12 @@ class PlaylistEditorFragment : Fragment() {
 
         binding.arrowBackIv.setOnClickListener {
             backPressedCallback.handleOnBackPressed()
+        }
+    }
+
+    private fun setupEditModeNavigation() {
+        binding.arrowBackIv.setOnClickListener {
+            parentFragmentManager.popBackStack()
         }
     }
 

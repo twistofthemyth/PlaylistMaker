@@ -41,6 +41,7 @@
     <string name="dialog_cancel">Отмена</string>
     <string name="dialog_complete">Завершить</string>
     <string name="dialog_yes">Да</string>
+    <string name="dialog_delete">Удалить</string>
     <string name="dialog_no">Нет</string>
     <string name="playlist_created">Плейлист %s создан</string>
     <string name="playlist_saved">Плейлист %s сохранен</string>
@@ -52,7 +53,7 @@
     <string name="playlist_item_edit">Редактировать информацию</string>
     <string name="playlist_item_delete">Удалить плейлист</string>
     <string name="dialog_delete_playlist_title">Удалить плейлист</string>
-    <string name="dialog_delete_playlist_message">Хотите удалить плейлист?</string>
+    <string name="dialog_delete_playlist_message">Вы уверены, что хотите удалить этот плейлист?</string>
     <string name="dialog_delete_track_title">Удалить трек</string>
     <string name="dialog_delete_track_message">Хотите удалить трек?</string>
     <string name="no_tracks_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>

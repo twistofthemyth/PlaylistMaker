@@ -91,6 +91,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
     private fun observeShareEvent() {
         playlistViewModel.getShareNavigationEvent()
             .observe(viewLifecycleOwner, SingleLiveEventObserver { event ->
+                dismiss()
                 when (event) {
                     is PlaylistViewModel.ShareState.Content -> startActivity(makeShareIntent(event))
                     PlaylistViewModel.ShareState.Empty -> makeEmptyListToast(requireContext()).show()
@@ -102,8 +103,8 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.dialog_delete_playlist_title)
             .setMessage(R.string.dialog_delete_playlist_message)
-            .setNegativeButton(R.string.dialog_no) { dialog, which -> }
-            .setPositiveButton(R.string.dialog_yes) { dialog, which ->
+            .setNegativeButton(R.string.dialog_cancel) { dialog, which -> }
+            .setPositiveButton(R.string.dialog_delete) { dialog, which ->
                 mediaViewModel.deletePlaylist(playlistId)
                 dismiss()
                 parentFragmentManager.popBackStack()
