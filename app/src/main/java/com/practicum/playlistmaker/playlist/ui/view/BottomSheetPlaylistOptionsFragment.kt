@@ -13,12 +13,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentBottomSheetTracksBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
-import com.practicum.playlistmaker.playlist.ui.view_model.BottomSheetPlaylistOptionsViewModel
+import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
+import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDialogFragment() {
+class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDialogFragment(),
+    PlaylistSharer {
 
     companion object {
         const val TAG = "BottomSheetPlaylistOptionsViewModel"
@@ -27,7 +29,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
     private var _binding: FragmentBottomSheetTracksBinding? = null
     private val binding get() = _binding!!
 
-    private val bottomSheetViewModel by viewModel<BottomSheetPlaylistOptionsViewModel> {
+    private val playlistViewModel by viewModel<PlaylistViewModel> {
         parametersOf(
             playlistId
         )
@@ -46,10 +48,14 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observePlaylistState()
+        observeShareEvent()
+    }
 
-        bottomSheetViewModel.getState().observe(viewLifecycleOwner) {
+    private fun observePlaylistState() {
+        playlistViewModel.getState().observe(viewLifecycleOwner) {
             when (it) {
-                is BottomSheetPlaylistOptionsViewModel.BottomSheetPlaylistOptionsState.Content -> {
+                is PlaylistViewModel.PlaylistState.Content -> {
                     Glide.with(binding.imageIv)
                         .load(it.playlist.image.toUri())
                         .centerCrop()
@@ -72,12 +78,24 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
                         findNavController().navigate(direction)
                         dismiss()
                     }
+                    binding.shareTv.setOnClickListener {
+                        playlistViewModel.sharePlaylist()
+                    }
                 }
 
-                BottomSheetPlaylistOptionsViewModel.BottomSheetPlaylistOptionsState.Error -> dismiss()
+                PlaylistViewModel.PlaylistState.Loading -> {}
             }
         }
+    }
 
+    private fun observeShareEvent() {
+        playlistViewModel.getShareNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { event ->
+                when (event) {
+                    is PlaylistViewModel.ShareState.Content -> startActivity(makeShareIntent(event))
+                    PlaylistViewModel.ShareState.Empty -> makeEmptyListToast(requireContext()).show()
+                }
+            })
     }
 
     fun showAlert() {

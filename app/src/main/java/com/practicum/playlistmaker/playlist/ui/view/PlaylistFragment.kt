@@ -22,13 +22,12 @@ import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view.TrackListAdapter
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
-import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PlaylistFragment : Fragment() {
+class PlaylistFragment : Fragment(), PlaylistSharer {
 
     private val args by navArgs<PlaylistFragmentArgs>()
     private var _binding: FragmentPlaylistBinding? = null
@@ -50,8 +49,8 @@ class PlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupTrackList()
+        observePlaylistState()
         observeNavigation()
-        observeViewState()
         setupBottomSheet()
         setupToolbar()
     }
@@ -76,21 +75,25 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun observeNavigation() {
-        playlistViewModel.getNavigationEvent()
-            .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
-                when (destination) {
-                    is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
-                        val direction =
-                            PlaylistFragmentDirections.actionPlaylistFragmentToTrackFragment(
-                                destination.track.trackId
-                            )
-                        findNavController().navigate(direction)
-                    }
+        playlistViewModel.getTrackNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { track ->
+                val direction =
+                    PlaylistFragmentDirections.actionPlaylistFragmentToTrackFragment(
+                        track.trackId
+                    )
+                findNavController().navigate(direction)
+            })
+
+        playlistViewModel.getShareNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { event ->
+                when (event) {
+                    is PlaylistViewModel.ShareState.Content -> startActivity(makeShareIntent(event))
+                    PlaylistViewModel.ShareState.Empty -> makeEmptyListToast(requireContext()).show()
                 }
             })
     }
 
-    private fun observeViewState() {
+    private fun observePlaylistState() {
         playlistViewModel.getState().observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistViewModel.PlaylistState.Content -> {
@@ -133,6 +136,10 @@ class PlaylistFragment : Fragment() {
                     } else {
                         binding.errorTv.isVisible = false
                         trackListAdapter.updateList(it.playlist.track)
+                    }
+
+                    binding.shareIv.setOnClickListener {
+                        playlistViewModel.sharePlaylist()
                     }
                 }
 

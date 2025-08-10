@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.util.event.Event
 import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import kotlinx.coroutines.launch
 
@@ -13,13 +14,18 @@ class PlaylistViewModel(val playlistRepository: PlaylistRepository, val playlist
     TrackNavigatableViewModel() {
 
     private val state = MutableLiveData<PlaylistState>()
+    private val shareNavigationEvent = MutableLiveData<Event<ShareState>>()
+
+    fun getShareNavigationEvent(): LiveData<Event<ShareState>> {
+        return shareNavigationEvent
+    }
 
     fun getState(): LiveData<PlaylistState> {
         return state
     }
 
     init {
-        state.postValue(PlaylistState.Loading())
+        state.postValue(PlaylistState.Loading)
         viewModelScope.launch {
             updateState()
         }
@@ -29,6 +35,17 @@ class PlaylistViewModel(val playlistRepository: PlaylistRepository, val playlist
         viewModelScope.launch {
             playlistRepository.removeTrackFromPlaylist(playlistId, track.trackId.toLong())
             updateState()
+        }
+    }
+
+    fun sharePlaylist() {
+        viewModelScope.launch {
+            val resource = playlistRepository.getPlaylist(playlistId)
+            if (resource.data == null || resource.data.track.isEmpty()) {
+                shareNavigationEvent.postValue(Event(ShareState.Empty))
+            } else {
+                shareNavigationEvent.postValue(Event(ShareState.Content(createShareContent(resource.data))))
+            }
         }
     }
 
@@ -54,9 +71,25 @@ class PlaylistViewModel(val playlistRepository: PlaylistRepository, val playlist
         return duration
     }
 
+    private fun createShareContent(playlist: Playlist): String {
+        val stringBuilder = StringBuilder()
+            .appendLine(playlist.name)
+            .appendLine(playlist.description)
+            .appendLine("${playlist.track.size} треков")
+        playlist.track.forEachIndexed { index, track ->
+            stringBuilder.appendLine("${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTime})")
+        }
+        return stringBuilder.toString()
+    }
+
     sealed interface PlaylistState {
-        class Loading() : PlaylistState
-        class Content(val playlist: Playlist, val count: Int, val duration: Int) :
+        data object Loading : PlaylistState
+        data class Content(val playlist: Playlist, val count: Int, val duration: Int) :
             PlaylistState
+    }
+
+    sealed interface ShareState {
+        data object Empty : ShareState
+        data class Content(val text: String) : ShareState
     }
 }

@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
-import com.practicum.playlistmaker.playlist.ui.view_model.BottomSheetPlaylistOptionsViewModel
 import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
 import com.practicum.playlistmaker.playlist_editor.ui.view_model.PlaylistEditorViewModel
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
@@ -34,9 +33,5 @@ val viewModelModule = module {
 
     viewModel { (playlistId: Long) ->
         PlaylistViewModel(get(), playlistId)
-    }
-
-    viewModel { (playlistId: Long) ->
-        BottomSheetPlaylistOptionsViewModel(get(), playlistId)
     }
 }

@@ -16,7 +16,6 @@ import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
-import com.practicum.playlistmaker.util.ui_utils.TrackNavigatableViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SearchFragment : Fragment() {
@@ -210,15 +209,11 @@ class SearchFragment : Fragment() {
     }
 
     private fun observeNavigation() {
-        viewModel.getNavigationEvent()
-            .observe(viewLifecycleOwner, SingleLiveEventObserver { destination ->
-                when (destination) {
-                    is TrackNavigatableViewModel.NavigationDestination.ToTrack -> {
-                        val direction =
-                            SearchFragmentDirections.actionSearchFragmentToTrackFragment(destination.track.trackId)
-                        findNavController().navigate(direction)
-                    }
-                }
+        viewModel.getTrackNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { track ->
+                val direction =
+                    SearchFragmentDirections.actionSearchFragmentToTrackFragment(track.trackId)
+                findNavController().navigate(direction)
             })
     }
 
