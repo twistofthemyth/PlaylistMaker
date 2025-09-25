@@ -82,7 +82,9 @@ class TrackFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.stopPlayer()
+        if(viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
+            viewModel.stopPlayer()
+        }
     }
 
     private fun setupFragment() {
@@ -125,7 +127,10 @@ class TrackFragment : Fragment() {
                     setupTrackInfo(it.track)
                 }
 
-                is TrackViewModel.TrackState.Error -> {}
+                is TrackViewModel.TrackState.Error -> {
+                    Toast.makeText(requireActivity(), R.string.track_not_found_error, Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                }
             }
         }
     }

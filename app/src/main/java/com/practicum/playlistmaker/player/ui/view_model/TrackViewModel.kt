@@ -37,9 +37,9 @@ class TrackViewModel(
                 postPlaylistsContent()
             }
 
-            searchInteractor.searchTracks(trackId).collect {
-                if (it.data != null && it.data.isNotEmpty()) {
-                    track = it.data[0]
+            searchInteractor.searchTrackById(trackId).let {
+                if (it.data != null) {
+                    track = it.data
                     trackPlayer.preparePlayer(track)
                     cachedFavoriteState =
                         playlistRepository.isTrackInFavorites(track.trackId.toLong())

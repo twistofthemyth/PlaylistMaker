@@ -10,4 +10,5 @@ import java.util.concurrent.Executors
 
 class SearchInteractorImpl(private val repo: SearchRepository) : SearchInteractor {
     override fun searchTracks(query: String): Flow<Resource<List<Track>>>  =  repo.searchTracks(query)
+    override suspend fun searchTrackById(id: String): Resource<Track> = repo.searchTrackById(id)
 }
