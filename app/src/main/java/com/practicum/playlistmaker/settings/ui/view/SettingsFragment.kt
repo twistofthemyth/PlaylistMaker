@@ -13,6 +13,7 @@ import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import com.practicum.playlistmaker.util.ui_utils.IntentUtils
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SettingsFragment : Fragment() {
@@ -86,15 +87,15 @@ class SettingsFragment : Fragment() {
             when (destination) {
                 is SettingsViewModel.NavigationDestination.Share -> {
                     val shareIntent = Intent(Intent.ACTION_SENDTO).apply {
-                        setData("smsto:".toUri())
-                        putExtra("sms_body", getString(R.string.share_app_url))
+                        setData(IntentUtils.URI_TYPE_SMS.toUri())
+                        putExtra(IntentUtils.EXTRA_TYPE_SMS_TEXT, getString(R.string.share_app_url))
                     }
                     startActivity(shareIntent)
                 }
 
                 is SettingsViewModel.NavigationDestination.Support -> {
                     val sendToSupportIntent = Intent(Intent.ACTION_SENDTO).apply {
-                        setData("mailto:".toUri())
+                        setData(IntentUtils.URI_TYPE_EMAIL.toUri())
                         putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
                         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_default_subject))
                         putExtra(Intent.EXTRA_TEXT, getString(R.string.support_default_text))

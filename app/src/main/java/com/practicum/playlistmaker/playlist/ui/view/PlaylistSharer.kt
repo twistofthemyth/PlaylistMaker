@@ -6,13 +6,13 @@ import android.widget.Toast
 import androidx.core.net.toUri
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.playlist.ui.view_model.PlaylistViewModel
+import com.practicum.playlistmaker.util.ui_utils.IntentUtils
 
 interface PlaylistSharer {
-
     fun makeShareIntent(event: PlaylistViewModel.ShareState.Content): Intent {
         return Intent(Intent.ACTION_SENDTO).apply {
-            setData("smsto:".toUri())
-            putExtra("sms_body", event.text)
+            setData(IntentUtils.URI_TYPE_SMS.toUri())
+            putExtra(IntentUtils.EXTRA_TYPE_SMS_TEXT, event.text)
         }
     }
 

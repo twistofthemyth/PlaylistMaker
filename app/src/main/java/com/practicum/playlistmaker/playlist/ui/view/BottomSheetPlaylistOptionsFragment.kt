@@ -55,34 +55,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
     private fun observePlaylistState() {
         playlistViewModel.getState().observe(viewLifecycleOwner) {
             when (it) {
-                is PlaylistViewModel.PlaylistState.Content -> {
-                    Glide.with(binding.imageIv)
-                        .load(it.playlist.image.toUri())
-                        .centerCrop()
-                        .placeholder(R.drawable.placeholder_album)
-                        .into(binding.imageIv)
-                    binding.nameTv.text = it.playlist.name
-                    binding.countTv.text = resources.getQuantityString(
-                        R.plurals.plular_track,
-                        it.playlist.track.size,
-                        it.playlist.track.size
-                    )
-
-                    binding.deleteTv.setOnClickListener { showAlert() }
-
-                    binding.editTv.setOnClickListener {
-                        val direction =
-                            PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistEditorFragment(
-                                playlistId
-                            )
-                        findNavController().navigate(direction)
-                        dismiss()
-                    }
-                    binding.shareTv.setOnClickListener {
-                        playlistViewModel.sharePlaylist()
-                    }
-                }
-
+                is PlaylistViewModel.PlaylistState.Content -> handleContentState(it)
                 PlaylistViewModel.PlaylistState.Loading -> {}
             }
         }
@@ -119,6 +92,34 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
             requireActivity().getString(R.string.playlist_deleted).format(binding.nameTv.text),
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    private fun handleContentState(content: PlaylistViewModel.PlaylistState.Content) {
+        Glide.with(binding.imageIv)
+            .load(content.playlist.image.toUri())
+            .centerCrop()
+            .placeholder(R.drawable.placeholder_album)
+            .into(binding.imageIv)
+        binding.nameTv.text = content.playlist.name
+        binding.countTv.text = resources.getQuantityString(
+            R.plurals.plular_track,
+            content.playlist.track.size,
+            content.playlist.track.size
+        )
+
+        binding.deleteTv.setOnClickListener { showAlert() }
+
+        binding.editTv.setOnClickListener {
+            val direction =
+                PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistEditorFragment(
+                    playlistId
+                )
+            findNavController().navigate(direction)
+            dismiss()
+        }
+        binding.shareTv.setOnClickListener {
+            playlistViewModel.sharePlaylist()
+        }
     }
 
     override fun onDestroy() {
