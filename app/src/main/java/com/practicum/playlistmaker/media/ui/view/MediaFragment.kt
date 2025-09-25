@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediaBinding
 
 class MediaFragment : Fragment() {
-    private val args by navArgs<MediaFragmentArgs>()
     private var _binding: FragmentMediaBinding? = null
     private val binding get() = _binding!!
 
@@ -40,9 +38,6 @@ class MediaFragment : Fragment() {
             }
         }.apply {
             attach()
-            binding.viewPager.post {
-                binding.viewPager.currentItem = args.tabId
-            }
         }
     }
 

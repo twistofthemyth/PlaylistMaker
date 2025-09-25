@@ -16,13 +16,16 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment"
+            app:destination="@id/playlistEditorFragment"
             app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
             app:popExitAnim="@anim/slide_out_right" />
-        <argument
-            android:name="tab_id"
-            android:defaultValue="0"
-            app:argType="integer" />
+        <action
+            android:id="@+id/action_mediaFragment_to_playlistFragment"
+            app:destination="@id/playlistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -33,6 +36,7 @@
             android:id="@+id/action_searchFragment_to_trackFragment"
             app:destination="@id/trackFragment"
             app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
@@ -47,32 +51,60 @@
         tools:layout="@layout/fragment_track">
         <action
             android:id="@+id/action_trackFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment"
+            app:destination="@id/playlistEditorFragment"
             app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
             app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="track_id"
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/createPlaylistFragment"
-        android:name="com.practicum.playlistmaker.createplaylist.ui.view.CreatePlaylistFragment"
-        android:label="CreatePlaylistFragment">
-        <action
-            android:id="@+id/action_createPlaylistFragment_to_mediaFragment"
-            app:destination="@id/mediaFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:popUpTo="@id/mediaFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_createPlaylistFragment_to_trackFragment"
-            app:destination="@id/trackFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:popUpTo="@id/trackFragment"
-            app:popUpToInclusive="true" />
+        android:id="@+id/playlistEditorFragment"
+        android:name="com.practicum.playlistmaker.playlist_editor.ui.view.PlaylistEditorFragment"
+        android:label="PlaylistEditorFragment">
+        <argument
+            android:name="playlist_id"
+            android:defaultValue="-1L"
+            app:argType="long" />
         <argument
             android:name="track_id"
             android:defaultValue=""
             app:argType="string" />
+        <action
+            android:id="@+id/action_playlistEditorFragment_to_playlistFragment"
+            app:destination="@id/playlistFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_in_right"
+            app:popUpTo="@id/playlistFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_playlistEditorFragment_to_trackFragment"
+            app:destination="@id/trackFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_in_right"
+            app:popUpTo="@id/trackFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.practicum.playlistmaker.playlist.ui.view.PlaylistFragment"
+        android:label="PlaylistFragment">
+        <argument
+            android:name="playlist_id"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_playlistFragment_to_trackFragment"
+            app:destination="@id/trackFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_playlistFragment_to_playlistEditorFragment"
+            app:destination="@id/playlistEditorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 </navigation>

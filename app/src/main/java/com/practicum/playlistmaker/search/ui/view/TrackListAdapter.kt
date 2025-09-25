@@ -7,7 +7,8 @@ import com.practicum.playlistmaker.databinding.SearchResultItemBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class TrackListAdapter(
-    private val onTrackClicked: (Track) -> Unit
+    private val onTrackClicked: (Track) -> Unit = {},
+    private val onTrackLongClicked: (Track) -> Unit = {},
 ) :
     RecyclerView.Adapter<TrackListElementViewHolder>() {
 
@@ -30,6 +31,10 @@ class TrackListAdapter(
         val track = cachedList[position]
         holder.bind(track)
         holder.itemView.setOnClickListener { onTrackClicked.invoke(track) }
+        holder.itemView.setOnLongClickListener {
+            onTrackLongClicked.invoke(track)
+            true
+        }
     }
 
     fun updateList(result: List<Track>) {

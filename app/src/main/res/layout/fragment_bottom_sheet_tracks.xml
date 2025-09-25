@@ -1,0 +1,82 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_bg"
+    android:backgroundTint="@color/background"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/round_thing_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/round_thing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/image_iv"
+        android:layout_width="@dimen/list_item_image_size"
+        android:layout_height="@dimen/list_item_image_size"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="20sp"
+        android:src="@drawable/placeholder_album"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/round_thing_iv" />
+
+    <TextView
+        android:id="@+id/name_tv"
+        style="@style/PM.Text.ListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@id/count_tv"
+        app:layout_constraintStart_toEndOf="@id/image_iv"
+        app:layout_constraintTop_toTopOf="@id/image_iv"
+        tools:text="Best songs 2021" />
+
+    <TextView
+        android:id="@+id/count_tv"
+        style="@style/PM.Text.ListSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/image_iv"
+        app:layout_constraintStart_toEndOf="@id/image_iv"
+        app:layout_constraintTop_toBottomOf="@id/name_tv"
+        tools:text="98 треков" />
+
+    <TextView
+        android:id="@+id/share_tv"
+        style="@style/PM.Text.ListTitle.Settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/playlist_item_share"
+        android:layout_marginTop="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_iv" />
+
+    <TextView
+        android:id="@+id/edit_tv"
+        style="@style/PM.Text.ListTitle.Settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/playlist_item_edit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/share_tv" />
+
+    <TextView
+        android:id="@+id/delete_tv"
+        style="@style/PM.Text.ListTitle.Settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/playlist_item_delete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_tv" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

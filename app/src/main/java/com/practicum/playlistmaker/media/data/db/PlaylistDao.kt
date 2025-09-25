@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 
 @Dao
 interface PlaylistDao {
@@ -15,6 +16,9 @@ interface PlaylistDao {
 
     @Insert(entity = PlaylistEntity::class, onConflict = REPLACE)
     suspend fun addPlaylist(playlist: PlaylistEntity)
+
+    @Update(entity = PlaylistEntity::class, onConflict = REPLACE)
+    suspend fun updatePlaylist(playlist: PlaylistEntity)
 
     @Transaction
     suspend fun removePlaylist(playlistId: Long) {
