@@ -83,7 +83,7 @@ class TrackFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         if(viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
-            viewModel.stopPlayer()
+            binding.playTrackIv.stop()
         }
     }
 
@@ -96,7 +96,11 @@ class TrackFragment : Fragment() {
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
 
-        binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
+        binding.playTrackIv.apply {
+            setOnPlayListener { viewModel.startPlayer() }
+            setOnStopListener { viewModel.stopPlayer() }
+        }
+
         binding.likeTrackIv.setOnClickListener {
             viewModel.toggleTrackFavorites()
             lifecycleScope.async {
@@ -122,9 +126,11 @@ class TrackFragment : Fragment() {
 
                 is TrackViewModel.TrackState.Content -> {
                     binding.timeTv.text = it.position
-                    binding.playTrackIv.setImageResource(it.iconResId)
                     binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
+                    if(it.isEnded) {
+                        binding.playTrackIv.stop()
+                    }
                 }
 
                 is TrackViewModel.TrackState.Error -> {

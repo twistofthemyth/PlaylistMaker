@@ -59,18 +59,6 @@ class TrackViewModel(
         trackPlayer.releasePlayer()
     }
 
-    fun togglePlayer() {
-        when (trackPlayer.getState()) {
-            PlayerState.STATE_PLAYING -> {
-                stopPlayer()
-            }
-
-            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED, PlayerState.STATE_DEFAULT -> {
-                startPlayer()
-            }
-        }
-    }
-
     fun startPlayer() {
         trackPlayer.startPlayer()
         timerJob?.cancel()
@@ -79,7 +67,7 @@ class TrackViewModel(
                 delay(TRACK_UPDATE_DELAY)
                 postTrackContent()
             }
-            postTrackContent()
+            postTrackContent(true)
         }
     }
 
@@ -125,13 +113,13 @@ class TrackViewModel(
         return cachedFavoriteState ?: false
     }
 
-    private fun postTrackContent() {
+    private fun postTrackContent(isEnded: Boolean = false) {
         trackState.postValue(
             TrackState.Content(
                 track,
-                if (trackPlayer.getState() == PlayerState.STATE_PLAYING) R.drawable.button_pause_track else R.drawable.button_play_track,
                 trackPlayer.getPosition(),
-                isTrackInFavorites()
+                isTrackInFavorites(),
+                isEnded
             )
         )
     }
@@ -144,9 +132,9 @@ class TrackViewModel(
         data object Loading : TrackState
         data class Content(
             val track: Track,
-            val iconResId: Int,
             val position: String,
             var isFavorite: Boolean,
+            var isEnded: Boolean
         ) : TrackState
 
         data object Error : TrackState
