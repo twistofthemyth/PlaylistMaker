@@ -1,17 +1,15 @@
 package com.practicum.playlistmaker.player.ui.view
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
-import androidx.core.graphics.drawable.toBitmap
 import com.practicum.playlistmaker.R
-import kotlin.math.min
 
 class PlaybackButtonView @JvmOverloads constructor(
     context: Context,
@@ -19,15 +17,12 @@ class PlaybackButtonView @JvmOverloads constructor(
     @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
-    private val stopDrawable: Bitmap?
-    private val startDrawable: Bitmap?
+    private var stopDrawable: Drawable?
+    private var startDrawable: Drawable?
     private val size: Int
     private var isPlaying = false
     private var imageRect = RectF(0f, 0f, 0f, 0f)
-
-    private var onStopAction: (() -> Unit)? = null
-
-    private var onPlayAction: (() -> Unit)? = null
+    private var listener: PlaybackButtonListener? = null
 
     init {
         context.theme.obtainStyledAttributes(
@@ -38,8 +33,8 @@ class PlaybackButtonView @JvmOverloads constructor(
         ).apply {
             try {
                 size = getDimensionPixelSize(R.styleable.PlaybackButtonView_size, 0)
-                stopDrawable = getDrawable(R.styleable.PlaybackButtonView_stop_icon_ref)?.toBitmap()
-                startDrawable = getDrawable(R.styleable.PlaybackButtonView_play_icon_ref)?.toBitmap()
+                stopDrawable = getDrawable(R.styleable.PlaybackButtonView_stop_icon_ref)
+                startDrawable = getDrawable(R.styleable.PlaybackButtonView_play_icon_ref)
             } finally {
                 recycle()
             }
@@ -58,13 +53,11 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         if (isPlaying) {
-            stopDrawable?.let {
-                canvas.drawBitmap(stopDrawable, null, imageRect, null)
-            }
+            stopDrawable?.setBounds(imageRect.left.toInt(), imageRect.top.toInt(), imageRect.right.toInt(), imageRect.bottom.toInt())
+            stopDrawable?.draw(canvas)
         } else {
-            startDrawable?.let {
-                canvas.drawBitmap(startDrawable, null, imageRect, null)
-            }
+            startDrawable?.setBounds(imageRect.left.toInt(), imageRect.top.toInt(), imageRect.right.toInt(), imageRect.bottom.toInt())
+            startDrawable?.draw(canvas)
         }
     }
 
@@ -73,6 +66,7 @@ class PlaybackButtonView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 return true
             }
+
             MotionEvent.ACTION_UP -> {
                 toggle()
                 return true
@@ -82,26 +76,32 @@ class PlaybackButtonView @JvmOverloads constructor(
     }
 
     fun play() {
-        isPlaying = true
-        onPlayAction?.invoke()
-        invalidate()
+        if (!isPlaying) {
+            isPlaying = true
+            listener?.onStart()
+            invalidate()
+        }
     }
 
     fun stop() {
-        isPlaying = false
-        onStopAction?.invoke()
-        invalidate()
+        if (isPlaying) {
+            isPlaying = false
+            listener?.onStop()
+            invalidate()
+        }
     }
 
     fun toggle() {
-        if(isPlaying) stop() else play()
+        if (isPlaying) stop() else play()
     }
 
-    fun setOnPlayListener(action: () -> Unit) {
-        onPlayAction = action
+    fun setPlaybackButtonListener(listener: PlaybackButtonListener) {
+        this.listener = listener
     }
 
-    fun setOnStopListener(action: () -> Unit) {
-        onStopAction = action
+    fun release() {
+        listener = null
+        stopDrawable = null
+        startDrawable = null
     }
 }
