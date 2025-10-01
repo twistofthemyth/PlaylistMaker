@@ -39,6 +39,15 @@ class TrackFragment : Fragment() {
     private var _playlistAdapter: PlaylistAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
 
+    private val playbackListener = object: PlaybackButtonListener {
+        override fun onStop() {
+            viewModel.stopPlayer()
+        }
+        override fun onStart() {
+            viewModel.startPlayer()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,6 +85,7 @@ class TrackFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.releasePlayer()
+        binding.playTrackIv.release()
         _binding = null
         _playlistAdapter = null
     }
@@ -83,7 +93,7 @@ class TrackFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         if(viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
-            viewModel.stopPlayer()
+            binding.playTrackIv.stop()
         }
     }
 
@@ -96,7 +106,8 @@ class TrackFragment : Fragment() {
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         }
 
-        binding.playTrackIv.setOnClickListener { viewModel.togglePlayer() }
+        binding.playTrackIv.setPlaybackButtonListener(playbackListener)
+
         binding.likeTrackIv.setOnClickListener {
             viewModel.toggleTrackFavorites()
             lifecycleScope.async {
@@ -122,9 +133,11 @@ class TrackFragment : Fragment() {
 
                 is TrackViewModel.TrackState.Content -> {
                     binding.timeTv.text = it.position
-                    binding.playTrackIv.setImageResource(it.iconResId)
                     binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
+                    if(it.isEnded) {
+                        binding.playTrackIv.stop()
+                    }
                 }
 
                 is TrackViewModel.TrackState.Error -> {
