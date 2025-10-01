@@ -17,7 +17,6 @@ import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 
 class TrackViewModel(
@@ -55,9 +54,9 @@ class TrackViewModel(
 
     fun bindService(context: Context) {
         viewModelScope.launch {
-            async { postPlaylistsContent() }
+            async { playlistsState.postValue(PlaylistsState.Content(playlistRepository.getPlaylists())) }
             val resource = searchInteractor.searchTrackById(trackId)
-            if(resource.data != null) {
+            if (resource.data != null) {
                 track = resource.data
                 trackState.postValue(TrackState.Content(track, isTrackInFavorites()))
                 bindService(context, track.previewUrl)
@@ -75,10 +74,12 @@ class TrackViewModel(
     }
 
     fun play() {
+        if(!isServiceBounded) trackState.postValue(TrackState.Error)
         boundService?.startPlayer()
     }
 
     fun pause() {
+        if(!isServiceBounded) trackState.postValue(TrackState.Error)
         boundService?.stopPlayer()
     }
 
@@ -101,11 +102,9 @@ class TrackViewModel(
     }
 
     suspend fun addTrackToPlaylist(playlist: Playlist): Boolean {
-        val result = playlistRepository.addTrackToPlaylist(playlist.id, track)
-        if (result) {
-            postPlaylistsContent()
-        }
-        return result
+        val isSuccessfullyAdded = playlistRepository.addTrackToPlaylist(playlist.id, track)
+        if (isSuccessfullyAdded) playlistsState.postValue(PlaylistsState.Content(playlistRepository.getPlaylists()))
+        return isSuccessfullyAdded
     }
 
     private fun bindService(context: Context, url: String) {
@@ -116,14 +115,6 @@ class TrackViewModel(
 
     private suspend fun isTrackInFavorites(): Boolean {
         return playlistRepository.isTrackInFavorites(track.trackId.toLong())
-    }
-
-    private suspend fun postTrackContent() {
-        trackState.postValue(TrackState.Content(track, isTrackInFavorites()))
-    }
-
-    private suspend fun postPlaylistsContent() {
-        playlistsState.postValue(PlaylistsState.Content(playlistRepository.getPlaylists()))
     }
 
     sealed interface TrackState {

@@ -19,9 +19,9 @@ import org.koin.core.component.inject
 class MusicPlayerService() : Service(), KoinComponent {
 
     companion object {
-        val DEFAULT_STATE = MusicPlayerState("", true)
         const val TRACK_URL_TAG = "track_url"
         private const val TRACK_UPDATE_DELAY = 300L
+        private val DEFAULT_STATE = MusicPlayerState("", true)
     }
 
     private val trackPlayer: TrackPlayer by inject()
