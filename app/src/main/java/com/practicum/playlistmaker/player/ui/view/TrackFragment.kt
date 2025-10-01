@@ -39,12 +39,13 @@ class TrackFragment : Fragment() {
     private var _playlistAdapter: PlaylistAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
 
-    private val playbackListener = object: PlaybackButtonListener {
+    private val playbackListener = object : PlaybackButtonListener {
         override fun onStop() {
-            viewModel.stopPlayer()
+            viewModel.pause()
         }
+
         override fun onStart() {
-            viewModel.startPlayer()
+            viewModel.play()
         }
     }
 
@@ -58,6 +59,7 @@ class TrackFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.bindService(requireContext())
         _playlistAdapter = PlaylistAdapter {
             lifecycleScope.launch {
                 val isAdded = viewModel.addTrackToPlaylist(it)
@@ -84,7 +86,7 @@ class TrackFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.releasePlayer()
+        viewModel.unbindService(requireContext())
         binding.playTrackIv.release()
         _binding = null
         _playlistAdapter = null
@@ -92,7 +94,7 @@ class TrackFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        if(viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
+        if (viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
             binding.playTrackIv.stop()
         }
     }
@@ -100,6 +102,7 @@ class TrackFragment : Fragment() {
     private fun setupFragment() {
         observeTrackState()
         observePlaylistsState()
+        observePlayerState()
 
         binding.playlistsRv.apply {
             adapter = playlistAdapter
@@ -109,8 +112,8 @@ class TrackFragment : Fragment() {
         binding.playTrackIv.setPlaybackButtonListener(playbackListener)
 
         binding.likeTrackIv.setOnClickListener {
-            viewModel.toggleTrackFavorites()
             lifecycleScope.async {
+                viewModel.toggleTrackFavorites()
                 delay(200)
                 mediaViewModel.updateFavoritePlayList()
             }
@@ -132,16 +135,16 @@ class TrackFragment : Fragment() {
                 is TrackViewModel.TrackState.Loading -> {}
 
                 is TrackViewModel.TrackState.Content -> {
-                    binding.timeTv.text = it.position
                     binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
-                    if(it.isEnded) {
-                        binding.playTrackIv.stop()
-                    }
                 }
 
                 is TrackViewModel.TrackState.Error -> {
-                    Toast.makeText(requireActivity(), R.string.track_not_found_error, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireActivity(),
+                        R.string.track_not_found_error,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     parentFragmentManager.popBackStack()
                 }
             }
@@ -157,6 +160,27 @@ class TrackFragment : Fragment() {
 
                 TrackViewModel.PlaylistsState.Loading -> {
                     playlistAdapter.updateList(emptyList())
+                }
+            }
+        }
+    }
+
+    private fun observePlayerState() {
+        lifecycleScope.async {
+            var attempts = 0
+            while (viewModel.getPlayerState() == null) {
+                delay(50)
+                attempts++
+                if (attempts > 10) {
+                    return@async
+                }
+            }
+            viewModel.getPlayerState()?.let { playerState ->
+                playerState.collect {
+                    binding.timeTv.text = it.position
+                    if (it.isEnded) {
+                        binding.playTrackIv.stop()
+                    }
                 }
             }
         }

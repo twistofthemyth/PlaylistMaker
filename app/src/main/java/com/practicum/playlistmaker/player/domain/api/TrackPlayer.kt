@@ -6,7 +6,7 @@ import java.util.function.Consumer
 
 interface TrackPlayer {
     fun getState(): PlayerState
-    fun preparePlayer(track: Track)
+    fun preparePlayer(url: String)
     fun startPlayer()
     fun stopPlayer()
     fun releasePlayer()
