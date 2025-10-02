@@ -20,11 +20,14 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.media.ui.view_model.PlaylistAdapter
+import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf

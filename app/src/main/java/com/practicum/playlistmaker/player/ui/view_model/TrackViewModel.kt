@@ -13,9 +13,11 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.player.service.MusicPlayerService
 import com.practicum.playlistmaker.player.service.MusicPlayerService.Companion.TRACK_URL_TAG
+import com.practicum.playlistmaker.player.service.MusicPlayerState
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -50,7 +52,7 @@ class TrackViewModel(
 
     fun getPlaylistsState(): LiveData<PlaylistsState> = playlistsState
 
-    fun getPlayerState() = boundService?.playerState
+    fun getPlayerState() = boundService?.state()
 
     fun bindService(context: Context) {
         viewModelScope.launch {
@@ -58,8 +60,8 @@ class TrackViewModel(
             val resource = searchInteractor.searchTrackById(trackId)
             if (resource.data != null) {
                 track = resource.data
-                trackState.postValue(TrackState.Content(track, isTrackInFavorites()))
                 bindService(context, track.previewUrl)
+                trackState.postValue(TrackState.Content(track, isTrackInFavorites()))
             } else {
                 trackState.postValue(TrackState.Error)
             }

@@ -6,32 +6,30 @@ import android.os.Binder
 import android.os.IBinder
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
+import com.practicum.playlistmaker.player.service.MusicPlayerState.Companion.DEFAULT_STATE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class MusicPlayerService() : Service(), KoinComponent {
+class MusicPlayerService() : Service(), KoinComponent, IMusicPlayerService {
 
     companion object {
         const val TRACK_URL_TAG = "track_url"
         private const val TRACK_UPDATE_DELAY = 300L
-        private val DEFAULT_STATE = MusicPlayerState("", true)
     }
 
     private val trackPlayer: TrackPlayer by inject()
-
     private val binder = MusicServiceBinder()
-
     private var timerJob: Job? = null
-    private val _playerState = MutableStateFlow<MusicPlayerState>(DEFAULT_STATE)
+    private val _playerState = MutableStateFlow(DEFAULT_STATE)
 
-    val playerState = _playerState.asStateFlow()
 
     override fun onBind(intent: Intent?): IBinder? {
         intent?.getStringExtra(TRACK_URL_TAG)?.let { trackUrl ->
@@ -47,14 +45,18 @@ class MusicPlayerService() : Service(), KoinComponent {
         return super.onUnbind(intent)
     }
 
-    fun startPlayer() {
+    override fun startPlayer() {
         trackPlayer.startPlayer()
         startTimer()
     }
 
-    fun stopPlayer() {
+    override fun stopPlayer() {
         trackPlayer.stopPlayer()
         timerJob?.cancel()
+    }
+
+    override fun state(): StateFlow<MusicPlayerState> {
+        return _playerState.asStateFlow()
     }
 
     private fun startTimer() {
@@ -70,5 +72,4 @@ class MusicPlayerService() : Service(), KoinComponent {
     inner class MusicServiceBinder : Binder() {
         fun getService(): MusicPlayerService = this@MusicPlayerService
     }
-    data class MusicPlayerState(val position: String, val isEnded: Boolean)
 }
