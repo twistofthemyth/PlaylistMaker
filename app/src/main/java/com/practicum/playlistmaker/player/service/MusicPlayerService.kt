@@ -6,14 +6,10 @@ import android.os.Binder
 import android.os.IBinder
 import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.domain.api.TrackPlayer
-import com.practicum.playlistmaker.player.service.MusicPlayerState.Companion.DEFAULT_STATE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -28,13 +24,12 @@ class MusicPlayerService() : Service(), KoinComponent, IMusicPlayerService {
     private val trackPlayer: TrackPlayer by inject()
     private val binder = MusicServiceBinder()
     private var timerJob: Job? = null
-    private val _playerState = MutableStateFlow(DEFAULT_STATE)
 
+    private var _listener: MusicPlayerListener? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         intent?.getStringExtra(TRACK_URL_TAG)?.let { trackUrl ->
             trackPlayer.preparePlayer(trackUrl)
-            _playerState.value = MusicPlayerState(trackPlayer.getPosition(), true)
         }
 
         return binder
@@ -42,6 +37,7 @@ class MusicPlayerService() : Service(), KoinComponent, IMusicPlayerService {
 
     override fun onUnbind(intent: Intent?): Boolean {
         trackPlayer.releasePlayer()
+        _listener = null
         return super.onUnbind(intent)
     }
 
@@ -55,17 +51,17 @@ class MusicPlayerService() : Service(), KoinComponent, IMusicPlayerService {
         timerJob?.cancel()
     }
 
-    override fun state(): StateFlow<MusicPlayerState> {
-        return _playerState.asStateFlow()
+    override fun setListener(listener: MusicPlayerListener) {
+        _listener = listener
     }
 
     private fun startTimer() {
         timerJob = CoroutineScope(Dispatchers.Default).launch {
             while (trackPlayer.getState() == PlayerState.STATE_PLAYING) {
                 delay(TRACK_UPDATE_DELAY)
-                _playerState.value = MusicPlayerState(trackPlayer.getPosition(), false)
+                _listener?.onStateChanged(MusicPlayerState(trackPlayer.getPosition(), false))
             }
-            _playerState.value = MusicPlayerState(trackPlayer.getPosition(), true)
+            _listener?.onStateChanged(MusicPlayerState(trackPlayer.getPosition(), true))
         }
     }
 

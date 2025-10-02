@@ -11,13 +11,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
+import com.practicum.playlistmaker.player.service.MusicPlayerListener
 import com.practicum.playlistmaker.player.service.MusicPlayerService
 import com.practicum.playlistmaker.player.service.MusicPlayerService.Companion.TRACK_URL_TAG
 import com.practicum.playlistmaker.player.service.MusicPlayerState
+import com.practicum.playlistmaker.player.service.MusicPlayerState.Companion.DEFAULT_STATE
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -28,6 +31,7 @@ class TrackViewModel(
 ) : ViewModel(), KoinComponent {
     private val trackState = MutableLiveData<TrackState>()
     private val playlistsState = MutableLiveData<PlaylistsState>()
+    private val _musicPlayerState = MutableStateFlow(DEFAULT_STATE)
     private var boundService: MusicPlayerService? = null
     private var isServiceBounded = false
     private val connection = object : ServiceConnection {
@@ -35,6 +39,7 @@ class TrackViewModel(
             val binder = service as MusicPlayerService.MusicServiceBinder
             boundService = binder.getService()
             isServiceBounded = true
+            boundService?.setListener(musicPlayerListener)
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -42,6 +47,12 @@ class TrackViewModel(
             isServiceBounded = false
         }
     }
+    private val musicPlayerListener = object : MusicPlayerListener {
+        override fun onStateChanged(state: MusicPlayerState) {
+            _musicPlayerState.value = state
+        }
+    }
+
     private lateinit var track: Track
 
     init {
@@ -52,7 +63,7 @@ class TrackViewModel(
 
     fun getPlaylistsState(): LiveData<PlaylistsState> = playlistsState
 
-    fun getPlayerState() = boundService?.state()
+    fun getPlayerState() = _musicPlayerState.asStateFlow()
 
     fun bindService(context: Context) {
         viewModelScope.launch {
@@ -76,12 +87,12 @@ class TrackViewModel(
     }
 
     fun play() {
-        if(!isServiceBounded) trackState.postValue(TrackState.Error)
+        if (!isServiceBounded) trackState.postValue(TrackState.Error)
         boundService?.startPlayer()
     }
 
     fun pause() {
-        if(!isServiceBounded) trackState.postValue(TrackState.Error)
+        if (!isServiceBounded) trackState.postValue(TrackState.Error)
         boundService?.stopPlayer()
     }
 

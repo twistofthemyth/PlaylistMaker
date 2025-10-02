@@ -169,21 +169,11 @@ class TrackFragment : Fragment() {
     }
 
     private fun observePlayerState() {
-        lifecycleScope.async {
-            var attempts = 0
-            while (viewModel.getPlayerState() == null) {
-                delay(50)
-                attempts++
-                if (attempts > 10) {
-                    return@async
-                }
-            }
-            viewModel.getPlayerState()?.let { playerState ->
-                playerState.collect {
-                    binding.timeTv.text = it.position
-                    if (it.isEnded) {
-                        binding.playTrackIv.stop()
-                    }
+        lifecycleScope.launch {
+            viewModel.getPlayerState().collect {
+                binding.timeTv.text = it.position
+                if (it.isEnded) {
+                    binding.playTrackIv.stop()
                 }
             }
         }
