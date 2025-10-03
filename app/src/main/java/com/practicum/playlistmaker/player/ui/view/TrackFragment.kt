@@ -1,11 +1,17 @@
 package com.practicum.playlistmaker.player.ui.view
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -41,6 +47,11 @@ class TrackFragment : Fragment() {
     private val binding get() = _binding!!
     private var _playlistAdapter: PlaylistAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
+    private val requestPermissionLauncher  = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            viewModel.collapse()
+        }
+    }
 
     private val playbackListener = object : PlaybackButtonListener {
         override fun onStop() {
@@ -96,9 +107,20 @@ class TrackFragment : Fragment() {
     }
 
     override fun onPause() {
+        if (!viewModel.getPlayerState().value.isEnded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                viewModel.collapse()
+            }
+        }
         super.onPause()
-        if (viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
-            binding.playTrackIv.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!viewModel.getPlayerState().value.isEnded) {
+            viewModel.expand()
         }
     }
 

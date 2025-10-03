@@ -13,6 +13,8 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.player.service.MusicPlayerListener
 import com.practicum.playlistmaker.player.service.MusicPlayerService
+import com.practicum.playlistmaker.player.service.MusicPlayerService.Companion.TRACK_ARTIST_TAG
+import com.practicum.playlistmaker.player.service.MusicPlayerService.Companion.TRACK_NAME_TAG
 import com.practicum.playlistmaker.player.service.MusicPlayerService.Companion.TRACK_URL_TAG
 import com.practicum.playlistmaker.player.service.MusicPlayerState
 import com.practicum.playlistmaker.player.service.MusicPlayerState.Companion.DEFAULT_STATE
@@ -71,7 +73,7 @@ class TrackViewModel(
             val resource = searchInteractor.searchTrackById(trackId)
             if (resource.data != null) {
                 track = resource.data
-                bindService(context, track.previewUrl)
+                bindService(context, track.previewUrl, track.artistName, track.trackName)
                 trackState.postValue(TrackState.Content(track, isTrackInFavorites()))
             } else {
                 trackState.postValue(TrackState.Error)
@@ -94,6 +96,14 @@ class TrackViewModel(
     fun pause() {
         if (!isServiceBounded) trackState.postValue(TrackState.Error)
         boundService?.stopPlayer()
+    }
+
+    fun collapse() {
+        boundService?.startForeground()
+    }
+
+    fun expand() {
+        boundService?.stopForeground()
     }
 
     suspend fun toggleTrackFavorites() {
@@ -120,9 +130,11 @@ class TrackViewModel(
         return isSuccessfullyAdded
     }
 
-    private fun bindService(context: Context, url: String) {
+    private fun bindService(context: Context, url: String, artistName: String, trackName: String) {
         val intent = Intent(context, MusicPlayerService::class.java)
-        intent.putExtra(TRACK_URL_TAG, url)
+            .putExtra(TRACK_URL_TAG, url)
+            .putExtra(TRACK_NAME_TAG, trackName)
+            .putExtra(TRACK_ARTIST_TAG, artistName)
         context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
