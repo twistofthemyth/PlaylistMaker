@@ -1,11 +1,17 @@
 package com.practicum.playlistmaker.player.ui.view
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -20,11 +26,14 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentTrackBinding
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.media.ui.view_model.PlaylistAdapter
+import com.practicum.playlistmaker.player.domain.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.TrackViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -38,13 +47,19 @@ class TrackFragment : Fragment() {
     private val binding get() = _binding!!
     private var _playlistAdapter: PlaylistAdapter? = null
     private val playlistAdapter get() = _playlistAdapter!!
-
-    private val playbackListener = object: PlaybackButtonListener {
-        override fun onStop() {
-            viewModel.stopPlayer()
+    private val requestPermissionLauncher  = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            viewModel.collapse()
         }
+    }
+
+    private val playbackListener = object : PlaybackButtonListener {
+        override fun onStop() {
+            viewModel.pause()
+        }
+
         override fun onStart() {
-            viewModel.startPlayer()
+            viewModel.play()
         }
     }
 
@@ -58,6 +73,7 @@ class TrackFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.bindService(requireContext())
         _playlistAdapter = PlaylistAdapter {
             lifecycleScope.launch {
                 val isAdded = viewModel.addTrackToPlaylist(it)
@@ -84,22 +100,34 @@ class TrackFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.releasePlayer()
+        viewModel.unbindService(requireContext())
         binding.playTrackIv.release()
         _binding = null
         _playlistAdapter = null
     }
 
     override fun onPause() {
+        if (!viewModel.getPlayerState().value.isEnded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                viewModel.collapse()
+            }
+        }
         super.onPause()
-        if(viewModel.getScreenState().value != TrackViewModel.TrackState.Error) {
-            binding.playTrackIv.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!viewModel.getPlayerState().value.isEnded) {
+            viewModel.expand()
         }
     }
 
     private fun setupFragment() {
         observeTrackState()
         observePlaylistsState()
+        observePlayerState()
 
         binding.playlistsRv.apply {
             adapter = playlistAdapter
@@ -109,8 +137,8 @@ class TrackFragment : Fragment() {
         binding.playTrackIv.setPlaybackButtonListener(playbackListener)
 
         binding.likeTrackIv.setOnClickListener {
-            viewModel.toggleTrackFavorites()
             lifecycleScope.async {
+                viewModel.toggleTrackFavorites()
                 delay(200)
                 mediaViewModel.updateFavoritePlayList()
             }
@@ -132,16 +160,16 @@ class TrackFragment : Fragment() {
                 is TrackViewModel.TrackState.Loading -> {}
 
                 is TrackViewModel.TrackState.Content -> {
-                    binding.timeTv.text = it.position
                     binding.likeTrackIv.setImageResource(if (it.isFavorite) R.drawable.button_like_track_liked else R.drawable.button_like_track)
                     setupTrackInfo(it.track)
-                    if(it.isEnded) {
-                        binding.playTrackIv.stop()
-                    }
                 }
 
                 is TrackViewModel.TrackState.Error -> {
-                    Toast.makeText(requireActivity(), R.string.track_not_found_error, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireActivity(),
+                        R.string.track_not_found_error,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     parentFragmentManager.popBackStack()
                 }
             }
@@ -157,6 +185,17 @@ class TrackFragment : Fragment() {
 
                 TrackViewModel.PlaylistsState.Loading -> {
                     playlistAdapter.updateList(emptyList())
+                }
+            }
+        }
+    }
+
+    private fun observePlayerState() {
+        lifecycleScope.launch {
+            viewModel.getPlayerState().collect {
+                binding.timeTv.text = it.position
+                if (it.isEnded) {
+                    binding.playTrackIv.stop()
                 }
             }
         }

@@ -17,8 +17,8 @@ class TrackPlayerImpl(private val mediaPlayer: MediaPlayer) : TrackPlayer {
     private var playerState = PlayerState.STATE_DEFAULT
     override fun getState() = playerState
 
-    override fun preparePlayer(track: Track) {
-        mediaPlayer.setDataSource(track.previewUrl)
+    override fun preparePlayer(url: String) {
+        mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
 
         mediaPlayer.setOnPreparedListener {
