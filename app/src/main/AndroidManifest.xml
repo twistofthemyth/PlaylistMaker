@@ -18,12 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".main.ui.view.HostActivity"
+            android:name=".compose_example.ui.ComposeExampleActivity"
             android:exported="true"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
