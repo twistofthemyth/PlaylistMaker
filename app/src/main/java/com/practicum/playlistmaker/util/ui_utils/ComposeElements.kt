@@ -1,8 +1,13 @@
 package com.practicum.playlistmaker.util.ui_utils
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +15,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -78,7 +84,7 @@ fun SearchEditText(onValueChange: (String) -> Unit, onValueClean: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
             .background(
                 color = colorResource(R.color.et_color),
                 shape = RoundedCornerShape(8.dp)
@@ -151,7 +157,7 @@ fun SearchEditText(onValueChange: (String) -> Unit, onValueClean: () -> Unit) {
 
 @Composable
 fun TrackItems(tracks: List<Track>, onClick: (Track) -> Unit) {
-    LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+    LazyColumn(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
         items(tracks) {
             TrackItem(track = it, onClick = onClick)
         }
@@ -265,7 +271,7 @@ fun TextScreenTitle(text: String) {
         text = text,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 14.dp, bottom = 16.dp),
+            .padding(top = 14.dp, bottom = 16.dp, start = 16.dp),
         style = TextStyle(
             fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
@@ -314,4 +320,60 @@ fun TextSmall(text: String) {
             fontSize = 11.sp
         )
     )
+}
+
+@Composable
+fun Material2Switcher(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val trackWidth = 32.dp
+    val trackHeight = 12.dp
+    val thumbDiameter = 18.dp
+
+    val thumbOffset by animateDpAsState(
+        targetValue = if (checked) (trackWidth - thumbDiameter) else 0.dp,
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        label = "thumb_animation"
+    )
+
+    val trackColor by animateColorAsState(
+        targetValue = colorResource(if (checked) R.color.primary_container_color else R.color.pm_gray),
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        label = "track_color_animation"
+    )
+
+    val thumbColor by animateColorAsState(
+        targetValue = colorResource(R.color.primary_color),
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        label = "thumb_color_animation"
+    )
+
+    Box(
+        modifier = modifier
+            .size(width = trackWidth, height = thumbDiameter)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onCheckedChange(!checked) }
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = trackWidth, height = trackHeight)
+                .align(Alignment.Center)
+                .background(
+                    color = trackColor,
+                    shape = RoundedCornerShape(percent = 50)
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .size(thumbDiameter)
+                .align(Alignment.CenterStart)
+                .offset(x = thumbOffset)
+                .background(thumbColor, CircleShape)
+        )
+    }
 }

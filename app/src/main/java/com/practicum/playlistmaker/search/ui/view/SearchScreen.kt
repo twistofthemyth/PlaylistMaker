@@ -28,7 +28,6 @@ fun SearchScreen(viewModel: SearchViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
     ) {
         TextScreenTitle(stringResource(R.string.search_button_txt))
         SearchEditText(
