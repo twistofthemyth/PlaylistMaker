@@ -6,6 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -16,6 +25,11 @@ import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import com.practicum.playlistmaker.util.ui_utils.InfoMessage
+import com.practicum.playlistmaker.util.ui_utils.InfoMessageButton
+import com.practicum.playlistmaker.util.ui_utils.SearchField
+import com.practicum.playlistmaker.util.ui_utils.TextScreenTitle
+import com.practicum.playlistmaker.util.ui_utils.TrackItems
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SearchFragment : Fragment() {
@@ -54,6 +68,56 @@ class SearchFragment : Fragment() {
         _binding = null
         _searchAdapter = null
         _searchHistoryAdapter = null
+    }
+
+    @Preview(showSystemUi = true)
+    @Composable
+    fun SearchScreen() {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            TextScreenTitle(stringResource(R.string.search_button_txt))
+            SearchField { viewModel.search(it) }
+            InfoMessage(R.string.you_searched)
+            TrackItems(
+                listOf(
+                    Track(
+                        "123",
+                        "Track name",
+                        "Artist Name",
+                        "13:12",
+                        "",
+                        "",
+                        "collection",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ),
+                    Track(
+                        "123",
+                        "Track name",
+                        "Artist Name",
+                        "13:12",
+                        "",
+                        "",
+                        "collection",
+                        "",
+                        "",
+                        "",
+                        ""
+                    )
+                )
+            ) {
+
+            }
+            InfoMessageButton(R.string.search_query_update_button) {
+
+            }
+        }
     }
 
     private fun setupViewModel() {
