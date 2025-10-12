@@ -16,7 +16,7 @@ import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.util.ui_utils.InfoMessage
 import com.practicum.playlistmaker.util.ui_utils.InfoMessageButton
 import com.practicum.playlistmaker.util.ui_utils.ProgressBar
-import com.practicum.playlistmaker.util.ui_utils.SearchField
+import com.practicum.playlistmaker.util.ui_utils.SearchEditText
 import com.practicum.playlistmaker.util.ui_utils.TextScreenTitle
 import com.practicum.playlistmaker.util.ui_utils.TrackItems
 
@@ -31,14 +31,17 @@ fun SearchScreen(viewModel: SearchViewModel) {
             .padding(horizontal = 16.dp)
     ) {
         TextScreenTitle(stringResource(R.string.search_button_txt))
-        SearchField(
+        SearchEditText(
             onValueChange = { viewModel.search(it) },
             onValueClean = { viewModel.cleanSearchQuery() })
         when (state) {
             is SearchViewModel.SearchViewState.Loading -> ProgressBar()
             is SearchViewModel.SearchViewState.NetworkError -> NetworkErrorScreen(viewModel)
             is SearchViewModel.SearchViewState.ShowHistory -> HistoryScreen(viewModel, state.tracks)
-            is SearchViewModel.SearchViewState.ShowSearchResult -> SearchResultScreen(viewModel, state.tracks)
+            is SearchViewModel.SearchViewState.ShowSearchResult -> SearchResultScreen(
+                viewModel,
+                state.tracks
+            )
         }
     }
 }
@@ -46,12 +49,12 @@ fun SearchScreen(viewModel: SearchViewModel) {
 @Composable
 private fun NetworkErrorScreen(viewModel: SearchViewModel) {
     InfoMessage(
-        R.string.net_error,
-        R.drawable.placeholder_net_error,
-        R.string.search_query_update_button
-    ) {
-        viewModel.repeatSearch()
-    }
+        textId = R.string.net_error,
+        descriptionId = R.string.net_error_description,
+        imageId = R.drawable.placeholder_net_error,
+        buttonTextId = R.string.search_query_update_button,
+        onButtonClickAction = { viewModel.repeatSearch() }
+    )
 }
 
 @Composable

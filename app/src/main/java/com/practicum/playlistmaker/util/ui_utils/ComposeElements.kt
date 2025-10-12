@@ -1,27 +1,28 @@
 package com.practicum.playlistmaker.util.ui_utils
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -70,63 +73,79 @@ fun ProgressBar() {
 }
 
 @Composable
-fun SearchField(onValueChange: (String) -> Unit, onValueClean: () -> Unit) {
+fun SearchEditText(onValueChange: (String) -> Unit, onValueClean: () -> Unit) {
     var searchText by remember { mutableStateOf("") }
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .background(
+                color = colorResource(R.color.et_color),
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
-        TextField(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp),
+                .align(Alignment.CenterStart)
+                .padding(start = 13.dp)
+                .clickable(onClick = {
+                    searchText = ""
+                    onValueClean.invoke()
+                })
+        ) {
+            Icon(
+                modifier = Modifier.width(16.dp),
+                painter = painterResource(R.drawable.ic_search),
+                tint = colorResource(R.color.et_hint_color),
+                contentDescription = null
+            )
+        }
+
+        BasicTextField(
             value = searchText,
             onValueChange = {
                 searchText = it
-                onValueChange.invoke(it)
+                onValueChange(it)
             },
-            label = {
-                Text(
-                    text = "Поиск",
-                    color = colorResource(R.color.et_hint_color),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = Fonts.ysDisplayRegular
-                    ),
-                )
-            },
-            leadingIcon = {
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 36.dp, end = 40.dp, top = 9.dp, bottom = 8.dp),
+            singleLine = true,
+            cursorBrush = SolidColor(colorResource(R.color.et_hint_color)),
+            decorationBox = { innerTextField ->
+                if (searchText.isEmpty()) {
+                    Text(
+                        text = "Поиск",
+                        color = colorResource(R.color.et_hint_color),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = Fonts.ysDisplayRegular
+                        ),
+                    )
+                }
+                innerTextField()
+            }
+        )
+
+        if (searchText.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 8.dp)
+                    .clickable(onClick = {
+                        searchText = ""
+                        onValueClean.invoke()
+                    })
+            ) {
                 Icon(
                     modifier = Modifier.width(16.dp),
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(R.drawable.ic_clear),
                     tint = colorResource(R.color.et_hint_color),
                     contentDescription = null
                 )
-            },
-            trailingIcon = {
-                if (searchText.isNotEmpty()) {
-                    Icon(
-                        modifier = Modifier
-                            .width(16.dp)
-                            .clickable(onClick = {
-                                searchText = ""
-                                onValueClean.invoke()
-                            }),
-                        painter = painterResource(R.drawable.ic_clear),
-                        tint = colorResource(R.color.et_hint_color),
-                        contentDescription = null
-                    )
-                }
-            },
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = colorResource(R.color.et_color),
-                unfocusedContainerColor = colorResource(R.color.et_color),
-                unfocusedBorderColor = colorResource(R.color.background),
-                focusedBorderColor = colorResource(R.color.background)
-            )
-        )
+            }
+        }
     }
 }
 
@@ -187,6 +206,7 @@ fun TrackItem(track: Track, onClick: (Track) -> Unit) {
 @Composable
 fun InfoMessage(
     textId: Int,
+    descriptionId: Int? = null,
     imageId: Int? = null,
     buttonTextId: Int? = null,
     onButtonClickAction: (() -> Unit)? = null
@@ -206,6 +226,11 @@ fun InfoMessage(
             )
         }
         TextMessage(stringResource(textId))
+
+        if (descriptionId != null) {
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            TextMessage(stringResource(descriptionId))
+        }
         if (buttonTextId != null && onButtonClickAction != null) {
             InfoMessageButton(buttonTextId, onButtonClickAction)
         }
@@ -245,7 +270,8 @@ fun TextScreenTitle(text: String) {
             fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = Fonts.ysDisplayMedium
-        )
+        ),
+        color = colorResource(R.color.text_color)
     )
 }
 
@@ -258,7 +284,9 @@ fun TextMessage(text: String) {
             color = colorResource(R.color.text_color),
             fontWeight = FontWeight.Medium,
             fontSize = 19.sp
-        )
+        ),
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -281,7 +309,7 @@ fun TextSmall(text: String) {
         text = text,
         fontFamily = Fonts.ysDisplayRegular,
         style = TextStyle(
-            color = colorResource(R.color.et_hint_color),
+            color = colorResource(R.color.text_subtitle_color),
             fontWeight = FontWeight.Normal,
             fontSize = 11.sp
         )
