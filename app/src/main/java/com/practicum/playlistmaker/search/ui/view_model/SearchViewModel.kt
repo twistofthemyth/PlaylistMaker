@@ -74,6 +74,8 @@ class SearchViewModel(
 
     override fun onTrackClicked(track: Track) {
         searchHistoryInteractor.addTrackToHistory(track)
+        val history = searchHistoryInteractor.getSearchHistory()
+        screenState.postValue(SearchViewState.ShowHistory(history.records))
     }
 
     sealed interface SearchViewState {
@@ -84,8 +86,6 @@ class SearchViewModel(
         class NetworkError() : SearchViewState
 
         class ShowSearchResult(val tracks: List<Track>) : SearchViewState
-
-        class InitedSearchInput() : SearchViewState
     }
 
     companion object {

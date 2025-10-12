@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".compose_example.ui.ComposeExampleActivity"
+            android:name=".main.ui.view.HostActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

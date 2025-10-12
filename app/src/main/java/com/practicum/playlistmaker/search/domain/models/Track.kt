@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.search.domain.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Track(
     val trackId: String,
     val trackName: String,

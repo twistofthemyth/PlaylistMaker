@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.bumptech.glide)
     implementation(libs.koin)
     implementation(libs.kotlin.coroutines)
+    implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.unit)
