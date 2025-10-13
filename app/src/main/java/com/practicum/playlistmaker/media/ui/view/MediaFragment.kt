@@ -5,46 +5,53 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentMediaBinding
+import com.practicum.playlistmaker.databinding.FragmentComposeBinding
+import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
+import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class MediaFragment : Fragment() {
-    private var _binding: FragmentMediaBinding? = null
-    private val binding get() = _binding!!
 
-    private var _tabMediator: TabLayoutMediator? = null
+    private val viewModel: MediaViewModel by activityViewModel<MediaViewModel>()
+    private var _binding: FragmentComposeBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentMediaBinding.inflate(inflater)
+        _binding = FragmentComposeBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewPager()
-    }
-
-    private fun setupViewPager() {
-        binding.viewPager.adapter = MediaViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
-        _tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when (position) {
-                0 -> tab.text = resources.getString(R.string.favorites_tab)
-                1 -> tab.text = resources.getString(R.string.playlists_tab)
-            }
-        }.apply {
-            attach()
+        binding.composeView.setContent {
+            MediaScreen(
+                viewModel = viewModel,
+                onClickTrack = {
+                    viewModel.clickTrack(it)
+                },
+                onCreatePlaylist = { findNavController().navigate(R.id.action_mediaFragment_to_createPlaylistFragment) },
+                onClickPlaylist = {
+                    val direction =
+                        MediaFragmentDirections.actionMediaFragmentToPlaylistFragment(it.id)
+                    findNavController().navigate(direction)
+                })
         }
+        viewModel.getTrackNavigationEvent()
+            .observe(viewLifecycleOwner, SingleLiveEventObserver { track ->
+                val direction =
+                    MediaFragmentDirections.actionMediaFragmentToTrackFragment(track.trackId)
+                findNavController().navigate(direction)
+            })
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        _tabMediator?.detach()
         _binding = null
-        _tabMediator = null
     }
 }

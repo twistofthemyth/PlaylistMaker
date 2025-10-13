@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -36,9 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 
 object Fonts {
@@ -165,6 +170,36 @@ fun TrackItems(tracks: List<Track>, onClick: (Track) -> Unit) {
 }
 
 @Composable
+fun PlaylistItem(playlist: Playlist, onClickPlaylist: (Playlist) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = { onClickPlaylist.invoke(playlist) })
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(8.dp)),
+            model = playlist.image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.placeholder_album)
+        )
+        Spacer(modifier = Modifier.size(4.dp))
+        TextSmall(playlist.name)
+        Spacer(modifier = Modifier.size(4.dp))
+        TextSmall(
+            pluralStringResource(
+                R.plurals.plular_track,
+                playlist.track.size,
+                playlist.track.size
+            )
+        )
+    }
+}
+
+@Composable
 fun TrackItem(track: Track, onClick: (Track) -> Unit) {
     Row(
         modifier = Modifier
@@ -177,9 +212,12 @@ fun TrackItem(track: Track, onClick: (Track) -> Unit) {
 
         ) {
         AsyncImage(
-            modifier = Modifier.size(45.dp),
+            modifier = Modifier
+                .size(45.dp)
+                .clip(RoundedCornerShape(2.dp)),
             model = track.coverArtwork,
             contentDescription = null,
+            contentScale = ContentScale.Crop,
             placeholder = painterResource(R.drawable.placeholder_album)
         )
 
@@ -192,19 +230,19 @@ fun TrackItem(track: Track, onClick: (Track) -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextSmall(track.artistName)
+                TextTiny(track.artistName)
                 Icon(
                     painter = painterResource(R.drawable.ic_dot_delimiter),
                     contentDescription = null,
-                    tint = colorResource(R.color.et_hint_color)
+                    tint = colorResource(R.color.list_item_icon_color)
                 )
-                TextSmall(track.trackTime)
+                TextTiny(track.trackTime)
             }
         }
         Icon(
             painter = painterResource(R.drawable.ic_arrow_forward),
             contentDescription = null,
-            tint = colorResource(R.color.et_hint_color)
+            tint = colorResource(R.color.list_item_icon_color)
         )
     }
 }
@@ -227,7 +265,7 @@ fun InfoMessage(
         if (imageId != null) {
             Image(
                 modifier = Modifier.padding(bottom = 16.dp, top = 102.dp),
-                painter = painterResource(R.drawable.placeholder_net_error),
+                painter = painterResource(imageId),
                 contentDescription = null
             )
         }
@@ -266,9 +304,9 @@ fun InfoMessageButton(textId: Int, onClick: () -> Unit) {
 }
 
 @Composable
-fun TextScreenTitle(text: String) {
+fun TextScreenTitle(textId: Int) {
     Text(
-        text = text,
+        text = stringResource(textId),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 14.dp, bottom = 16.dp, start = 16.dp),
@@ -315,9 +353,35 @@ fun TextSmall(text: String) {
         text = text,
         fontFamily = Fonts.ysDisplayRegular,
         style = TextStyle(
+            color = colorResource(R.color.text_color),
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp
+        )
+    )
+}
+
+@Composable
+fun TextTiny(text: String) {
+    Text(
+        text = text,
+        fontFamily = Fonts.ysDisplayRegular,
+        style = TextStyle(
             color = colorResource(R.color.text_subtitle_color),
             fontWeight = FontWeight.Normal,
             fontSize = 11.sp
+        )
+    )
+}
+
+@Composable
+fun TextTab(text: String) {
+    Text(
+        text = text,
+        fontFamily = Fonts.ysDisplayMedium,
+        style = TextStyle(
+            color = colorResource(R.color.text_color),
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp
         )
     )
 }

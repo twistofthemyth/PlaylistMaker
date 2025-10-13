@@ -34,7 +34,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel) {
     Column {
-        TextScreenTitle(stringResource(R.string.settings_button_txt))
+        TextScreenTitle(R.string.settings_button_txt)
         SettingsItem(
             textId = R.string.setting_item_theme,
             onCheckedChange = {

@@ -3,12 +3,9 @@ package com.practicum.playlistmaker.search.ui.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -29,7 +26,7 @@ fun SearchScreen(viewModel: SearchViewModel) {
             .fillMaxSize()
             .fillMaxWidth()
     ) {
-        TextScreenTitle(stringResource(R.string.search_button_txt))
+        TextScreenTitle(R.string.search_button_txt)
         SearchEditText(
             onValueChange = { viewModel.search(it) },
             onValueClean = { viewModel.cleanSearchQuery() })
@@ -73,7 +70,7 @@ private fun HistoryScreen(viewModel: SearchViewModel, tracks: List<Track>) {
 private fun SearchResultScreen(viewModel: SearchViewModel, tracks: List<Track>) {
     if (tracks.isEmpty()) {
         InfoMessage(
-            R.string.not_found, R.drawable.placeholder_not_found
+            textId = R.string.not_found, imageId = R.drawable.placeholder_not_found
         )
     }
     TrackItems(tracks) {
