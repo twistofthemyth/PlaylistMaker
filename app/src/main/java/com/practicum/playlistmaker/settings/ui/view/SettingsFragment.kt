@@ -9,7 +9,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentSettingsComposeBinding
+import com.practicum.playlistmaker.databinding.FragmentComposeBinding
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
@@ -19,7 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by activityViewModel<SettingsViewModel>()
-    private var _binding: FragmentSettingsComposeBinding? = null
+    private var _binding: FragmentComposeBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -27,7 +27,7 @@ class SettingsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSettingsComposeBinding.inflate(inflater)
+        _binding = FragmentComposeBinding.inflate(inflater)
         return binding.root
     }
 
