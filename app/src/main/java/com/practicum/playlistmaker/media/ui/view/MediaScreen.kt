@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -124,6 +125,7 @@ fun PlaylistsScreen(
         InfoMessageButton(R.string.create_playlist, onClick = onCreatePlaylist)
         if (playlists.isEmpty()) {
             InfoMessage(
+                modifier = Modifier.padding(top = 36.dp),
                 textId = R.string.empty_playlists,
                 imageId = R.drawable.placeholder_not_found
             )
@@ -152,11 +154,16 @@ fun FavoritesScreen(list: List<Track> = listOf(), onClickTrack: (Track) -> Unit 
     ) {
         if (list.isEmpty()) {
             InfoMessage(
+                modifier = Modifier.padding(top = 102.dp),
                 textId = R.string.empty_favorites,
                 imageId = R.drawable.placeholder_not_found
             )
         } else {
-            TrackItems(list, onClickTrack)
+            TrackItems(
+                modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
+                tracks = list,
+                onClick = onClickTrack
+            )
         }
     }
 }

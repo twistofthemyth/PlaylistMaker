@@ -161,8 +161,8 @@ fun SearchEditText(onValueChange: (String) -> Unit, onValueClean: () -> Unit) {
 }
 
 @Composable
-fun TrackItems(tracks: List<Track>, onClick: (Track) -> Unit) {
-    LazyColumn(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
+fun TrackItems(modifier: Modifier = Modifier, tracks: List<Track>, onClick: (Track) -> Unit) {
+    LazyColumn(modifier = modifier) {
         items(tracks) {
             TrackItem(track = it, onClick = onClick)
         }
@@ -176,16 +176,27 @@ fun PlaylistItem(playlist: Playlist, onClickPlaylist: (Playlist) -> Unit) {
             .fillMaxSize()
             .clickable(onClick = { onClickPlaylist.invoke(playlist) })
     ) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(8.dp)),
-            model = playlist.image,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.placeholder_album)
-        )
+        if (playlist.image.isEmpty() || playlist.image == "null") {
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp)),
+                painter = painterResource(R.drawable.placeholder_album),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp)),
+                model = playlist.image.ifEmpty { null },
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+        }
         Spacer(modifier = Modifier.size(4.dp))
         TextSmall(playlist.name)
         Spacer(modifier = Modifier.size(4.dp))
@@ -249,6 +260,7 @@ fun TrackItem(track: Track, onClick: (Track) -> Unit) {
 
 @Composable
 fun InfoMessage(
+    modifier: Modifier = Modifier,
     textId: Int,
     descriptionId: Int? = null,
     imageId: Int? = null,
@@ -256,15 +268,14 @@ fun InfoMessage(
     onButtonClickAction: (() -> Unit)? = null
 ) {
     Column(
-        modifier = Modifier
-            .padding(top = 24.dp, bottom = 8.dp)
+        modifier = modifier
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         if (imageId != null) {
             Image(
-                modifier = Modifier.padding(bottom = 16.dp, top = 102.dp),
+                modifier = Modifier.padding(bottom = 16.dp),
                 painter = painterResource(imageId),
                 contentDescription = null
             )
