@@ -11,6 +11,7 @@ import java.util.Locale
 
 object DataConverter {
     private val TRACK_TIME_FORMATTER = SimpleDateFormat("mm:ss", Locale.ENGLISH)
+    private val NULL_STRING = "null"
 
     fun convertNetworkTrackToTrack(iTunesTrackDto: ITunesTrackDto): Track {
         return Track(
@@ -99,7 +100,7 @@ object DataConverter {
             playlist.id,
             playlist.name,
             playlist.description,
-            playlist.image
+            playlist.image.orEmpty()
         )
     }
 
@@ -115,7 +116,7 @@ object DataConverter {
             playlist.id,
             playlist.name,
             playlist.description,
-            playlist.image,
+            if (NULL_STRING == playlist.image || playlist.image.isEmpty()) null else playlist.image,
             tracks.map { convertTrackEntityToTrack(it) }
         )
     }
