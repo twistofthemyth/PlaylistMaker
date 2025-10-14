@@ -13,7 +13,7 @@ class PlaylistViewHolder(private val binding: SearchResultItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(data: Playlist) {
         Glide.with(itemView)
-            .load(data.image.toUri())
+            .load(data.image?.toUri())
             .placeholder(R.drawable.placeholder_album)
             .centerCrop()
             .transform(

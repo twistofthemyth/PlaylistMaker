@@ -91,7 +91,7 @@ class PlaylistEditorFragment : Fragment() {
         binding.createBtn.setText(R.string.save_playlist_button)
         binding.nameEt.setText(playlist.name)
         binding.descriptionEt.setText(playlist.description)
-        if (playlist.image.isNotEmpty()) {
+        if (playlist.image != null) {
             showPreview(playlist.image.toUri())
         }
         enableConfirmButton()

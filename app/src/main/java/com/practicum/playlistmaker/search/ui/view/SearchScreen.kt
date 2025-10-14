@@ -5,24 +5,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.util.ui_utils.compose.ProgressBar
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.util.ui_utils.compose.SearchEditText
+import com.practicum.playlistmaker.search.ui.compose.TextScreenTitle
+import com.practicum.playlistmaker.search.ui.compose.TrackItems
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.util.ui_utils.InfoMessage
-import com.practicum.playlistmaker.util.ui_utils.InfoMessageButton
-import com.practicum.playlistmaker.util.ui_utils.ProgressBar
-import com.practicum.playlistmaker.util.ui_utils.SearchEditText
-import com.practicum.playlistmaker.util.ui_utils.TextScreenTitle
-import com.practicum.playlistmaker.util.ui_utils.TrackItems
+import com.practicum.playlistmaker.util.ui_utils.compose.InfoMessage
+import com.practicum.playlistmaker.util.ui_utils.compose.InfoMessageButton
 
 @Composable
 fun SearchScreen(viewModel: SearchViewModel) {
     val state = viewModel.getScreenState().asFlow()
-        .collectAsState(SearchViewModel.SearchViewState.Loading()).value
+        .collectAsStateWithLifecycle(SearchViewModel.SearchViewState.Loading()).value
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,8 +37,7 @@ fun SearchScreen(viewModel: SearchViewModel) {
             is SearchViewModel.SearchViewState.NetworkError -> NetworkErrorScreen(viewModel)
             is SearchViewModel.SearchViewState.ShowHistory -> HistoryScreen(viewModel, state.tracks)
             is SearchViewModel.SearchViewState.ShowSearchResult -> SearchResultScreen(
-                viewModel,
-                state.tracks
+                viewModel, state.tracks
             )
         }
     }

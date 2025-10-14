@@ -15,7 +15,7 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,17 +23,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.media.domain.models.Playlist
 import com.practicum.playlistmaker.media.ui.view_model.MediaViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.util.ui_utils.InfoMessage
-import com.practicum.playlistmaker.util.ui_utils.InfoMessageButton
-import com.practicum.playlistmaker.util.ui_utils.PlaylistItem
-import com.practicum.playlistmaker.util.ui_utils.ProgressBar
-import com.practicum.playlistmaker.util.ui_utils.TextScreenTitle
-import com.practicum.playlistmaker.util.ui_utils.TextTab
-import com.practicum.playlistmaker.util.ui_utils.TrackItems
+import com.practicum.playlistmaker.util.ui_utils.compose.InfoMessage
+import com.practicum.playlistmaker.util.ui_utils.compose.InfoMessageButton
+import com.practicum.playlistmaker.search.ui.compose.TextScreenTitle
+import com.practicum.playlistmaker.search.ui.compose.TrackItems
+import com.practicum.playlistmaker.util.ui_utils.compose.PlaylistItem
+import com.practicum.playlistmaker.util.ui_utils.compose.ProgressBar
+import com.practicum.playlistmaker.util.ui_utils.compose.TextTab
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,12 +46,12 @@ fun MediaScreen(
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 2 })
-    val titles = listOf(R.string.favorites_tab, R.string.playlists_tab)
+    val titles = remember { listOf(R.string.favorites_tab, R.string.playlists_tab) }
 
     val favoritesState = viewModel.getFavoritesState().asFlow()
-        .collectAsState(MediaViewModel.FavoritesState.Empty)
-    val playlistState =
-        viewModel.getPlaylistState().asFlow().collectAsState(MediaViewModel.PlaylistState.Empty)
+        .collectAsStateWithLifecycle(MediaViewModel.FavoritesState.Empty)
+    val playlistState = viewModel.getPlaylistState().asFlow()
+        .collectAsStateWithLifecycle(MediaViewModel.PlaylistState.Empty)
 
     Column(modifier = Modifier.fillMaxSize()) {
         TextScreenTitle(R.string.media_button_txt)
@@ -84,26 +85,19 @@ fun MediaScreen(
                 .weight(1f)
         ) {
             when (it) {
-                0 -> {
-                    val favoritesStateValue = favoritesState.value
-                    when (favoritesStateValue) {
-                        is MediaViewModel.FavoritesState.Content -> FavoritesScreen(
-                            favoritesStateValue.favoritesTrack, onClickTrack
-                        )
-
-                        MediaViewModel.FavoritesState.Empty -> FavoritesScreen()
-                    }
-                }
+                0 -> FavoritesScreen(
+                    state = favoritesState.value,
+                    onClickTrack = onClickTrack
+                )
 
                 else -> {
-                    val playlistStateValue = playlistState.value
-                    when (playlistStateValue) {
-                        is MediaViewModel.PlaylistState.Content -> PlaylistsScreen(
-                            playlistStateValue.playlists, onCreatePlaylist, onClickPlaylist
+                    when (playlistState.value) {
+                        is MediaViewModel.PlaylistState.Loading -> ProgressBar()
+                        else -> PlaylistsScreen(
+                            state = playlistState.value,
+                            onCreatePlaylist = onCreatePlaylist,
+                            onClickPlaylist = onClickPlaylist
                         )
-
-                        MediaViewModel.PlaylistState.Empty -> PlaylistsScreen(onCreatePlaylist = onCreatePlaylist)
-                        MediaViewModel.PlaylistState.Loading -> ProgressBar()
                     }
                 }
             }
@@ -112,11 +106,47 @@ fun MediaScreen(
 }
 
 @Composable
-fun PlaylistsScreen(
-    playlists: List<Playlist> = listOf(),
+private fun FavoritesScreen(
+    state: MediaViewModel.FavoritesState,
+    onClickTrack: (Track) -> Unit = {}
+) {
+    val trackList = when (state) {
+        is MediaViewModel.FavoritesState.Content -> state.favoritesTrack
+        else -> emptyList()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxWidth()
+    ) {
+        if (trackList.isEmpty()) {
+            InfoMessage(
+                modifier = Modifier.padding(top = 102.dp),
+                textId = R.string.empty_favorites,
+                imageId = R.drawable.placeholder_not_found
+            )
+        } else {
+            TrackItems(
+                modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
+                tracks = trackList,
+                onClick = onClickTrack
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlaylistsScreen(
+    state: MediaViewModel.PlaylistState,
     onCreatePlaylist: () -> Unit = {},
     onClickPlaylist: (Playlist) -> Unit = {}
 ) {
+    val playlists = when (state) {
+        is MediaViewModel.PlaylistState.Content -> state.playlists
+        else -> emptyList()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -141,29 +171,6 @@ fun PlaylistsScreen(
                     PlaylistItem(item, onClickPlaylist)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun FavoritesScreen(list: List<Track> = listOf(), onClickTrack: (Track) -> Unit = {}) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
-    ) {
-        if (list.isEmpty()) {
-            InfoMessage(
-                modifier = Modifier.padding(top = 102.dp),
-                textId = R.string.empty_favorites,
-                imageId = R.drawable.placeholder_not_found
-            )
-        } else {
-            TrackItems(
-                modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
-                tracks = list,
-                onClick = onClickTrack
-            )
         }
     }
 }

@@ -108,7 +108,7 @@ class PlaylistFragment : Fragment(), PlaylistSharer {
                     binding.progressBar.isVisible = false
 
                     Glide.with(binding.playlistIv)
-                        .load(it.playlist.image.toUri())
+                        .load(it.playlist.image?.toUri())
                         .centerCrop()
                         .placeholder(R.drawable.placeholder_album)
                         .into(binding.playlistIv)

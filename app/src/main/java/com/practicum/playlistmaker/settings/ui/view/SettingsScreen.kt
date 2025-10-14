@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.settings.ui.view
+package com.practicum.playlistmaker.settings.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,11 +24,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.search.ui.compose.TextScreenTitle
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
-import com.practicum.playlistmaker.util.ui_utils.Fonts
-import com.practicum.playlistmaker.util.ui_utils.Material2Switcher
-import com.practicum.playlistmaker.util.ui_utils.TextScreenTitle
+import com.practicum.playlistmaker.util.ui_utils.compose.Fonts
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,7 +69,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun SettingsItem(
+private fun SettingsItem(
     textId: Int,
     iconId: Int? = null,
     onClick: (() -> Unit)? = null,

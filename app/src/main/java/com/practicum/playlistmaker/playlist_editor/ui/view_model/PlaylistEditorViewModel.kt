@@ -38,7 +38,7 @@ class PlaylistEditorViewModel(val playlistRepository: PlaylistRepository, val pl
     private fun initEditState(playlist: Playlist) {
         name = playlist.name
         description = playlist.description
-        image = playlist.image.toUri()
+        image = playlist.image?.toUri()
     }
 
     fun getState() = state as LiveData<CreatePlaylistState>

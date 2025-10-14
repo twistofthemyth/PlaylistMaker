@@ -96,7 +96,7 @@ class BottomSheetPlaylistOptionsFragment(val playlistId: Long) : BottomSheetDial
 
     private fun handleContentState(content: PlaylistViewModel.PlaylistState.Content) {
         Glide.with(binding.imageIv)
-            .load(content.playlist.image.toUri())
+            .load(content.playlist.image?.toUri())
             .centerCrop()
             .placeholder(R.drawable.placeholder_album)
             .into(binding.imageIv)

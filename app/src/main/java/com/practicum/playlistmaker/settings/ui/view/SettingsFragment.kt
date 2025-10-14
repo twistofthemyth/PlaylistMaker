@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentComposeBinding
 import com.practicum.playlistmaker.settings.domain.models.AppStyle
+import com.practicum.playlistmaker.settings.ui.compose.SettingsScreen
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.util.event.SingleLiveEventObserver
 import com.practicum.playlistmaker.util.ui_utils.IntentUtils
